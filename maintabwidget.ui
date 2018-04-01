@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainTabWidget</class>
+ <widget class="QTabWidget" name="MainTabWidget">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1166</width>
+    <height>726</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="font">
+   <font>
+    <pointsize>16</pointsize>
+    <weight>50</weight>
+    <bold>false</bold>
+   </font>
+  </property>
+  <property name="windowTitle">
+   <string>TabWidget</string>
+  </property>
+  <property name="layoutDirection">
+   <enum>Qt::LeftToRight</enum>
+  </property>
+  <property name="tabPosition">
+   <enum>QTabWidget::West</enum>
+  </property>
+  <property name="tabShape">
+   <enum>QTabWidget::Rounded</enum>
+  </property>
+  <property name="currentIndex">
+   <number>0</number>
+  </property>
+  <property name="iconSize">
+   <size>
+    <width>32</width>
+    <height>32</height>
+   </size>
+  </property>
+  <property name="elideMode">
+   <enum>Qt::ElideLeft</enum>
+  </property>
+  <property name="documentMode">
+   <bool>false</bool>
+  </property>
+  <property name="tabsClosable">
+   <bool>false</bool>
+  </property>
+  <property name="movable">
+   <bool>true</bool>
+  </property>
+  <widget class="QWidget" name="tabHistory">
+   <attribute name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/icons/Logs_tab_no_color_icon_90.png</normaloff>:/icons/icons/Logs_tab_no_color_icon_90.png</iconset>
+   </attribute>
+   <attribute name="title">
+    <string>История</string>
+   </attribute>
+   <widget class="testTableWidget" name="wTest" native="true">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>20</y>
+      <width>1091</width>
+      <height>691</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
+  <widget class="SPRSpectrumListTableWidget" name="tabSpectrum">
+   <attribute name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/icons/Spector_tab_icons_no_color_icon_90.png</normaloff>:/icons/icons/Spector_tab_icons_no_color_icon_90.png</iconset>
+   </attribute>
+   <attribute name="title">
+    <string>Спектор</string>
+   </attribute>
+   <layout class="QVBoxLayout" name="verticalLayout_2"/>
+  </widget>
+  <widget class="SPRSeparateWidget" name="tabSeparate">
+   <attribute name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/icons/Separate_tab_bo_colors_icon_90.png</normaloff>:/icons/icons/Separate_tab_bo_colors_icon_90.png</iconset>
+   </attribute>
+   <attribute name="title">
+    <string>Сепарация</string>
+   </attribute>
+  </widget>
+  <widget class="SPRTestIMSWidget" name="tabTest">
+   <attribute name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/icons/Settings_tab_no_color_icon_90.png</normaloff>:/icons/icons/Settings_tab_no_color_icon_90.png</iconset>
+   </attribute>
+   <attribute name="title">
+    <string>Тесты</string>
+   </attribute>
+  </widget>
+  <widget class="SPRSettingsWidget" name="tabSettings">
+   <attribute name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/icons/Test_tab_no_color_icons.png</normaloff>:/icons/icons/Test_tab_no_color_icons.png</iconset>
+   </attribute>
+   <attribute name="title">
+    <string>Настройка</string>
+   </attribute>
+   <layout class="QVBoxLayout" name="verticalLayout"/>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>SPRSpectrumListTableWidget</class>
+   <extends>QWidget</extends>
+   <header>sprspectrumlisttablewidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SPRSettingsWidget</class>
+   <extends>QWidget</extends>
+   <header>sprsettingswidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>testTableWidget</class>
+   <extends>QWidget</extends>
+   <header>testtablewidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SPRTestIMSWidget</class>
+   <extends>QWidget</extends>
+   <header>sprtestimswidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SPRSeparateWidget</class>
+   <extends>QWidget</extends>
+   <header>sprseparatewidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
+ <connections/>
+</ui>

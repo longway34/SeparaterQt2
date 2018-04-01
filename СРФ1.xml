@@ -1,0 +1,243 @@
+<SEPARATOR PORT="3425" IP="192.168.0.120" TUBES="2" NAME="СРФ1" IM_COUNT="4" CHANNELS="4" IM_ROW_COUNT="1" COLOR="43520">
+    <PROPERTIES>
+        <PROPERTY CODE="GUID">
+            <VALUE NAME="VALUE">{0000A372-7114-388A-1653-90CD0B4885C2}</VALUE>
+            <VALUE NAME="CONFIG_GUID">{000019AD-3DD9-6E05-5CB8-1571CD2A86E2}</VALUE>
+        </PROPERTY>
+        <PROPERTY CODE="RMT">
+            <VALUE NAME="ROENTGENS_TYPE">0</VALUE>
+            <VALUE NAME="XRAY_TIME_ON">5</VALUE>
+            <VALUE NAME="XRAY_TIME_OFF">5</VALUE>
+            <VALUE NAME="XRAY_TIME_EXPOSITION">5</VALUE>
+            <VALUE NAME="IGNORE_TUBES_ERROR">0</VALUE>
+            <VALUE NAME="M50_REGIME">0</VALUE>
+            <VALUE NAME="ROENTGEN_DEVIATION_PERMISSIBLE">5</VALUE>
+            <VALUE NAME="ROENTGEN_DEVIATION_CRITICAL">10</VALUE>
+            <VALUE NAME="IGNORE_RGU_ERROR">0</VALUE>
+            <VALUE NAME="USE_OLD_RGU_COMMAND">0</VALUE>
+            <VALUE NAME="RGU_UP_DOWN_TIME">35</VALUE>
+        </PROPERTY>
+        <PROPERTY CODE="PRAM_TUBE_0">
+            <VALUE NAME="I">40</VALUE>
+            <VALUE NAME="U">40</VALUE>
+        </PROPERTY>
+        <PROPERTY CODE="PRAM_TUBE_1">
+            <VALUE NAME="I">40</VALUE>
+            <VALUE NAME="U">40</VALUE>
+        </PROPERTY>
+        <PROPERTY CODE="CHANNEL_0">
+            <VALUE NAME="DEU">107</VALUE>
+            <VALUE NAME="CP">125</VALUE>
+        </PROPERTY>
+        <PROPERTY CODE="CHANNEL_1">
+            <VALUE NAME="DEU">95</VALUE>
+            <VALUE NAME="CP">125</VALUE>
+        </PROPERTY>
+        <PROPERTY CODE="CHANNEL_2">
+            <VALUE NAME="DEU">118</VALUE>
+            <VALUE NAME="CP">127</VALUE>
+        </PROPERTY>
+        <PROPERTY CODE="CHANNEL_3">
+            <VALUE NAME="DEU">78</VALUE>
+            <VALUE NAME="CP">124</VALUE>
+        </PROPERTY>
+        <PROPERTY CODE="IGNORED_CHANNELS">
+            <VALUE NAME="CHANNEL_0">0</VALUE>
+            <VALUE NAME="CHANNEL_1">0</VALUE>
+            <VALUE NAME="CHANNEL_2">0</VALUE>
+            <VALUE NAME="CHANNEL_3">0</VALUE>
+            <VALUE NAME="CHANNEL_4">0</VALUE>
+            <VALUE NAME="CHANNEL_5">0</VALUE>
+            <VALUE NAME="CHANNEL_6">0</VALUE>
+            <VALUE NAME="CHANNEL_7">0</VALUE>
+        </PROPERTY>
+        <PROPERTY CODE="AUTO_CODE_SET">
+            <VALUE NAME="USE_DEU">1</VALUE>
+            <VALUE NAME="USE_RGU">0</VALUE>
+            <VALUE NAME="START_DEU">80</VALUE>
+            <VALUE NAME="STEP_DEU">20</VALUE>
+            <VALUE NAME="PEAK_POSITION">64</VALUE>
+            <VALUE NAME="USE_CHANNEL_0">1</VALUE>
+            <VALUE NAME="USE_CHANNEL_1">1</VALUE>
+            <VALUE NAME="USE_CHANNEL_2">1</VALUE>
+            <VALUE NAME="USE_CHANNEL_3">1</VALUE>
+            <VALUE NAME="USE_CHANNEL_4">1</VALUE>
+            <VALUE NAME="USE_CHANNEL_5">1</VALUE>
+            <VALUE NAME="USE_CHANNEL_6">1</VALUE>
+            <VALUE NAME="USE_CHANNEL_7">1</VALUE>
+        </PROPERTY>
+        <PROPERTY CODE="PITATEL">
+            <VALUE NAME="CODE">680</VALUE>
+            <VALUE NAME="DEC_CODE_PERCENT">5</VALUE>
+            <VALUE NAME="MAX_CODE_PERCENT">100</VALUE>
+        </PROPERTY>
+        <PROPERTY CODE="RANGES_NAMES">
+            <VALUE NAME="NAME1">Ns</VALUE>
+            <VALUE NAME="NAME2">Fe</VALUE>
+            <VALUE NAME="NAME3">Cu</VALUE>
+            <VALUE NAME="NAME4">3</VALUE>
+            <VALUE NAME="NAME5">4</VALUE>
+            <VALUE NAME="NAME6">5</VALUE>
+        </PROPERTY>
+        <PROPERTY CODE="IM">
+            <VALUE NAME="MIN_SIZE">16</VALUE>
+            <VALUE NAME="MIN_PAUSE">110</VALUE>
+            <VALUE NAME="MIN_DURATION">40</VALUE>
+            <VALUE NAME="MAX_SIZE">200</VALUE>
+            <VALUE NAME="MAX_PAUSE">40</VALUE>
+            <VALUE NAME="MAX_DURATION">150</VALUE>
+            <VALUE NAME="LIMIT_ABRASION">300000</VALUE>
+            <VALUE NAME="ABRASION1">0</VALUE>
+            <VALUE NAME="ABRASION2">0</VALUE>
+            <VALUE NAME="ABRASION3">0</VALUE>
+            <VALUE NAME="ABRASION4">0</VALUE>
+            <VALUE NAME="IGNORE_ERRORS">1</VALUE>
+        </PROPERTY>
+        <PROPERTY CODE="ORE_SPEED_KOEF">
+            <VALUE NAME="KOEF_A">-5.2</VALUE>
+            <VALUE NAME="KOEF_B">4.522</VALUE>
+        </PROPERTY>
+        <PROPERTY CODE="SEPARATION">
+            <VALUE NAME="CRITICAL_STOPPING">0</VALUE>
+            <VALUE NAME="X_RAY_CORRECTION">2</VALUE>
+        </PROPERTY>
+        <PROPERTY CODE="CORRELATION_CONTROL_SPECTRUM">
+            <VALUE NAME="PERMISSIBLE">0.7</VALUE>
+            <VALUE NAME="CRITICAL">0.6</VALUE>
+        </PROPERTY>
+        <PROPERTY CODE="SPEED_STREAM">
+            <VALUE NAME="PERMISSIBLE">8</VALUE>
+            <VALUE NAME="CRITICAL">10</VALUE>
+        </PROPERTY>
+        <PROPERTY CODE="CENTER_DEVIATION">
+            <VALUE NAME="PERMISSIBLE">3</VALUE>
+            <VALUE NAME="CRITICAL">5</VALUE>
+        </PROPERTY>
+        <PROPERTY CODE="AIR_LOADING">
+            <VALUE NAME="PERMISSIBLE_MIN">1000</VALUE>
+            <VALUE NAME="PERMISSIBLE_MAX">5000</VALUE>
+            <VALUE NAME="CRITICAL_MIN">500</VALUE>
+            <VALUE NAME="CRITICAL_MAX">5100</VALUE>
+        </PROPERTY>
+        <PROPERTY CODE="CONTROL_RANGE">
+            <VALUE NAME="INDEX">0</VALUE>
+        </PROPERTY>
+        <PROPERTY CODE="STONE_DENSITY">
+            <VALUE NAME="CONCENTRATE">400</VALUE>
+            <VALUE NAME="TAIL">400</VALUE>
+        </PROPERTY>
+        <PROPERTY CODE="SEPARATION_TIME">
+            <VALUE NAME="TIME_FOR_DATA">5</VALUE>
+            <VALUE NAME="TIME_FOR_SPECTRUM">15</VALUE>
+            <VALUE NAME="TIME_FOR_HISTOGRAMM">25</VALUE>
+            <VALUE NAME="TIME_FOR_ORE_PARAMETERS">1</VALUE>
+        </PROPERTY>
+        <PROPERTY CODE="LEVEL_SELECTION">
+            <VALUE NAME="CORRECTION">5</VALUE>
+            <VALUE NAME="ON">1</VALUE>
+        </PROPERTY>
+        <PROPERTY CODE="SPECTRUMS">
+            <VALUE NAME="FILE_NAME">СРФ1.spc</VALUE>
+            <VALUE NAME="COLUMN0">0</VALUE>
+            <VALUE NAME="COLUMN1">1</VALUE>
+            <VALUE NAME="COLUMN2">2</VALUE>
+            <VALUE NAME="COLUMN3">3</VALUE>
+            <VALUE NAME="COLUMN4">4</VALUE>
+            <VALUE NAME="COLUMN5">5</VALUE>
+            <VALUE NAME="COLUMN6">6</VALUE>
+            <VALUE NAME="COLUMN7">7</VALUE>
+            <VALUE NAME="COLUMN8">8</VALUE>
+            <VALUE NAME="COLUMN9">9</VALUE>
+            <VALUE NAME="COLUMN10">10</VALUE>
+            <VALUE NAME="COLUMN11">11</VALUE>
+            <VALUE NAME="COLUMN12">12</VALUE>
+            <VALUE NAME="COLUMN13">13</VALUE>
+            <VALUE NAME="COLUMN14">-1</VALUE>
+            <VALUE NAME="COLUMN15">-1</VALUE>
+            <VALUE NAME="COLUMN16">-1</VALUE>
+        </PROPERTY>
+        <PROPERTY CODE="TERMO_ELEMENT">
+            <VALUE NAME="MODE">0</VALUE>
+        </PROPERTY>
+        <PROPERTY CODE="DOOR">
+            <VALUE NAME="IGNORE">1</VALUE>
+        </PROPERTY>
+        <PROPERTY CODE="MAX_STONE_PARAMETERS">
+            <VALUE NAME="USE_MAX_STONE_PARAMETERS">0</VALUE>
+            <VALUE NAME="DELAY0">0</VALUE>
+            <VALUE NAME="DURATION0">0</VALUE>
+            <VALUE NAME="MEASURE0">0</VALUE>
+            <VALUE NAME="DELAY1">0</VALUE>
+            <VALUE NAME="DURATION1">0</VALUE>
+            <VALUE NAME="MEASURE1">0</VALUE>
+        </PROPERTY>
+    </PROPERTIES>
+    <SEPARATE_SETUP>
+        <OBL>
+            <CHANNEL INDEX="0">
+                <OblName Ls="129" Rs="250"/>
+                <OblName Ls="57" Rs="71"/>
+                <OblName Ls="77" Rs="84"/>
+                <OblName Ls="1" Rs="2"/>
+                <OblName Ls="1" Rs="2"/>
+                <OblName Ls="1" Rs="2"/>
+            </CHANNEL>
+            <CHANNEL INDEX="1">
+                <OblName Ls="129" Rs="250"/>
+                <OblName Ls="58" Rs="70"/>
+                <OblName Ls="77" Rs="84"/>
+                <OblName Ls="1" Rs="2"/>
+                <OblName Ls="1" Rs="2"/>
+                <OblName Ls="1" Rs="2"/>
+            </CHANNEL>
+            <CHANNEL INDEX="2">
+                <OblName Ls="129" Rs="250"/>
+                <OblName Ls="58" Rs="69"/>
+                <OblName Ls="77" Rs="84"/>
+                <OblName Ls="1" Rs="2"/>
+                <OblName Ls="1" Rs="2"/>
+                <OblName Ls="1" Rs="2"/>
+            </CHANNEL>
+            <CHANNEL INDEX="3">
+                <OblName Ls="129" Rs="250"/>
+                <OblName Ls="58" Rs="69"/>
+                <OblName Ls="77" Rs="84"/>
+                <OblName Ls="1" Rs="2"/>
+                <OblName Ls="1" Rs="2"/>
+                <OblName Ls="1" Rs="2"/>
+            </CHANNEL>
+        </OBL>
+        <GmZ g0="21.4868" g1="20" g2="34.0767" g3="21.4868"/>
+        <SH1 s0="1" s1="0" s2="0" s3="0" s4="0" s5="0"/>
+        <SH2 s0="0" s1="0" s2="0" s3="0" s4="0" s5="0"/>
+        <SH3 s0="0" s1="0" s2="0" s3="0" s4="0" s5="0"/>
+        <KH1 k0="0" k1="0"/>
+        <KH2 k0="0" k1="0"/>
+        <KH3 k0="0" k1="0"/>
+        <K_PR_MIN Value="1"/>
+        <K_PR_MAX Value="1"/>
+        <Prg>
+            <CHANNEL p0="1" p1="99" p2="-99" p3="99" p4="-99" p5="99" INDEX="0"/>
+            <CHANNEL p0="1" p1="99" p2="-99" p3="99" p4="-99" p5="99" INDEX="1"/>
+            <CHANNEL p0="1" p1="99" p2="-99" p3="99" p4="-99" p5="99" INDEX="2"/>
+            <CHANNEL p0="1" p1="99" p2="-99" p3="99" p4="-99" p5="99" INDEX="3"/>
+        </Prg>
+        <Tiz t0="16" t1="62" t2="108" t3="154" t4="400"/>
+        <fH12 Value="0"/>
+        <fOtb Value="0"/>
+        <fOtbR2 Value="0"/>
+        <MaxG1 Value="2"/>
+        <MinG1 Value="0"/>
+        <GCol Value="200"/>
+        <KRuch Value="4"/>
+        <Usl u1="1" u2="1" u3="1" u0="1"/>
+        <TOtb Value="8"/>
+        <TOtbR2 Value="8"/>
+        <Alg Value="0"/>
+        <Sep_Row Value="0"/>
+        <K_im u1="0.597826" u2="0.597826" u3="0.597826" u0="0.597826"/>
+        <B_im u1="30.4348" u2="30.4348" u3="30.4348" u0="30.4348"/>
+        <K_zd u1="-0.380435" u2="-0.380435" u3="-0.380435" u0="-0.380435"/>
+        <B_zd u1="116.087" u2="116.087" u3="116.087" u0="116.087"/>
+    </SEPARATE_SETUP>
+</SEPARATOR>

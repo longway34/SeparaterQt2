@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SPRSettingsRentgenWidget</class>
+ <widget class="QWidget" name="SPRSettingsRentgenWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>640</width>
+    <height>404</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QTabWidget" name="tabWidget_3">
+     <property name="statusTip">
+      <string/>
+     </property>
+     <property name="currentIndex">
+      <number>2</number>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+     <property name="tabsClosable">
+      <bool>false</bool>
+     </property>
+     <property name="movable">
+      <bool>true</bool>
+     </property>
+     <property name="tabBarAutoHide">
+      <bool>false</bool>
+     </property>
+     <widget class="QWidget" name="tab_11">
+      <attribute name="icon">
+       <iconset resource="icons.qrc">
+        <normaloff>:/icons/algoritmSettings/rentgen/icons/AlgoripmSerrings_tabs/Rentgens/Rentgen_Settings_Main_1.png</normaloff>:/icons/algoritmSettings/rentgen/icons/AlgoripmSerrings_tabs/Rentgens/Rentgen_Settings_Main_1.png</iconset>
+      </attribute>
+      <attribute name="title">
+       <string>Основные параметры</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_10">
+       <item>
+        <widget class="SPRSettingsRentgenMainWidget" name="wSettingsRentgenMainWidget" native="true"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_12">
+      <attribute name="icon">
+       <iconset resource="icons.qrc">
+        <normaloff>:/icons/algoritmSettings/rentgen/icons/AlgoripmSerrings_tabs/Rentgens/Rentgen_Settings_Controls_1.png</normaloff>:/icons/algoritmSettings/rentgen/icons/AlgoripmSerrings_tabs/Rentgens/Rentgen_Settings_Controls_1.png</iconset>
+      </attribute>
+      <attribute name="title">
+       <string>Контрольные параметры</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_11">
+       <item>
+        <widget class="SPRSettingsRentgenControlWidget" name="wSettingsRentgenControlWidget" native="true"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_13">
+      <attribute name="icon">
+       <iconset resource="icons.qrc">
+        <normaloff>:/icons/algoritmSettings/rentgen/icons/AlgoripmSerrings_tabs/Rentgens/Rentgen_Settings_Auto_1.png</normaloff>:/icons/algoritmSettings/rentgen/icons/AlgoripmSerrings_tabs/Rentgens/Rentgen_Settings_Auto_1.png</iconset>
+      </attribute>
+      <attribute name="title">
+       <string>Автоустановка</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_12">
+       <item>
+        <widget class="SPRSettingsRentgenAutosetWidget" name="wSettingsRentgenAutoWidget" native="true"/>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>SPRSettingsRentgenMainWidget</class>
+   <extends>QWidget</extends>
+   <header>sprsettingsrentgenmainwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SPRSettingsRentgenControlWidget</class>
+   <extends>QWidget</extends>
+   <header>sprsettingsrentgencontrolwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SPRSettingsRentgenAutosetWidget</class>
+   <extends>QWidget</extends>
+   <header>sprsettingsrentgenautosetwidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
+ <connections/>
+</ui>

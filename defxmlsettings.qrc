@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/def">
+        <file>defSettings.xml</file>
+    </qresource>
+</RCC>
