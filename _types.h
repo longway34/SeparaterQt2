@@ -12,6 +12,7 @@
 //#include "models/sprvariable.h"
 //#include "models/sprelementvariable.h"
 
+// comment 02.04.2018
 
 typedef enum eTypePRAM : int{
     pram50 = 0,
