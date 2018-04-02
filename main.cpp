@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
 //    MainWindow w(&doc);
 //    w.show();
 
-    MainTabWidget tw(QString("СРФ1.xml"), nullptr);
+    MainTabWidget tw("Separator.xml", nullptr);
     tw.show();
 
     return a.exec();

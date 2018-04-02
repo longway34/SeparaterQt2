@@ -7,7 +7,7 @@
 #include "models/sprmainmodel.h"
 #include "models/sprseparatemodel.h"
 #include "tcp/TCPCommand.h"
-#include "tcp/tcpgetkspectrums.h"
+#include "tcp/tcpgetspectrumsgistogramms.h"
 #include "tcp/tcpgetgistogramms.h"
 
 
@@ -23,7 +23,7 @@ public:
     SPRSeparateModel *separateModel;
 
     TCPGetGistogramms *getGistogramm;
-    TCPGetKSpectrums *getKSpectrums;
+    TCPGetSpectrumsGistogramms *getKSpectrums;
     TCPCommand *getSeparate;
 
     ISPRModelData *setModel(SPRSpectrumListItemsModel *_model, SPRFormulaItemModel *_formulas){

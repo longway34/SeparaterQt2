@@ -8,7 +8,7 @@ SPRSettingsControlWidget::SPRSettingsControlWidget(QWidget *parent) :
     QVector<QAbstractSpinBox*> les = {
         ui.leWeightAvgConcentrate, ui.leWeightAvgTail,
         ui.leTimeMeassureData, ui.leTimeMeassureHistorramm, ui.leTimeMeassureSpector,
-        ui.leVEMSLess, ui.leVEMSMaxCode,
+        ui.leVEMSLess, ui.leVEMSMaxCode, ui.leVEMSBegin,
         ui.leCorrectStream
     };
     for(int i=0; i<les.size(); i++){
@@ -99,6 +99,7 @@ ISPRModelData *SPRSettingsControlWidget::setModel(SPRSettingsControlModel *data)
 
     ui.leVEMSLess->setValue(model->VEMSLevelLess->getData());
     ui.leVEMSMaxCode->setValue(model->VEMSMaxCode->getData());
+    ui.leVEMSBegin->setValue(model->VEMSBeginCode->getData());
 
     QVariant cur; cur.setValue<EnumElements>(model->controlArea->getData());
     int curIndex = ui.cbControlArea->findData(cur);
@@ -113,116 +114,126 @@ ISPRModelData *SPRSettingsControlWidget::getModel()
 
 void SPRSettingsControlWidget::viewChange()
 {
-    if(sender() == ui.leTimeMeassureData){
-        model->tMeassureForData->setData(ui.leTimeMeassureData->value());
-        return;
-    }
-    if(sender() == ui.leTimeMeassureHistorramm){
-        model->tMeassureForHistogramm->setData(ui.leTimeMeassureHistorramm->value());
-        return;
-    }
-    if(sender() == ui.leTimeMeassureSpector){
-        model->tMeassureForSpectrum->setData(ui.leTimeMeassureSpector->value());
-        return;
-    }
-    if(sender() == ui.leWeightAvgConcentrate){
-        model->weightAvgStoneConcentrate->setData(ui.leWeightAvgConcentrate->value());
-        return;
-    }
-    if(sender() == ui.leWeightAvgTail){
-        model->weightAvgStoneTail->setData(ui.leWeightAvgTail->value());
-        return;
-    }
-    if(sender() == ui.leVEMSLess){
-        model->VEMSLevelLess->setData(ui.leVEMSLess->value());
-        return;
-    }
-    if(sender() == ui.leVEMSMaxCode){
-        model->VEMSMaxCode->setData(ui.leVEMSMaxCode->value());
-        return;
-    }
-    if(sender() == ui.leCorrectStream){
-        model->correctOptimalOreStream->setData(ui.leCorrectStream->value());
-        return;
-    }
-    QLineEdit *le = (QLineEdit*)sender();
-    QTableWidget *tw = le->property("tw").value<QTableWidget*>();
-    if(tw == ui.tControl){
-        int row = le->property("row").toInt();
-        int col = le->property("col").toInt();
-        if(row == 0){
-            double value = le->text().toDouble();
-            if(col == 0){
-                model->correlSpectrumPermiss->setData(value);
-                return;
-            }
-            if(col == 1){
-                model->correlSpectrumCritical->setData(value);
-                return;
-            }
+    if(model){
+        if(sender() == ui.leTimeMeassureData){
+            model->tMeassureForData->setData(ui.leTimeMeassureData->value());
             return;
         }
-        uint value = le->text().toInt();
-        if(row == 1){
-            if(col == 0){
-                model->speedStreamPermiss->setData(value);
-                return;
-            }
-            if(col == 1){
-                model->speedStreamCritical->setData(value);
-                return;
-            }
+        if(sender() == ui.leTimeMeassureHistorramm){
+            model->tMeassureForHistogramm->setData(ui.leTimeMeassureHistorramm->value());
             return;
         }
-        if(row == 2){
-            if(col == 0){
-                model->diffCenterGravityPermiss->setData(value);
-                return;
-            }
-            if(col == 1){
-                model->diffCenterGravityCritical->setData(value);
-                return;
-            }
+        if(sender() == ui.leTimeMeassureSpector){
+            model->tMeassureForSpectrum->setData(ui.leTimeMeassureSpector->value());
             return;
         }
-        if(row == 3){
-            if(col == 0){
-                model->airLoadingMinPermiss->setData(value);
-                return;
-            }
-            if(col == 1){
-                model->airLoadingMinCritical->setData(value);
-                return;
-            }
+        if(sender() == ui.leWeightAvgConcentrate){
+            model->weightAvgStoneConcentrate->setData(ui.leWeightAvgConcentrate->value());
             return;
         }
-        if(row == 4){
-            if(col == 0){
-                model->airLoadingMaxPermiss->setData(value);
-                return;
-            }
-            if(col == 1){
-                model->airLoadingMaxCritical->setData(value);
-                return;
-            }
+        if(sender() == ui.leWeightAvgTail){
+            model->weightAvgStoneTail->setData(ui.leWeightAvgTail->value());
             return;
+        }
+        if(sender() == ui.leVEMSLess){
+            model->VEMSLevelLess->setData(ui.leVEMSLess->value());
+            return;
+        }
+        if(sender() == ui.leVEMSMaxCode){
+            model->VEMSMaxCode->setData(ui.leVEMSMaxCode->value());
+            return;
+        }
+        if(sender() == ui.leVEMSBegin){
+            model->VEMSBeginCode->setData(round(ui.leVEMSMaxCode->value()) * 20);
+            return;
+        }
+        if(sender() == ui.leCorrectStream){
+            model->correctOptimalOreStream->setData(ui.leCorrectStream->value());
+            return;
+        }
+        QLineEdit *le = (QLineEdit*)sender();
+        QTableWidget *tw = le->property("tw").value<QTableWidget*>();
+        if(tw == ui.tControl){
+            int row = le->property("row").toInt();
+            int col = le->property("col").toInt();
+            if(row == 0){
+                double value = le->text().toDouble();
+                if(col == 0){
+                    model->correlSpectrumPermiss->setData(value);
+                    return;
+                }
+                if(col == 1){
+                    model->correlSpectrumCritical->setData(value);
+                    return;
+                }
+                return;
+            }
+            uint value = le->text().toInt();
+            if(row == 1){
+                if(col == 0){
+                    model->speedStreamPermiss->setData(value);
+                    return;
+                }
+                if(col == 1){
+                    model->speedStreamCritical->setData(value);
+                    return;
+                }
+                return;
+            }
+            if(row == 2){
+                if(col == 0){
+                    model->diffCenterGravityPermiss->setData(value);
+                    return;
+                }
+                if(col == 1){
+                    model->diffCenterGravityCritical->setData(value);
+                    return;
+                }
+                return;
+            }
+            if(row == 3){
+                if(col == 0){
+                    model->airLoadingMinPermiss->setData(value);
+                    return;
+                }
+                if(col == 1){
+                    model->airLoadingMinCritical->setData(value);
+                    return;
+                }
+                return;
+            }
+            if(row == 4){
+                if(col == 0){
+                    model->airLoadingMaxPermiss->setData(value);
+                    return;
+                }
+                if(col == 1){
+                    model->airLoadingMaxCritical->setData(value);
+                    return;
+                }
+                return;
+            }
         }
     }
 }
 
 void SPRSettingsControlWidget::viewChange(bool value)
 {
-    if(sender() == ui.cbAutoControlStream){
-        model->autoOreStreamControl->setData(value);
+    if(model){
+        if(sender() == ui.cbAutoControlStream){
+            model->autoOreStreamControl->setData(value);
+        }
     }
 }
 
 
 void SPRSettingsControlWidget::viewChange(int index)
 {
-    if(sender() == ui.cbControlArea){
-        EnumElements el = ui.cbControlArea->itemData(index).value<EnumElements>();
-        model->controlArea->setData(el);
+    if(model){
+        if(sender() == ui.cbControlArea){
+            EnumElements el = ui.cbControlArea->itemData(index).value<EnumElements>();
+            model->controlArea->setData(el);
+        }
     }
 }
 

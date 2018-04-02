@@ -25,6 +25,7 @@ SPRSettingsControlModel::SPRSettingsControlModel(QDomDocument *_doc, ISPRModelDa
     autoOreStreamControl = new SPRVariable<bool>(doc, SPR_CONTROL_AUTO_STREAM_CONTROL_XPATH, DEF_SPR_CONTROL_AUTO_STREAM_CONTROL, this);
     VEMSLevelLess = new SPRVariable<double>(doc, SPR_CONTROL_VEMS_LEVEL_LESS_XPATH, DEF_SPR_CONTROL_VEMS_LEVEL_LESS, this);
     VEMSMaxCode = new SPRVariable<double>(doc, SPR_CONTROL_VEMS_MAX_CODE_XPATH, DEF_SPR_CONTROL_VEMS_MAX_CODE, this);
+    VEMSBeginCode = new SPRVariable<uint16_t>(doc, SPR_CONTROL_VEMS_BEGIN_CODE_XPATH, DEF_SPR_CONTROL_VEMS_BEGIN_CODE, this);
 }
 
 SPRSettingsControlModel::~SPRSettingsControlModel()

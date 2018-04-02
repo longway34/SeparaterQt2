@@ -31,6 +31,7 @@ TCPTimeOutCommand::TCPTimeOutCommand(EnumCommands _command, uint _timeout, uint 
 void TCPTimeOutCommand::setReplayData(QByteArray replayData){
     this->replayData = replayData;
     if(timeout > 0 && parts >= 1){
+        timer.stop();
         timer.setInterval(timeout / parts);
         timer.start();
         countParts = 0;

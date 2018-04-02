@@ -38,6 +38,8 @@ public:
 
     SPRVariable<double> *VEMSLevelLess;
     SPRVariable<double> *VEMSMaxCode;
+    SPRVariable<uint16_t> *VEMSBeginCode;
+;
 
     SPRSettingsControlModel(QObject *parent = nullptr):
         correlSpectrumPermiss(nullptr),

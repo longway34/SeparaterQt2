@@ -2,6 +2,12 @@
 #include <QTableWidget>
 #include <QFileInfo>
 #include <QFile>
+#include <QTextStream>
+#include <QDebug>
+#include <QResource>
+#include <QIODevice>
+#include <QDir>
+#include <QtXml/QDomDocument>
 
 #include "isprwidget.h"
 
@@ -14,12 +20,26 @@ void ISPRWidget::setDoc(QString _fName)
 {
     QFile in(_fName);
     if(in.open(QIODevice::ReadOnly)){
-        if(document.setContent(&in)){
-            QFileInfo fi(_fName);
-            docFileName = fi.absoluteFilePath();
-            docFilePath = fi.absolutePath();
+        QTextStream ins(&in);
+        QString mText = ins.readAll().trimmed();
+        ins.seek(0);
+
+        qDebug() << mText;
+        QString err = "no errors"; int ln, col;
+        bool res = document.setContent(mText.toLatin1(), &err, &ln, &col);
+        QDomElement root = document.documentElement();
+        if(res){
             doc = &document;
             setDoc(doc);
+            if(_fName.at(0) != ':'){ // resource
+                QFileInfo fi(_fName);
+                docFileName = fi.absoluteFilePath();
+                docFilePath = fi.absolutePath();
+            } else {
+                docFilePath = QDir::currentPath();
+                docFileName = docFilePath + QDir::separator()+"Separator.xml";
+            }
+
         }
         in.close();
     }

@@ -15,15 +15,3 @@ TCPGetGistogramms::TCPGetGistogramms(TCPTimeOutWigget *_widget, uint _threads):
     }
 }
 
-void TCPGetGistogramms::go(TCPCommand *_command)
-{
-    if(!_command){
-        commandSet[0]->send(server);
-    } else {
-        if(_command->getNum() < threadNum-1){
-            commandSet[_command->getNum()+1]->send(server);
-        } else {
-            emit commandComplite(this);
-        }
-    }
-}

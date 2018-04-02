@@ -31,7 +31,7 @@ MainTabWidget::MainTabWidget(QString _fName, QWidget *parent): QTabWidget(parent
     ui.setupUi(this);
     bool createNewDoc = false;
     if(!QFile::exists(_fName)){
-        _fName = ":/def/defSetting/xml";
+        _fName = ":/def/defSettings.xml";
         createNewDoc = true;
 
     }
@@ -39,12 +39,15 @@ MainTabWidget::MainTabWidget(QString _fName, QWidget *parent): QTabWidget(parent
     setModel(new SPRMainModel(doc));
 
     if(createNewDoc){
-        QFile out(model->getSettingsMainModel()->name->getData());
-        if(out.open(QIODevice::WriteOnly)){}
+//        QString fName = model->getSettingsMainModel()->name->toString();
+        QString fName = "Separator.xml";
+        QFile out(fName);
+        if(out.open(QIODevice::WriteOnly)){
         QTextStream stream( &out );
           stream << doc->toString();
 
           out.close();
+        }
     }
 
     connect(ui.tabSettings, SIGNAL(changeFileSettinds(QString)), this, SLOT(onChangeFileSettings(QString)));

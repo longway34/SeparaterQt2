@@ -107,9 +107,10 @@ SOURCES += \
     tcp/tcpcommandstoppitatel.cpp \
     models/sprseparatemodel.cpp \
     sprseparatewidget.cpp \
-    tcp/tcpgetkspectrums.cpp \
     tcp/tcpgetgistogramms.cpp \
-    tcp/tcpstartseparate.cpp
+    tcp/tcpstartstopseparate.cpp \
+    tcp/tcpgetspectrumsgistogramms.cpp \
+    tcp/tcpgetrentgensparams.cpp
 
 HEADERS += \
     _types.h \
@@ -187,9 +188,10 @@ HEADERS += \
     tcp/tcpcommandstoppitatel.h \
     models/sprseparatemodel.h \
     sprseparatewidget.h \
-    tcp/tcpgetkspectrums.h \
     tcp/tcpgetgistogramms.h \
-    tcp/tcpstartseparate.h
+    tcp/tcpstartstopseparate.h \
+    tcp/tcpgetspectrumsgistogramms.h \
+    tcp/tcpgetrentgensparams.h
 
 FORMS += \
     sprsettingsrentgenmainwidget.ui \

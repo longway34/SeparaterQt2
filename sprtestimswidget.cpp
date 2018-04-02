@@ -169,8 +169,10 @@ void SPRTestIMSWidget::onChangeValue(bool _val){
 void SPRTestIMSWidget::onChangeValue(double _val){
     if(sender() == ui.lePitatelPercents){
         if(model->getServer()->isState(spr_state_pitatel_on)){
-            uint16_t percent = _val;
-            commandChangePersentPitatel->setSendData(QByteArray::fromRawData((char*)&percent, sizeof(percent)));
+            uint16_t code = round(_val) * 20;
+            model->getSettingsControlModel()->VEMSBeginCode->setData(code);
+
+            commandChangePersentPitatel->setSendData(QByteArray::fromRawData((char*)&code, sizeof(code)));
             commandChangePersentPitatel->send(model->getServer());
         }
     }
@@ -493,6 +495,7 @@ ISPRModelData *SPRTestIMSWidget::setModel(SPRMainModel *_model)
     getSpectrumsCommand->setModel(model);
     separatorOnCommand->setModel(model->getSettingsRentgenModel());
     rentgenOnCommand->setModel(model->getSettingsRentgenModel());
+    commandStartPitatel->setModelVariable(model->getSettingsControlModel()->VEMSBeginCode);
 
 //    commandRaskladStart
 
@@ -505,6 +508,9 @@ ISPRModelData *SPRTestIMSWidget::setModel(SPRMainModel *_model)
 void SPRTestIMSWidget::widgetsShow()
 {
     if(model){
+        ui.lePitatelPercents->setValue((double)model->getSettingsControlModel()->VEMSBeginCode->getData());
+        ui.thPitatelPercents->setValue((double)model->getSettingsControlModel()->VEMSBeginCode->getData());
+
         for(int i=0; i<model->getSettingsMainModel()->getIms()->getData(); i++){
             vectorIms[i]->setVisible(true);
         }
