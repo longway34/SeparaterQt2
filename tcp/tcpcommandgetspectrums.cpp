@@ -30,16 +30,17 @@ TCPCommandGetSpectrums::TCPCommandGetSpectrums(ServerConnect *_server, TCPTimeOu
 {
     setTimeOfSpectrum(_time);
 
+    char ch0 = '\0';
     addCommand(new TCPCommand(getblk)); //0
     addCommand(new TCPCommand(expon)); // 1
-    QByteArray chData = QByteArray::fromRawData("\x00", 1);
-    findCommands(expon).last()->setSendData(chData);
+//    QByteArray chData = QByteArray::fromRawData("\x00", 1);
+    findCommands(expon).last()->setSendData(&ch0, sizeof(ch0));
 
     addCommand(new TCPCommand(offosw)); // 2
     addCommand(new TCPCommand(onosw)); // 3
     addCommand(new TCPTimeOutCommand(timeoutcommand, DEF_SPR_RENTGEN_TIME_HOT_RA*2000, 10, widget, tr("Включение рентгена"), tr("Установка экспозиции...")));
     addCommand(new TCPCommand(getren)); //5
-    findCommands(getren).last()->setSendData(chData);
+    findCommands(getren).last()->setSendData(&ch0, sizeof(ch0));
     addCommand(new TCPCommand(setspk)); //6
     addCommand(new TCPTimeOutCommand(timeoutcommand, timeOfSpectrum, 10, widget, tr("Накопление спектра"), tr("Накопление спектра")));
     addCommand(new TCPCommand(nocommand)); // 8
@@ -47,7 +48,7 @@ TCPCommandGetSpectrums::TCPCommandGetSpectrums(ServerConnect *_server, TCPTimeOu
     addCommand(new TCPCommand(getspk)); // 9
 
     addCommand(new TCPCommand(expoff)); // 10
-    findCommands(expoff).last()->setSendData(chData);
+    findCommands(expoff).last()->setSendData(&ch0, sizeof(ch0));
     addCommand(new TCPCommand(offosw)); // 11
     addCommand(new TCPCommand(onosw)); // 12
     addCommand(new TCPCommand(offosw)); // 13
@@ -68,18 +69,18 @@ void TCPCommandGetSpectrums::go(TCPCommand *_command)
             channels = model->getSettingsMainModel()->getThreads()->getData();
             hotTime = model->getSettingsRentgenModel()->timeHotRA->getData() * 1000;
         }
-
+        char ch0 = '\0';
         findCommands(timeoutcommand).first()->setTimeOut(hotTime);
         uint32_t spkTime = timeOfSpectrum * 10;
-        QByteArray baSpk = QByteArray::fromRawData((char*)&spkTime, sizeof(spkTime));
+//        QByteArray baSpk = QByteArray::fromRawData((char*)&spkTime, sizeof(spkTime));
         cDeb = findCommands(setspk).first();
-        findCommands(setspk).first()->setSendData(baSpk);
-        QByteArray rrr = findCommands(setspk).first()->getSendData();
+        findCommands(setspk).first()->setSendData(&spkTime, sizeof(spkTime));
+//        QByteArray rrr = findCommands(setspk).first()->getSendData();
         TCPTimeOutCommand *to2 = (TCPTimeOutCommand*)(findCommands(timeoutcommand).last());
         to2->setTimeOut(timeOfSpectrum * 1000+1000);
         to2->setWidgetTitleMessage(tr("Накопление спектра"), QString(tr("Идет накопление спектра за %1 секунд\nПодождите...")).arg(QString::number(timeOfSpectrum)));
 
-        findCommands(getspk).first()->setSendData(QByteArray::fromRawData("\x00", 1));
+        findCommands(getspk).first()->setSendData(&ch0, sizeof(ch0));
 
         commandSet[0]->send(server);
         return;
@@ -91,7 +92,7 @@ void TCPCommandGetSpectrums::go(TCPCommand *_command)
         if(num == 9){
             spectrumsData.push_back(_command->getResult());
             if(channelCount < channels - 1){
-                findCommands(getspk).first()->setSendData(QByteArray::fromRawData((char*)&channelCount, sizeof(channelCount)));
+                findCommands(getspk).first()->setSendData(&channelCount, sizeof(channelCount));
                 channelCount++;
                 findCommands(getspk).first()->send(server);
                 return;
@@ -105,8 +106,8 @@ void TCPCommandGetSpectrums::go(TCPCommand *_command)
                 cDeb = commandSet[num + 1];
                 TCPCommand *_comm = commandSet[num + 1];
                 uint32_t spkTime = timeOfSpectrum * 10;
-                QByteArray baSpk = QByteArray::fromRawData((char*)&spkTime, sizeof(spkTime));
-                _comm->setSendData(baSpk);
+//                QByteArray baSpk = QByteArray::fromRawData((char*)&spkTime, sizeof(spkTime));
+                _comm->setSendData(&spkTime, sizeof(spkTime));
                 int x = 0;
             }
             commandSet[num + 1]->send(server);

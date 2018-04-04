@@ -8,12 +8,12 @@ SPRSeparateModel::SPRSeparateModel(QDomDocument *_doc, ISPRModelData *parent):
 
     for(int i=0; i< mainModel->getSettingsMainModel()->getThreads()->getData(); i++){
         QString path = SPR_SEPARATE_GMZ_PATH_PREFIX + QString::number(i)+"]";
-        SPRVariable<uint> *var = new SPRVariable<uint>(doc, path, DEF_SPR_SEPARATE_GMZ, this);
+        SPRVariable<double> *var = new SPRVariable<double>(doc, path, DEF_SPR_SEPARATE_GMZ, this);
         gmz.push_back(var);
 
         path = SPR_SEPARATE_USL_PATH_PREFIX + QString::number(i)+"]";
-        var = new SPRVariable<uint>(doc, path, DEF_SPR_SEPARATE_USL, this);
-        usl.push_back(var);
+        SPRVariable<uint> *vari = new SPRVariable<uint>(doc, path, DEF_SPR_SEPARATE_USL, this);
+        usl.push_back(vari);
     }
 
     gcol = new SPRVariable<uint>(doc, SPR_SEPARATE_GCOL_PATH, DEF_SPR_SEPARATE_GCOL, this);

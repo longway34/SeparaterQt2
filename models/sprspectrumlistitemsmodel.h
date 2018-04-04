@@ -20,8 +20,10 @@ class SPRSpectrumListItemsModel : public ISPRModelData
     QVector<SPRSpectrumItemModel*> spectrumsModel;
 
 public:
-    SPRSpectrumListItemsModel(ISPRModelData *parent = nullptr): formulas(nullptr), zonesTableModel(nullptr){}
+    SPRSpectrumListItemsModel(ISPRModelData *parent = nullptr): zonesTableModel(nullptr), formulas(nullptr), spectrumsModel(){}
     SPRSpectrumListItemsModel(QDomDocument *_doc, ISPRModelData *parent = nullptr);
+//    SPRSpectrumListItemsModel(SPRMainModel *_mainModel, ISPRModelData *parent = nullptr);
+
     SPRSpectrumListItemsModel(SPRSpectrumZonesTableModel *_model, SPRSettingsFormulaModel *_formulas, ISPRModelData *parent = nullptr);
     virtual ~SPRSpectrumListItemsModel();
 

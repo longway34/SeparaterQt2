@@ -52,8 +52,8 @@ void TCPCommandRentgerOn::go(TCPCommand *_command)
                 d = model->deuCodes[i]->getData();
                 cp = model->cpCodes[i]->getData();
             }
-            deuData.append(QByteArray::fromRawData((char*)&d, sizeof(d)));
-            cpData.append(QByteArray::fromRawData((char*)&cp, sizeof(cp)));
+            deuData.append((char*)&d, sizeof(d));
+            cpData.append((char*)&cp, sizeof(cp));
         }
         findCommands(setudeu).last()->setSendData(deuData);
         findCommands(setptdeu).last()->setSendData(cpData);
@@ -76,9 +76,9 @@ void TCPCommandRentgerOn::go(TCPCommand *_command)
             }
             kv = kv * (21.8) - 23;
             mka = mka * (23.4) - 101;
-            data.append(QByteArray::fromRawData((char*)&rentgenCount, 1));
-            data.append(QByteArray::fromRawData((char*)&kv, sizeof(kv)));
-            data.append(QByteArray::fromRawData((char*)&mka, sizeof(mka)));
+            data.append((char*)&rentgenCount, 1);
+            data.append((char*)&kv, sizeof(kv));
+            data.append((char*)&mka, sizeof(mka));
 
             findCommands(setren).last()->setSendData(data);
 

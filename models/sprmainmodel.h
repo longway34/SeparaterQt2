@@ -2,7 +2,16 @@
 #define SPRMAINMODEL_H
 
 #include <QDomDocument>
-#include "models/models.h"
+//#include "models/models.h"
+#include "models/sprsettingsmainmodel.h"
+#include "models/sprsettingscontrolmodel.h"
+#include "models/sprsettingsformulamodel.h"
+#include "models/sprsettingsimsmodel.h"
+#include "models/sprsettingsporogsmodel.h"
+#include "models/sprsettingsrentgenmodel.h"
+#include "models/sprspectrumzonestablemodel.h"
+#include "models/sprspectrumlistitemsmodel.h"
+
 #include "tcp/ServerConnect.h"
 
 class SPRMainModel : public ISPRModelData

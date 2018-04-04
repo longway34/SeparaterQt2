@@ -22,13 +22,21 @@ SPRSettingsFormulaModel *SPRSpectrumListItemsModel::getFormulas() const
     return formulas;
 }
 
-SPRSpectrumListItemsModel::SPRSpectrumListItemsModel(QDomDocument *_doc, ISPRModelData *parent): ISPRModelData(_doc, parent), zonesTableModel(nullptr)
+SPRSpectrumListItemsModel::SPRSpectrumListItemsModel(QDomDocument *_doc, ISPRModelData *parent): ISPRModelData(_doc, parent), zonesTableModel(nullptr), formulas(nullptr), spectrumsModel()
 {
     setZonesModel(new SPRSpectrumZonesTableModel(doc, parent));
     setProperty("delete_zones", QVariant(true));
 }
 
-SPRSpectrumListItemsModel::SPRSpectrumListItemsModel(SPRSpectrumZonesTableModel *_model, SPRSettingsFormulaModel *_formulas, ISPRModelData *parent): zonesTableModel(nullptr)
+//SPRSpectrumListItemsModel::SPRSpectrumListItemsModel(SPRMainModel *_mainModel, ISPRModelData *parent): ISPRModelData(_doc, parent), zonesTableModel(nullptr), formulas(nullptr), spectrumsModel()
+//{
+//    setZonesModel(_mainModel->getSpectrumZonesTableModel());
+//    setZonesModel(_mainModel->getSettingsFormulaModel());
+//    setProperty("delete_zones", QVariant(false));
+//    setProperty("delete_formulas", QVariant(false));
+//}
+
+SPRSpectrumListItemsModel::SPRSpectrumListItemsModel(SPRSpectrumZonesTableModel *_model, SPRSettingsFormulaModel *_formulas, ISPRModelData *parent): zonesTableModel(nullptr), formulas(nullptr), spectrumsModel()
 {
     setZonesModel(_model);
     setFormulasModel(_formulas);

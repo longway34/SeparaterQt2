@@ -28,12 +28,12 @@
     <rect>
      <x>340</x>
      <y>10</y>
-     <width>401</width>
+     <width>421</width>
      <height>211</height>
     </rect>
    </property>
   </widget>
-  <widget class="QTableWidget" name="kspectTable">
+  <widget class="SPRSpectrumSmallTable" name="kspectTable">
    <property name="geometry">
     <rect>
      <x>7</x>
@@ -48,36 +48,6 @@
    <property name="selectionBehavior">
     <enum>QAbstractItemView::SelectRows</enum>
    </property>
-   <column>
-    <property name="text">
-     <string>№ куска</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>ручей</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>H1</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>H2</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>H3</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>t. изм. мс</string>
-    </property>
-   </column>
   </widget>
   <widget class="QComboBox" name="cbThread">
    <property name="geometry">
@@ -109,23 +79,53 @@
     </property>
    </item>
   </widget>
-  <widget class="QTableWidget" name="stoneTable">
+  <widget class="QTableWidget" name="workSeparTable">
    <property name="geometry">
     <rect>
      <x>10</x>
      <y>380</y>
-     <width>751</width>
+     <width>971</width>
      <height>192</height>
     </rect>
    </property>
    <column>
     <property name="text">
-     <string>i_prg</string>
+     <string>i_prg[0]</string>
     </property>
    </column>
    <column>
     <property name="text">
-     <string>p_prg</string>
+     <string>i_prd[1]</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>i_prd[2]</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>i_prd[3]</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>p_prg[0]</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>p_prd[1]</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>p_prd[2]</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>p_prd[3]</string>
     </property>
    </column>
    <column>
@@ -188,8 +188,8 @@
    <property name="geometry">
     <rect>
      <x>770</x>
-     <y>250</y>
-     <width>201</width>
+     <y>180</y>
+     <width>191</width>
      <height>192</height>
     </rect>
    </property>
@@ -233,6 +233,19 @@
     <string>Get KSPK</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="bSetSepar">
+   <property name="geometry">
+    <rect>
+     <x>770</x>
+     <y>150</y>
+     <width>161</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Set Separ</string>
+   </property>
+  </widget>
  </widget>
  <customwidgets>
   <customwidget>
@@ -250,6 +263,11 @@
    <extends>QWidget</extends>
    <header>sprspectrumgraphicswidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SPRSpectrumSmallTable</class>
+   <extends>QTableWidget</extends>
+   <header>sprspectrumsmalltable.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

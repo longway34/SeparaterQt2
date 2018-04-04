@@ -49,6 +49,11 @@ public:
         this->sendData = sendData;
     }
 
+    void setSendData(void *data, uint len){
+        QByteArray ba; ba.append((char*)data, len);
+        this->sendData = ba;
+    }
+
     QByteArray getSendData() {
         return sendData;
     }

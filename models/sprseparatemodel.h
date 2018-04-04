@@ -9,6 +9,7 @@
 #include "models/sprvariable.h"
 #include "models/sprspectrumzonesmodel.h"
 #include "models/sprmainmodel.h"
+#include "models/sprporogsmodel.h"
 
 
 
@@ -80,12 +81,15 @@ class SPRSeparateModel : public ISPRModelData
 
     SPRMainModel *mainModel;
     SPRSettintsSeparate settingsSeparate;
-    SPRWorkSeparate workSeparate;
 
+    void *fullWorkSeparate(SPRWorkSeparate *dst, QByteArray rawData){
+        return memcpy(dst, rawData.constData()+1, sizeof(SPRWorkSeparate));
+    }
 public:
 //    QMap<EnumElements, SPRSpectrumZonesModel::SpectorRange> elements;
+    QVector<SPRWorkSeparate*> workSeparate;
 
-    QVector<SPRVariable<uint>*> gmz;
+    QVector<SPRVariable<double>*> gmz;
     SPRVariable<uint> *gcol;
     SPRVariable<uint> *kruch;
     QVector<SPRVariable<uint>*> usl;
@@ -96,16 +100,21 @@ public:
         ISPRModelData(), mainModel(0), gmz(), gcol(nullptr), kruch(nullptr), usl(), alg(nullptr), sep_row()
     {
     }
+    addWorkSeparateData(QByteArray rawData){
+        uint uots = rawData.size();
+        uint inps = sizeof(SPRWorkSeparate);
 
-    void *fullWorkSeparate(QByteArray rawData){
-        return memcpy(&workSeparate, rawData.constData(), sizeof(workSeparate));
+        if(rawData.size()-1 == sizeof(SPRWorkSeparate)){
+            SPRWorkSeparate *str = (SPRWorkSeparate*)malloc(sizeof(SPRWorkSeparate));
+            fullWorkSeparate(str, rawData);
+            workSeparate.push_front(str);
+        }
     }
+
     QByteArray toByteArray()
     {
         memset(&settingsSeparate, 0, sizeof(settingsSeparate));
 
-        SPRPorogsModel *porogs = mainModel->getSettingsPorogsModel()->getPorogs();
-        SPRPorogsModel *porogs2 = mainModel->getSettingsPorogsModel()->getPorogs2();
         for(int th=0; th<MAX_SPR_MAIN_THREADS; th++){
             ElementsProperty *elements = mainModel->getSpectrumZonesTableModel()->getElements(th);
             foreach(EnumElements el, (*elements).keys()){
@@ -113,6 +122,9 @@ public:
                 settingsSeparate.obl[th][(*elements)[el].elIndex].rs = (*elements)[el].max->getData();
             }
             for(int cond=0; cond<MAX_SPR_FORMULA_CONDITION; cond++){
+                SPRPorogsModel *porogs = mainModel->getSettingsPorogsModel()->getPorogs();
+                SPRPorogsModel *porogs2 = mainModel->getSettingsPorogsModel()->getPorogs2();
+
                 settingsSeparate.prg[th][cond] = porogs->porogs[th][cond]->getData();
                 settingsSeparate.prg2[th][cond] = porogs2->porogs[th][cond]->getData();
             }
