@@ -1,6 +1,5 @@
 #include "tcp/tcpstartstopseparate.h"
 #include "tcp/tcpgetspectrumsgistogramms.h"
-#include "tcp/tcpgetgistogramms.h"
 #include "tcp/tcpgetrentgensparams.h"
 
 void TCPStartStopSeparate::setModel(SPRMainModel *value)

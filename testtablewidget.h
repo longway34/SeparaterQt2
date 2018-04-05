@@ -6,7 +6,6 @@
 #include "models/sprseparatemodel.h"
 #include "tcp/TCPCommand.h"
 #include "tcp/tcpgetspectrumsgistogramms.h"
-#include "tcp/tcpgetgistogramms.h"
 
 class testTableWidget : public QWidget
 {

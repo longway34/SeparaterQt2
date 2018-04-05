@@ -39,7 +39,7 @@ TCPCommandRGUUpDown::TCPCommandRGUUpDown(ServerConnect *_server, TCPTimeOutWigge
     addCommand(new TCPCommand(getstate)); // 2
     addCommand(new TCPCommand(getrgu2)); // 3
     char chStop = '\0';
-    QByteArray rgu0; = rgu0.append(&chStop, sizeof(chStop));
+    QByteArray rgu0; rgu0.append(&chStop, sizeof(chStop));
     TCPCommand *command0 = new TCPCommand(setrgu2); command0->setSendData(rgu0);
     addCommand(command0); // 4
 

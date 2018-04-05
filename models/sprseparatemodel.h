@@ -100,7 +100,7 @@ public:
         ISPRModelData(), mainModel(0), gmz(), gcol(nullptr), kruch(nullptr), usl(), alg(nullptr), sep_row()
     {
     }
-    addWorkSeparateData(QByteArray rawData){
+    void addWorkSeparateData(QByteArray rawData){
         uint uots = rawData.size();
         uint inps = sizeof(SPRWorkSeparate);
 
