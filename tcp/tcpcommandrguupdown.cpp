@@ -18,11 +18,12 @@ TCPCommandRGUUpDown::TCPCommandRGUUpDown(ServerConnect *_server, TCPTimeOutWigge
     TCPCommandSet(_server, _widget, {}), upDown(_upDown)
 {
     QByteArray rguUpDown;
+    char chDown = '\02', chUp = '\01';
     if(upDown){
-        rguUpDown.append(QByteArray::fromRawData("\x01", 1));
+        rguUpDown.append(&chUp, sizeof(chUp));
         result = 1;
     } else {
-        rguUpDown.append(QByteArray::fromRawData("\x02", 1));
+        rguUpDown.append(&chDown, sizeof(chDown));
         result = 2;
     }
 //    addCommand(new TCPCommand(getrgu2));
@@ -37,7 +38,8 @@ TCPCommandRGUUpDown::TCPCommandRGUUpDown(ServerConnect *_server, TCPTimeOutWigge
     }
     addCommand(new TCPCommand(getstate)); // 2
     addCommand(new TCPCommand(getrgu2)); // 3
-    QByteArray rgu0 = QByteArray::fromRawData("\x00", 1);
+    char chStop = '\0';
+    QByteArray rgu0; = rgu0.append(&chStop, sizeof(chStop));
     TCPCommand *command0 = new TCPCommand(setrgu2); command0->setSendData(rgu0);
     addCommand(command0); // 4
 
