@@ -44,6 +44,11 @@ public:
     void setThread(int _thread){*thread = _thread;}
     uint8_t *getBuf(){ return buf;}
     void setbuf(uint8_t* _buf){ buf = _buf;}
+    void setColor(QColor color){
+        *red = color.red();
+        *green = color.green();
+        *blue = color.blue();
+    }
 
 } SpectrumItemData;
 

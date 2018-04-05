@@ -47,6 +47,9 @@ public:
     }
     SPRSettingsFormulaModel *getFormulas() const;
     void clearGraphicsItemModel(){
+        for(int i=0; i< spectrumsModel.size();i++){
+            delete spectrumsModel[i];
+        }
         spectrumsModel.clear();
     }
 };

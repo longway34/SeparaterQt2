@@ -43,6 +43,7 @@ SPRMainModel *SPRSettingsWidget::setModel(SPRMainModel *_model)
     model = _model;
 
 
+
     imodel = ui.wSettingsMainWidget->setModel(model->getSettingsMainModel());
     connect(this,SIGNAL(doShow()), ui.wSettingsMainWidget, SLOT(widgetsShow()));
     connect(ui.wSettingsMainWidget,SIGNAL(doShow()), this, SLOT(widgetsShow()));

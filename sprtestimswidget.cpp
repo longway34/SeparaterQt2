@@ -58,7 +58,7 @@ SPRTestIMSWidget::SPRTestIMSWidget(QWidget *parent) :
 // init commands and connects
 // *********************************************************************
 
-    getSpectrumsCommand = new TCPCommandGetSpectrums(nullptr, towidget, model);
+    getSpectrumsCommand = new TCPGetSpectrumsGistogramms(nullptr, getspk, towidget);
     connect(getSpectrumsCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
     connect(getSpectrumsCommand, SIGNAL(commandComplite(TCPCommand*)), ui.logsWidget, SLOT(onLogsCommand(TCPCommand*)));
 
@@ -70,7 +70,8 @@ SPRTestIMSWidget::SPRTestIMSWidget(QWidget *parent) :
             new TCPCommand(expoff),
             new TCPCommand(offren)
                                           });
-    rentgenOffCommand->findCommands(expoff).first()->setSendData(QByteArray::fromRawData("\x00", 1));
+    char ch0 = '\0';
+    rentgenOffCommand->findCommands(expoff).first()->setSendData(&ch0, sizeof(ch0));
 
     connect(rentgenOffCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
     connect(rentgenOffCommand, SIGNAL(commandComplite(TCPCommand*)), ui.logsWidget, SLOT(onLogsCommand(TCPCommand*)));
@@ -105,8 +106,8 @@ SPRTestIMSWidget::SPRTestIMSWidget(QWidget *parent) :
     connect(rguDownCommand, SIGNAL(commandComplite(TCPCommand*)), ui.logsWidget, SLOT(onLogsCommand(TCPCommand*)));
 
     thermoReadStateCommand = new TCPCommandSet(nullptr, towidget, {});
-    QByteArray ct0 = QByteArray::fromRawData("\x00\x00\x00\x00", 4);
-    TCPCommand *stemp = new TCPCommand(settemp); stemp->setSendData(ct0);
+    char *ct0 = "\x00\x00\x00\x00";
+    TCPCommand *stemp = new TCPCommand(settemp); stemp->setSendData(&ct0, 4);
     thermoReadStateCommand->addCommand(stemp);
     thermoReadStateCommand->addCommand(new TCPTimeOutCommand(timeoutcommand, 2000));
     thermoReadStateCommand->addCommand(new TCPCommand(gettemp));
@@ -117,8 +118,9 @@ SPRTestIMSWidget::SPRTestIMSWidget(QWidget *parent) :
     QByteArray term;
     uint16_t min, max;
     min = ui.slThermoMin->value(); max = ui.slThermoMax->value();
-    QDataStream ds(&term, QIODevice::WriteOnly);
-    ds <<  min << max;
+//    QDataStream ds(&term, QIODevice::WriteOnly);
+//    ds <<  min << max;
+    term.append((char*)&min, sizeof(min)); term.append((char*)&max, sizeof(max));
     TCPCommand *sthermo = new TCPCommand(settemp); sthermo->setSendData(term);
     thermoWriteStateCommand->addCommand(sthermo)->addCommand(new TCPTimeOutCommand(timeoutcommand, 2000))->addCommand(new TCPCommand(gettemp))->addCommand(new TCPCommand(getstate));
     connect(thermoWriteStateCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
@@ -137,8 +139,8 @@ SPRTestIMSWidget::SPRTestIMSWidget(QWidget *parent) :
     connect(commandStopPitatel, SIGNAL(commandComplite(TCPCommand*)), ui.logsWidget, SLOT(onLogsCommand(TCPCommand*)));
 
     commandChangePersentPitatel = new TCPCommand(setpuw);
-    uint16_t persent = 880;
-    commandChangePersentPitatel->setSendData(QByteArray::fromRawData((char*)&persent, sizeof(persent)));
+//    uint16_t code = model->getSettingsControlModel()->VEMSBeginCode->getData();
+//    commandChangePersentPitatel->setSendData(&code, sizeof(code));
     connect(commandChangePersentPitatel, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
     connect(commandChangePersentPitatel, SIGNAL(commandComplite(TCPCommand*)), ui.logsWidget, SLOT(onLogsCommand(TCPCommand*)));
 
@@ -172,7 +174,7 @@ void SPRTestIMSWidget::onChangeValue(double _val){
             uint16_t code = round(_val) * 20;
             model->getSettingsControlModel()->VEMSBeginCode->setData(code);
 
-            commandChangePersentPitatel->setSendData(QByteArray::fromRawData((char*)&code, sizeof(code)));
+            commandChangePersentPitatel->setSendData(&code, sizeof(code));
             commandChangePersentPitatel->send(model->getServer());
         }
     }
@@ -180,87 +182,90 @@ void SPRTestIMSWidget::onChangeValue(double _val){
 
 void SPRTestIMSWidget::onCommand(bool){
 
-    if(sender() == ui.bRudospuskStart){
-        commandStartRudostusk->send(model->getServer());
-        return;
-    }
-    if(sender() == ui.bRudospustStop){
-        commandStopRudospusk->send(model->getServer());
-        return;
-    }
-
-    if(sender() == ui.bRaskladStart){
-        commandStartRasklad->send(model->getServer());
-        return;
-    }
-
-    if(sender() == ui.bRaskladStop){
-        commandStopRasklad->send(model->getServer());
-    }
-
-    if(sender() == ui.bRGUReadPosition){
-        rguReadStateCommand->send(model->getServer());
-        return;
-    }
-    if(sender() == ui.bRGUUp){
-        rguUpCommand->send(model->getServer());
-        return;
-    }
-    if(sender() == ui.bRGUDown){
-        rguDownCommand->send(model->getServer());
-        return;
-    }
-    if(sender() == ui.bSeparatorOn){
-        separatorOnCommand->send(model->getServer());
-    }
-    if(sender() == ui.bSeparatorOff){
-        separatorOffCommand->send(model->getServer());
-        return;
-    }
-    if(sender() == ui.bThermoGet){
-        thermoReadStateCommand->send(model->getServer());
-        return;
-    }
-    if(sender() == ui.bThermoSet){
-        setThermo();
-        return;
-    }
-    if(sender() == ui.bIMSStart){
-        QVector<uint8_t> _vch;
-//        QVector<QCheckBox*> _cbCh= {ui.cbIMSThread0, ui.cbIMSThread1, ui.cbIMSThread2, ui.cbIMSThread3, ui.cbIMSThread4, ui.cbIMSThread5, ui.cbIMSThread6, ui.cbIMSThread7};
-        for(uint i=0; i < model->getSettingsMainModel()->getIms()->getData(); i++){
-            if(ui.cbIMSAllThreads->isChecked() || vectorIms[i]->isChecked()){
-                _vch.push_back(i);
-            }
+    if(model){
+        if(sender() == ui.bRudospuskStart){
+            commandStartRudostusk->send(model->getServer());
+            return;
         }
-        startTestImsCommand->setParams(_vch, ui.slIMSDelay->value(), ui.slIMSTime->value(), ui.slIMSFrequency->value());
-        startTestImsCommand->send(model->getServer());
-        return;
-    }
-    if(sender() == ui.bIMSStop){
-        startTestImsCommand->stopTest();
-        return;
-    }
-    if(sender() == ui.bPitatelStart){
-        commandStartPitatel->send(model->getServer());
-        return;
-    }
-    if(sender() == ui.bPitatelStop){
-//        commandStartPitatel->setPitatelStopFlag();
-        commandStopPitatel->send(model->getServer());
-        return;
-    }
-    if(sender() == ui.bRentgenOn){
-        rentgenOnCommand->send(model->getServer());
-        return;
-    }
-    if(sender() == ui.bRentgenOff){
-        rentgenOffCommand->send(model->getServer());
-        return;
-    }
-    if(sender() == ui.bGetSpectrum){
-        getSpectrumsCommand->send(model->getServer());
-        return;
+        if(sender() == ui.bRudospustStop){
+            commandStopRudospusk->send(model->getServer());
+            return;
+        }
+
+        if(sender() == ui.bRaskladStart){
+            commandStartRasklad->send(model->getServer());
+            return;
+        }
+
+        if(sender() == ui.bRaskladStop){
+            commandStopRasklad->send(model->getServer());
+        }
+
+        if(sender() == ui.bRGUReadPosition){
+            rguReadStateCommand->send(model->getServer());
+            return;
+        }
+        if(sender() == ui.bRGUUp){
+            rguUpCommand->send(model->getServer());
+            return;
+        }
+        if(sender() == ui.bRGUDown){
+            rguDownCommand->send(model->getServer());
+            return;
+        }
+        if(sender() == ui.bSeparatorOn){
+            separatorOnCommand->send(model->getServer());
+        }
+        if(sender() == ui.bSeparatorOff){
+            separatorOffCommand->send(model->getServer());
+            return;
+        }
+        if(sender() == ui.bThermoGet){
+            thermoReadStateCommand->send(model->getServer());
+            return;
+        }
+        if(sender() == ui.bThermoSet){
+            setThermo();
+            return;
+        }
+        if(sender() == ui.bIMSStart){
+            QVector<uint8_t> _vch;
+    //        QVector<QCheckBox*> _cbCh= {ui.cbIMSThread0, ui.cbIMSThread1, ui.cbIMSThread2, ui.cbIMSThread3, ui.cbIMSThread4, ui.cbIMSThread5, ui.cbIMSThread6, ui.cbIMSThread7};
+            for(uint i=0; i < model->getSettingsMainModel()->getIms()->getData(); i++){
+                if(ui.cbIMSAllThreads->isChecked() || vectorIms[i]->isChecked()){
+                    _vch.push_back(i);
+                }
+            }
+            startTestImsCommand->setParams(_vch, ui.slIMSDelay->value(), ui.slIMSTime->value(), ui.slIMSFrequency->value());
+            startTestImsCommand->send(model->getServer());
+            return;
+        }
+        if(sender() == ui.bIMSStop){
+            startTestImsCommand->stopTest();
+            return;
+        }
+        if(sender() == ui.bPitatelStart){
+            commandStartPitatel->send(model->getServer());
+            return;
+        }
+        if(sender() == ui.bPitatelStop){
+    //        commandStartPitatel->setPitatelStopFlag();
+            commandStopPitatel->send(model->getServer());
+            return;
+        }
+        if(sender() == ui.bRentgenOn){
+            rentgenOnCommand->send(model->getServer());
+            return;
+        }
+        if(sender() == ui.bRentgenOff){
+            rentgenOffCommand->send(model->getServer());
+            return;
+        }
+        if(sender() == ui.bGetSpectrum){
+            getSpectrumsCommand->setThreadTimer(model->getSettingsMainModel()->getThreads()->getData(), 5);
+            getSpectrumsCommand->send(model->getServer());
+            return;
+        }
     }
 }
 
@@ -429,8 +434,8 @@ void SPRTestIMSWidget::onCommandComplite(TCPCommand *_comm){
         if(res.size() > 0 && res[0] == 0){
             QMessageBox::information(this, tr("Получение спектров"), tr("Спектры получены"));
             ui.wSpectrumWidget->getModel()->clearGraphicsItemModel();
-            for(int ch=0; ch<getSpectrumsCommand->getChannels(); ch++){
-                QByteArray sp = getSpectrumsCommand->getSpectrum(ch);
+            for(int ch=0; MAX_SPR_MAIN_THREADS; ch++){
+                QByteArray sp = getSpectrumsCommand->getSpectrumData(ch);
                 ui.wSpectrumWidget->getModel()->addSpectrum(sp);
                 QColor col = colors[ch % colors.size()];
                 ui.wSpectrumWidget->getModel()->getSpectrumItem(ch)->setSpectrumColor(col);
@@ -492,10 +497,13 @@ ISPRModelData *SPRTestIMSWidget::setModel(SPRMainModel *_model)
 
     ui.wSpectrumWidget->setModel(new SPRSpectrumListItemsModel(model->getSpectrumZonesTableModel(), model->getSettingsFormulaModel()));
 
-    getSpectrumsCommand->setModel(model);
+    getSpectrumsCommand->setThreadTimer(model->getSettingsMainModel()->getThreads()->getData());
     separatorOnCommand->setModel(model->getSettingsRentgenModel());
     rentgenOnCommand->setModel(model->getSettingsRentgenModel());
     commandStartPitatel->setModelVariable(model->getSettingsControlModel()->VEMSBeginCode);
+
+    uint16_t code = model->getSettingsControlModel()->VEMSBeginCode->getData();
+    commandChangePersentPitatel->setSendData(&code, sizeof(code));
 
 //    commandRaskladStart
 

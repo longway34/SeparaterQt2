@@ -13,7 +13,8 @@
 #include "tcp/tcpcommandstoppitatel.h"
 #include "tcp/tcpcommandseparatoron.h"
 #include "tcp/tcpcommandrentgeron.h"
-#include "tcp/tcpcommandgetspectrums.h"
+//#include "tcp/tcpcommandgetspectrums.h"
+#include "tcp/tcpgetspectrumsgistogramms.h"
 #include "tcp/tcpstartrudospuskcommand.h"
 #include "tcp/tcpstoprudostuskcommand.h"
 
@@ -26,7 +27,8 @@ class SPRTestIMSWidget : public QWidget, public ISPRWidget
 public:
     explicit SPRTestIMSWidget(QWidget *parent = 0);
 
-    TCPCommandGetSpectrums *getSpectrumsCommand;
+//    TCPCommandGetSpectrums *getSpectrumsCommand;
+    TCPGetSpectrumsGistogramms *getSpectrumsCommand;
 
     TCPCommandSeparatorOn *separatorOnCommand;
     TCPCommandSet *separatorOffCommand;

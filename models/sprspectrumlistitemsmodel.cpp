@@ -15,6 +15,7 @@ SPRSpectrumItemModel *SPRSpectrumListItemsModel::addSpectrum(uint8_t *buf, int b
     SPRSpectrumItemModel *item = new SPRSpectrumItemModel(zonesTableModel, formulas, this);
     item->setSpectrumData(buf, bufLentgh);
     spectrumsModel.push_back(item);
+    return item;
 }
 
 SPRSettingsFormulaModel *SPRSpectrumListItemsModel::getFormulas() const

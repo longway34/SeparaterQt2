@@ -11,10 +11,11 @@ class TCPGetSpectrumsGistogramms : public TCPCommandSet
     
     uint threadNum;
     EnumCommands dataType;
+    uint tTimeOut;
 
 public:
     TCPGetSpectrumsGistogramms();
-    TCPGetSpectrumsGistogramms(ServerConnect *_server, EnumCommands _dataType, uint _threads = MAX_SPR_MAIN_THREADS);
+    TCPGetSpectrumsGistogramms(ServerConnect *_server, EnumCommands _dataType, TCPTimeOutWigget *_widget = nullptr, uint _threads = MAX_SPR_MAIN_THREADS);
 
     QByteArray getKSpectrumData(int thread = -1){
         QVector<TCPCommand*>vspect = findCommands(getkspk);
@@ -65,7 +66,7 @@ public:
         return res;
     }
 
-    void setThreadNum(const uint &value);
+    void setThreadTimer(const uint &value, uint _timeOut = 1);
 
 protected slots:
     virtual void go(TCPCommand *_command = NULL);

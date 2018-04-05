@@ -1,22 +1,22 @@
 #include "tcpgetspectrumsgistogramms.h"
 
-void TCPGetSpectrumsGistogramms::setThreadNum(const uint &value)
+void TCPGetSpectrumsGistogramms::setThreadTimer(const uint &value, uint _timeOut)
 {
-    threadNum = value;
+    threadNum = value; tTimeOut = _timeOut;
     for(int i=0; i< commandSet.size(); i++){
         delete commandSet[i];
     }
     commandSet.clear();
 
        int tTimer = 1;
-       uint32_t tArg = tTimer * 10;
+       uint32_t tArg = tTimeOut * 10;
        if(dataType == getspk){
            TCPCommand *setRen = new TCPCommand(setspk);
 //           QByteArray data;
 //           data.append((char*)&tArg, sizeof(tArg));
            setRen->setSendData(&tArg, sizeof(tArg));
            addCommand(setRen);
-           addCommand(new TCPTimeOutCommand(timeoutcommand, tTimer));
+           addCommand(new TCPTimeOutCommand(timeoutcommand, tTimeOut+2, tTimeOut, this->widget, tr("Накопление спектра"), tr("Накопление спектра")));
        }
        for(uint8_t i=0; i<threadNum; i++){
            TCPCommand *comm = new TCPCommand(dataType);
@@ -33,10 +33,10 @@ TCPGetSpectrumsGistogramms::TCPGetSpectrumsGistogramms()
 {
 }
 
-TCPGetSpectrumsGistogramms::TCPGetSpectrumsGistogramms(ServerConnect *_server, EnumCommands _dataType, uint _threads):
-    TCPCommandSet(_server, nullptr, {}), threadNum(_threads), dataType(_dataType)
+TCPGetSpectrumsGistogramms::TCPGetSpectrumsGistogramms(ServerConnect *_server, EnumCommands _dataType, TCPTimeOutWigget *_widget, uint _threads):
+    TCPCommandSet(_server, _widget, {}), threadNum(_threads), dataType(_dataType)
 {
-    setThreadNum(threadNum);
+    setThreadTimer(threadNum);
 }
 
 void TCPGetSpectrumsGistogramms::go(TCPCommand *_command)

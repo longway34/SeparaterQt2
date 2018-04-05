@@ -27,9 +27,9 @@ TCPStartStopSeparate::TCPStartStopSeparate(ServerConnect *_server, TCPTimeOutWig
 
 
     addCommand(new TCPGetRentgensParams(_server)); // 6
-    TCPGetSpectrumsGistogramms *spk = new TCPGetSpectrumsGistogramms(_server, getspk);
+    TCPGetSpectrumsGistogramms *spk = new TCPGetSpectrumsGistogramms(_server, setspk);
     addCommand(spk); // 7
-    commandSet.last()->setReplayData(QByteArray::fromRawData((char*)&timeOfSpk, sizeof(timeOfSpk)));
+    commandSet.last()->setSendData((char*)&timeOfSpk, sizeof(timeOfSpk));
 
     // 8
     addCommand(new TCPTimeOutCommand(timeoutcommand, timeOfSpk / 10, 1, _widget, tr("Получение начальноых спектров"), tr("Получение начальноых спектров")));
@@ -87,9 +87,9 @@ void TCPStartStopSeparate::go(TCPCommand *_command)
             tGetGistogramm = model->getSettingsControlModel()->tMeassureForHistogramm->getData();
         }
 
-        ((TCPGetSpectrumsGistogramms*)commandSet.at(7))->setThreadNum(threads);
-        ((TCPGetSpectrumsGistogramms*)commandSet.at(18))->setThreadNum(threads);
-        ((TCPGetSpectrumsGistogramms*)commandSet.at(19))->setThreadNum(threads);
+        ((TCPGetSpectrumsGistogramms*)commandSet.at(7))->setThreadTimer(threads);
+        ((TCPGetSpectrumsGistogramms*)commandSet.at(18))->setThreadTimer(threads);
+        ((TCPGetSpectrumsGistogramms*)commandSet.at(19))->setThreadTimer(threads);
 
         ((TCPGetRentgensParams*)commandSet.at(19))->setRentgens(rentgens);
 

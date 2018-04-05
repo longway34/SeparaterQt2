@@ -1,6 +1,8 @@
 #include "sprspectrumlisttable.h"
 #include <QLabel>
+#include "_types.h"
 
+extern QColor mainColors[];
 
 void SPRSpectrumListTable::connectFirstTable(FirstColumn *fc){
     connect(fc, SIGNAL(changeColor(QColor)), this, SLOT(viewChange(QColor)));
@@ -156,6 +158,10 @@ ISPRModelData *SPRSpectrumListTable::setModel(SPRSpectrumListItemsModel *_model,
 
 ISPRModelData *SPRSpectrumListTable::addSpectrum(uint8_t *_inp, int _bufSize, int _thread)
 {
+    static const QColor mainColors[] = {Qt::red, Qt::green, Qt::blue, Qt::cyan, Qt::magenta, Qt::yellow,
+                                        Qt::darkRed, Qt::darkBlue, Qt::darkGreen, Qt::darkCyan, Qt::darkMagenta, Qt::darkYellow,
+                                        Qt::gray, Qt::lightGray, Qt::white, Qt::darkGray};
+
     if(_thread < 0 || _thread >= MAX_SPR_MAIN_THREADS){
         if(_bufSize == DEF_SPECTRUM_DATA_BUF_LENGTH){
             spectumItemData b;
@@ -170,6 +176,9 @@ ISPRModelData *SPRSpectrumListTable::addSpectrum(uint8_t *_inp, int _bufSize, in
 
     if(_bufSize == DEF_SPECTRUM_DATA_LENGTH){
         mod->getSpectrumData()->setThread(_thread);
+        mod->setSpectrumName("spect_"+QString::number(_thread));
+//        mod->setSpectrumColor();
+        mod->setSpectrumColor(mainColors[_thread % 16]);
         mod->recomplite();
     }
     addRowTable(mod->getSpectrumData());

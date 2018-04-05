@@ -211,6 +211,7 @@ public:
     void setMainModel(SPRMainModel *value);
     virtual ~SPRSeparateModel();
 
+    SPRSettintsSeparate *getSettingsSeparate();
 };
 
 #endif // SPRSEPARATEMODEL_H
