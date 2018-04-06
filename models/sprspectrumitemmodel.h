@@ -13,8 +13,6 @@
 #include "qwt_interval.h"
 #include "qwt_plot_histogram.h"
 
-#define DEF_SPECTRUM_DATA_BUF_LENGTH    708
-#define DEF_SPECTRUM_DATA_LENGTH        512
 
 typedef class spectumItemData{
     uint16_t bufLength;

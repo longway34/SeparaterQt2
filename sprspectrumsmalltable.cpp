@@ -14,6 +14,7 @@ void SPRSpectrumSmallTable::widgetsShow(){
     SPRSpectrumListTable::widgetsShow();
     for(int row=0; row<model->getSpectrumsModel()->size(); row++){
         SPRSpectrumItemModel *mod = model->getSpectrumItem(row);
-        ((QLabel*)cellWidget(row, 10))->setText(QString::number(*mod->getSpectrumData()->time * 1000, 'f', 0));
+        ((QLabel*)cellWidget(row, 10))->setText(QString::number(*mod->getSpectrumData()->time / 1000, 'f', 3));
     }
+    resizeColumnsToContents();
 }

@@ -26,6 +26,9 @@ testTableWidget::testTableWidget(QWidget *parent) :
 
     towidget = new TCPTimeOutWigget(this);
 
+    ui.baseGrapthics->getCanvas()->setAxisScale(QwtPlot::Axis::xBottom, 0, 256, 25);
+    ui.kSpertGraphic->getCanvas()->setAxisScale(QwtPlot::Axis::xBottom, 0, 256, 25);
+
     startSeparate = new TCPTestStartSeparate(nullptr, towidget);
 }
 

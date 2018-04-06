@@ -92,7 +92,7 @@ public:
 
 private:
     Ui::SPRSpectrumGraphicsWidget ui;
-    
+
     // ISPRWidget interface
 public:
 
@@ -106,7 +106,9 @@ public:
         }
     }
     void setAllCurrent(bool value);
-
+    QwtPlot *getCanvas(){
+        return ui.canvas;
+    }
 
 public slots:
     virtual void widgetsShow();
