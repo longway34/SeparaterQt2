@@ -164,6 +164,20 @@ void SPRSpectrumItemModel::setFormulas(SPRSettingsFormulaModel *value)
     }
 }
 
+void SPRSpectrumItemModel::setTimeScope(uint32_t _time_in_ms){
+    *spectrumData.time = (double)_time_in_ms;
+}
+
+void SPRSpectrumItemModel::setSpectrumDateTime(QDateTime _dateTime){
+    *spectrumData.year = _dateTime.date().year();
+    *spectrumData.month = _dateTime.date().month();
+    *spectrumData.day = _dateTime.date().day();
+
+    *spectrumData.hours = _dateTime.time().hour();
+    *spectrumData.min = _dateTime.time().minute();
+    *spectrumData.sec = _dateTime.time().second();
+}
+
 SpectrumItemData *SPRSpectrumItemModel::getSpectrumData()
 {
     return &spectrumData;

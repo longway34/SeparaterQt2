@@ -29,7 +29,7 @@ public:
         }
         return res;
     }
-    int getKSpectrumTime(int thread){
+    uint32_t getKSpectrumTime(int thread){
         QVector<TCPCommand*>vspect = findCommands(getkspk);
         QByteArray res0; int res = 0;
         if(vspect.size() > 0){
@@ -38,7 +38,7 @@ public:
 
             res0 = vspect[thread]->getReplayData();
             res0 = res0.right(5);
-            res = res0.left(sizeof(int)).toUInt();
+            res = res0.left(sizeof(int)).toInt();
         }
         return res;
     }

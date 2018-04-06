@@ -2,8 +2,6 @@
 #include <QLabel>
 #include "_types.h"
 
-extern QColor mainColors[];
-
 void SPRSpectrumListTable::connectFirstTable(FirstColumn *fc){
     connect(fc, SIGNAL(changeColor(QColor)), this, SLOT(viewChange(QColor)));
     connect(fc, SIGNAL(iAmSelected(int)), this, SLOT(viewChange(int)));
@@ -143,51 +141,40 @@ void SPRSpectrumListTable::onCurrentPosChanged(int row, int col){
     emit rowSelectedChecked(getSelectedItems(), row);
 }
 
-ISPRModelData *SPRSpectrumListTable::setModel(SPRSpectrumListItemsModel *_model, uint8_t *inp)
+ISPRModelData *SPRSpectrumListTable::setModel(SPRSpectrumListItemsModel *_model, uint8_t *inp, int _bufSize)
 {
-    if(_model){
-        if(model != _model){
-            model = _model;
-            emit modelChanged();
+    if(model != _model){
+        model = _model;
+        connect(model, SIGNAL(modelChanget()), this, SLOT(widgetsShow()));
+        if(inp){
+            addSpectrum(inp, _bufSize);
         }
+        widgetsShow();
     }
-    if(inp){
-        addSpectrum(inp);
-    }
+    return model;
 }
 
-ISPRModelData *SPRSpectrumListTable::addSpectrum(uint8_t *_inp, int _bufSize, int _thread)
+SPRSpectrumItemModel *SPRSpectrumListTable::addSpectrum(uint8_t *_inp, int _bufSize, int _thread)
 {
-    static const QColor mainColors[] = {Qt::red, Qt::green, Qt::blue, Qt::cyan, Qt::magenta, Qt::yellow,
-                                        Qt::darkRed, Qt::darkBlue, Qt::darkGreen, Qt::darkCyan, Qt::darkMagenta, Qt::darkYellow,
-                                        Qt::gray, Qt::lightGray, Qt::white, Qt::darkGray};
+    if(model){
+        SPRSpectrumItemModel *item = model->addSpectrum(_inp, _bufSize);
 
-    if(_thread < 0 || _thread >= MAX_SPR_MAIN_THREADS){
-        if(_bufSize == DEF_SPECTRUM_DATA_BUF_LENGTH){
-            spectumItemData b;
-            b.setbuf(_inp);
-            _thread = *b.thread;
-        } else {
-            _thread = 0;
+        if(_bufSize == DEF_SPECTRUM_DATA_LENGTH){
+            if(_thread >= 0 && _thread < MAX_SPR_MAIN_THREADS){
+                item->getSpectrumData()->setThread(_thread);
+            }
         }
+        addRowTable(item->getSpectrumData());
+        widgetsShow();
+        return item;
     }
-    SPRSpectrumItemModel *mod = new SPRSpectrumItemModel(model->getZonesTableModel(), model->getFormulas(), model);
-    mod->setSpectrumData(_inp, _bufSize);
-
-    if(_bufSize == DEF_SPECTRUM_DATA_LENGTH){
-        mod->getSpectrumData()->setThread(_thread);
-        mod->setSpectrumName("spect_"+QString::number(_thread));
-//        mod->setSpectrumColor();
-        mod->setSpectrumColor(mainColors[_thread % 16]);
-        mod->recomplite();
-    }
-    addRowTable(mod->getSpectrumData());
-    model->getSpectrumsModel()->push_back(mod);
-    emit modelChanged();
+    return nullptr;
 }
 
 void SPRSpectrumListTable::widgetsShow()
 {
+
+    while(rowCount() > 0) this->removeRow(0);
 
     for(int row=0; row<model->getSpectrumsModel()->size(); row++){
         SpectrumItemData *mod = model->getSpectrumsModel()->at(row)->getSpectrumData();
@@ -248,7 +235,7 @@ void SPRSpectrumListTable::viewChange(QColor color)
         *model->getSpectrumsModel()->at(row)->getSpectrumData()->green = color.green();
         *model->getSpectrumsModel()->at(row)->getSpectrumData()->blue = color.blue();
 //        emit rowChangeColor(row);
-        emit modelChanged();
+        widgetsShow();
     }
 }
 
@@ -259,7 +246,7 @@ void SPRSpectrumListTable::viewChange()
         SpectrumItemData *data = model->getSpectrumsModel()->at(row)->getSpectrumData();
         const char *value = ((QLineEdit*)sender())->text().toStdString().c_str();
         strcpy(data->name, value);
-        emit modelChanged();
+        widgetsShow();
     }
 }
 

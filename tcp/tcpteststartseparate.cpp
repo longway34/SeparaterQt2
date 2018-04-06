@@ -7,23 +7,23 @@ TCPTestStartSeparate::TCPTestStartSeparate(ServerConnect *_server, TCPTimeOutWig
     TCPCommandSet(server, _widget, {}), separateModel(nullptr)
 {
     char ch0 = '\0';
-    addCommand(new TCPCommandSeparatorOn(_server, _widget));
-    addCommand(new TCPCommandRentgerOn(_server, _widget));
+    addCommand(new TCPCommandSeparatorOn(_server, _widget)); //0
+    addCommand(new TCPCommandRentgerOn(_server, _widget)); //1
 
-    addCommand(new TCPCommand(expon))->setSendData(&ch0, sizeof(ch0));
-    addCommand(new TCPCommand(offosw));
-    addCommand(new TCPCommand(onosw));
+    addCommand(new TCPCommand(expon))->setSendData(&ch0, sizeof(ch0)); //2
+    addCommand(new TCPCommand(offosw)); //3
+    addCommand(new TCPCommand(onosw)); //4
 
-    addCommand(new TCPTimeOutCommand(timeoutcommand, 10, 10, _widget, tr("Включение эхспозиции"), tr("Включение эхспозиции")));
-    addCommand(new TCPCommand(getren))->setSendData(&ch0, sizeof(ch0));
+    addCommand(new TCPTimeOutCommand(timeoutcommand, 10, 10, _widget, tr("Включение эхспозиции"), tr("Включение эхспозиции"))); //5
+    addCommand(new TCPCommand(getren))->setSendData(&ch0, sizeof(ch0)); // 6
 
     TCPGetSpectrumsGistogramms *spect = new TCPGetSpectrumsGistogramms(_server, getspk);
-    addCommand(spect);
+    addCommand(spect); // 7
 
-    addCommand(new TCPCommand(setsepar));
-    addCommand(new TCPCommand(startsep));
+    addCommand(new TCPCommand(setsepar)); // 8
+    addCommand(new TCPCommand(startsep)); // 9
 
-    addCommand(new TCPCommand(oniw));
+    addCommand(new TCPCommand(oniw)); // 10
 
 }
 

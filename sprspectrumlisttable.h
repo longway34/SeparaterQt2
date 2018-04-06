@@ -32,7 +32,7 @@ protected:
 public:
     explicit SPRSpectrumListTable(QWidget *parent = 0);
 
-    ISPRModelData *setModel(SPRSpectrumListItemsModel *_model, uint8_t *inp = nullptr);
+    ISPRModelData *setModel(SPRSpectrumListItemsModel *_model, uint8_t *inp = nullptr, int _bufSize = DEF_SPECTRUM_DATA_BUF_LENGTH);
     // ISPRWidget interface
     SPRSpectrumListItemsModel *getModels(){ return model; }
     SPRSpectrumItemModel *getModel(int index){
@@ -42,7 +42,7 @@ public:
             return nullptr;
         }
     }
-    ISPRModelData *addSpectrum(uint8_t *_inp, int _bufSize = DEF_SPECTRUM_DATA_BUF_LENGTH, int _thread = -1);
+    SPRSpectrumItemModel *addSpectrum(uint8_t *_inp, int _bufSize = DEF_SPECTRUM_DATA_BUF_LENGTH, int _thread = -1);
 //    ISPRModelData *setZonesTableModel(SPRSpectrumZonesTableModel *ranges);
 
     QList<int> getSelectedItems(){

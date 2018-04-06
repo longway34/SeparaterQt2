@@ -19,8 +19,8 @@
 
 class TCPCommandSet : public TCPTimeOutCommand{
 protected:
-    QVector<TCPCommand*> commandSet;
-    
+//    QVector<TCPCommand*> commandSet;
+
     ServerConnect *server;
     
 public:
@@ -129,20 +129,20 @@ public:
         }
         return res;
     }
-    QVector<TCPCommand*> findCommands(EnumCommands _command=lastcommand){
-        if(_command == lastcommand){
-            return QVector<TCPCommand*>({commandSet.last()});
-        } else {
-            QVector<TCPCommand*> res;
-            for(int i=0; i<commandSet.size();i++){
-                TCPCommand *comm = commandSet[i];
-                if(comm->getCommand() == _command){
-                    res.push_back(comm);
-                }
-            }
-            return res;
-        }
-    }
+//    QVector<TCPCommand*> findCommands(EnumCommands _command=lastcommand){
+//        if(_command == lastcommand){
+//            return QVector<TCPCommand*>({commandSet.last()});
+//        } else {
+//            QVector<TCPCommand*> res;
+//            for(int i=0; i<commandSet.size();i++){
+//                TCPCommand *comm = commandSet[i];
+//                if(comm->getCommand() == _command){
+//                    res.push_back(comm);
+//                }
+//            }
+//            return res;
+//        }
+//    }
 protected:
 //    virtual bool isCondition();
     

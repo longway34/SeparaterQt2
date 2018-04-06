@@ -25,7 +25,8 @@ class TCPCommand: public ITCPCommand {
     Q_OBJECT
     
 protected:
-    
+    QVector<TCPCommand*> commandSet;
+
 public:
     TCPCommand();
     TCPCommand(EnumCommands _command){
@@ -95,6 +96,27 @@ public:
             res += replayData[i];
         }
         return res;
+    }
+
+    virtual QVector<TCPCommand*> findCommands(EnumCommands _command=lastcommand){
+        if(_command == lastcommand){
+            return QVector<TCPCommand*>({this});
+        } else {
+            QVector<TCPCommand*> res;
+            if(_command == this->command){
+                res.push_back(this);
+            }
+            for(int i=0; i<commandSet.size();i++){
+                TCPCommand *comm = commandSet[i];
+//                if(comm->getCommand() == _command){
+                    QVector<TCPCommand*> vres = comm->findCommands(_command);
+                    for(int v=0; v<vres.size();v++){
+                        res.push_back(vres[v]);
+                    }
+//                }
+            }
+            return res;
+        }
     }
 
 public slots:

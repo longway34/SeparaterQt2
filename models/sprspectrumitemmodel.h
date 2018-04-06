@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QPolygonF>
 #include <QByteArray>
+#include <QDateTime>
 
 #include "models/isprmodeldata.h"
 #include "models/sprspectrumzonestablemodel.h"
@@ -105,6 +106,9 @@ public:
         memcpy(spectrumData.name, name.toStdString().c_str(), name.length());
     }
 
+    void setSpectrumThread(uint th){
+        *spectrumData.thread = th;
+    }
     SPRSpectrumZonesModel *getZones(){
         uint th = *spectrumData.thread;
         return zones->items[*spectrumData.thread];
@@ -118,6 +122,8 @@ public:
     QMap<EnumElements, QVector<QwtIntervalSample>> getZonesGaphics();
     QPolygonF getSpectrumGraphics();
 
+    void setSpectrumDateTime(QDateTime _dateTime);
+    void setTimeScope(uint32_t _time_in_ms);
 protected:
 };
 

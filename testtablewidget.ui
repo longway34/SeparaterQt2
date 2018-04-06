@@ -23,22 +23,6 @@
     </rect>
    </property>
   </widget>
-  <widget class="SPRSpectrumSmallTable" name="kspectTable">
-   <property name="geometry">
-    <rect>
-     <x>7</x>
-     <y>220</y>
-     <width>431</width>
-     <height>151</height>
-    </rect>
-   </property>
-   <property name="alternatingRowColors">
-    <bool>true</bool>
-   </property>
-   <property name="selectionBehavior">
-    <enum>QAbstractItemView::SelectRows</enum>
-   </property>
-  </widget>
   <widget class="QComboBox" name="cbThread">
    <property name="geometry">
     <rect>
@@ -185,9 +169,9 @@
   <widget class="SPRSpectrumListTable" name="baseTable">
    <property name="geometry">
     <rect>
-     <x>450</x>
-     <y>221</y>
-     <width>511</width>
+     <x>10</x>
+     <y>220</y>
+     <width>561</width>
      <height>151</height>
     </rect>
    </property>
@@ -291,6 +275,22 @@
    </property>
    <property name="text">
     <string>kSpec</string>
+   </property>
+  </widget>
+  <widget class="SPRSpectrumSmallTable" name="kspectTable">
+   <property name="geometry">
+    <rect>
+     <x>580</x>
+     <y>220</y>
+     <width>391</width>
+     <height>151</height>
+    </rect>
+   </property>
+   <property name="alternatingRowColors">
+    <bool>true</bool>
+   </property>
+   <property name="selectionBehavior">
+    <enum>QAbstractItemView::SelectRows</enum>
    </property>
   </widget>
  </widget>

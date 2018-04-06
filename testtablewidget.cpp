@@ -58,8 +58,6 @@ ISPRModelData *testTableWidget::setModel(SPRMainModel *_model){
 }
 
 void testTableWidget::widgetsShow(){
-    ui.baseTable->widgetsShow();
-
 
     while(ui.workSeparTable->rowCount() > 0){
         ui.workSeparTable->removeRow(0);
@@ -97,6 +95,9 @@ void testTableWidget::widgetsShow(){
     ui.workSeparTable->resizeColumnsToContents();
 
     ui.kspectTable->widgetsShow();
+    ui.kSpertGraphic->widgetsShow();
+    ui.baseTable->widgetsShow();
+    ui.baseGrapthics->widgetsShow();
 }
 
 void testTableWidget::onModelChanged(){
@@ -134,9 +135,6 @@ void testTableWidget::onGetButtomsClick(bool)
 
 void testTableWidget::onCommandComplite(TCPCommand *_command)
 {
-    QColor mainColors[] = {Qt::red, Qt::green, Qt::blue, Qt::cyan, Qt::magenta, Qt::yellow,
-                                        Qt::darkRed, Qt::darkBlue, Qt::darkGreen, Qt::darkCyan, Qt::darkMagenta, Qt::darkYellow,
-                                        Qt::gray, Qt::lightGray, Qt::white, Qt::darkGray};
 
     if(sender() == getGistogramm){
         return;
@@ -148,23 +146,40 @@ void testTableWidget::onCommandComplite(TCPCommand *_command)
         return;
     }
     if(sender() == getKSpectrums){
-        kSpectrumsModel->clearGraphicsItemModel();
+        kSpectrumsModel->clearSpectrums();
         for(uint th=0; th<MAX_SPR_MAIN_THREADS; th++){
             QByteArray res = getKSpectrums->getKSpectrumData(th);
             uint8_t *spec = (uint8_t*)(res.left(DEF_SPECTRUM_DATA_LENGTH).constData());
 
-            SPRSpectrumItemModel *mod = kSpectrumsModel->addSpectrum(spec, DEF_SPECTRUM_DATA_LENGTH);
-            mod->setSpectrumColor(mainColors);
+            SPRSpectrumItemModel *item = kSpectrumsModel->addSpectrum(spec, DEF_SPECTRUM_DATA_LENGTH);
+            uint32_t t = getKSpectrums->getKSpectrumTime(th);
+            item->setTimeScope(t);
 
-            ui.kspectTable->addSpectrum(spec, DEF_SPECTRUM_DATA_LENGTH, th);
+//            SPRSpectrumItemModel *mod = ui.kspectTable->addSpectrum(spec, DEF_SPECTRUM_DATA_LENGTH);
+//            ui.kspectTable->addSpectrum(spec, DEF_SPECTRUM_DATA_LENGTH, th);
 
-            ui.kSpertGraphic->setModel(ui.kspectTable->getModels());
-            ui.kSpertGraphic->setVisibleAll();
+//            ui.kSpertGraphic->setModel(ui.kspectTable->getModels());
         }
+        ui.kSpertGraphic->setVisibleAll();
         widgetsShow();
         return;
     }
     if(sender() == setSeparate){
+        return;
+    }
+    if(sender() == startSeparate){
+        spectrumsBaseModel->clearSpectrums();
+//        for(uint th=0;th<MAX_SPR_MAIN_THREADS; th++){
+        QVector<TCPCommand*> vspk = startSeparate->findCommands(getspk);
+        for(int i=0; i<vspk.size();i++){
+            QByteArray spk = vspk[i]->getReplayData().right(DEF_SPECTRUM_DATA_LENGTH);
+            SPRSpectrumItemModel *item = spectrumsBaseModel->addSpectrum(spk);
+            item->setTimeScope(1);
+        }
+//            ui.baseTable->setModel(spectrumsBaseModel);
+//        }
+        ui.baseGrapthics->setVisibleAll();
+        widgetsShow();
         return;
     }
 }

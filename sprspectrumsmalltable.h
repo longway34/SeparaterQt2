@@ -10,6 +10,7 @@ class SPRSpectrumSmallTable : public SPRSpectrumListTable
 {
 public:
     explicit SPRSpectrumSmallTable(QWidget *parent = 0);
+    virtual void widgetsShow();
 };
 
 #endif // SPRSPECTRUMSMALLTABLE_H
