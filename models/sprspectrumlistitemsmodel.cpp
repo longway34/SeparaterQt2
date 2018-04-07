@@ -1,5 +1,9 @@
 #include "sprspectrumlistitemsmodel.h"
 
+static const QVector<QColor> mainColors = {Qt::red, Qt::green, Qt::blue, Qt::cyan, Qt::magenta, Qt::yellow,
+                                    Qt::darkRed, Qt::darkBlue, Qt::darkGreen, Qt::darkCyan, Qt::darkMagenta, Qt::darkYellow,
+                                    Qt::gray, Qt::lightGray, Qt::white, Qt::darkGray};
+
 QVector<SPRSpectrumItemModel *> *SPRSpectrumListItemsModel::getSpectrumsModel()
 {
     return &spectrumsModel;
@@ -9,12 +13,32 @@ SPRSpectrumZonesTableModel *SPRSpectrumListItemsModel::getZonesTableModel()
 {
     return zonesTableModel;
 }
+void  *SPRSpectrumListItemsModel::clearSpectrums(){
+    for(int i=0; i<spectrumsModel.size(); i++){
+        delete spectrumsModel[i];
+    }
+    spectrumsModel.clear();
+//    emit modelChanget();
+}
+
+SPRSpectrumItemModel *SPRSpectrumListItemsModel::setSpectrum(uint8_t *buf, int bufLentgh){
+    clearSpectrums();
+    addSpectrum(buf, bufLentgh);
+}
 
 SPRSpectrumItemModel *SPRSpectrumListItemsModel::addSpectrum(uint8_t *buf, int bufLentgh)
 {
     SPRSpectrumItemModel *item = new SPRSpectrumItemModel(zonesTableModel, formulas, this);
     item->setSpectrumData(buf, bufLentgh);
+    if(bufLentgh == DEF_SPECTRUM_DATA_LENGTH){
+        item->setSpectrumThread(spectrumsModel.size());
+        item->setSpectrumName("spec_"+QString::number(spectrumsModel.size()));
+        item->setSpectrumColor(mainColors[spectrumsModel.size() % mainColors.size()]);
+        item->setSpectrumDateTime(QDateTime::currentDateTime());
+    }
     spectrumsModel.push_back(item);
+//    emit modelChanget();
+    return item;
 }
 
 SPRSettingsFormulaModel *SPRSpectrumListItemsModel::getFormulas() const
@@ -88,9 +112,13 @@ ISPRModelData *SPRSpectrumListItemsModel::setFormulasModel(SPRSettingsFormulaMod
     return this;
 }
 
-ISPRModelData *SPRSpectrumListItemsModel::setModel(SPRSpectrumZonesTableModel *_zones, SPRSettingsFormulaModel *_formulas)
+ISPRModelData *SPRSpectrumListItemsModel::setModel(SPRSpectrumZonesTableModel *_zones, SPRSettingsFormulaModel *_formulas, uint8_t *inp, int len)
 {
     setZonesModel(_zones);
     setFormulasModel(_formulas);
+    clearSpectrums();
+    if(inp){
+        addSpectrum(inp, len);
+    }
     return this;
 }

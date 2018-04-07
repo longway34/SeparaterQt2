@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QPolygonF>
 #include <QByteArray>
+#include <QDateTime>
 
 #include "models/isprmodeldata.h"
 #include "models/sprspectrumzonestablemodel.h"
@@ -12,8 +13,6 @@
 #include "qwt_interval.h"
 #include "qwt_plot_histogram.h"
 
-#define DEF_SPECTRUM_DATA_BUF_LENGTH    708
-#define DEF_SPECTRUM_DATA_LENGTH        512
 
 typedef class spectumItemData{
     uint16_t bufLength;
@@ -44,6 +43,11 @@ public:
     void setThread(int _thread){*thread = _thread;}
     uint8_t *getBuf(){ return buf;}
     void setbuf(uint8_t* _buf){ buf = _buf;}
+    void setColor(QColor color){
+        *red = color.red();
+        *green = color.green();
+        *blue = color.blue();
+    }
 
 } SpectrumItemData;
 
@@ -100,6 +104,9 @@ public:
         memcpy(spectrumData.name, name.toStdString().c_str(), name.length());
     }
 
+    void setSpectrumThread(uint th){
+        *spectrumData.thread = th;
+    }
     SPRSpectrumZonesModel *getZones(){
         uint th = *spectrumData.thread;
         return zones->items[*spectrumData.thread];
@@ -113,6 +120,8 @@ public:
     QMap<EnumElements, QVector<QwtIntervalSample>> getZonesGaphics();
     QPolygonF getSpectrumGraphics();
 
+    void setSpectrumDateTime(QDateTime _dateTime);
+    void setTimeScope(uint32_t _time_in_ms);
 protected:
 };
 

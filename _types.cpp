@@ -12,3 +12,6 @@ static const DefaultElementsProperty elementsProperty[MAX_SPR_SPECTOR_ELEMENTS] 
 
 };
 
+static const QColor mainColors[] = {Qt::red, Qt::green, Qt::blue, Qt::cyan, Qt::magenta, Qt::yellow,
+                                    Qt::darkRed, Qt::darkBlue, Qt::darkGreen, Qt::darkCyan, Qt::darkMagenta, Qt::darkYellow,
+                                    Qt::gray, Qt::lightGray, Qt::white, Qt::darkGray};

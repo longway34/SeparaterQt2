@@ -6,7 +6,9 @@
 #include "models/sprseparatemodel.h"
 #include "tcp/TCPCommand.h"
 #include "tcp/tcpgetspectrumsgistogramms.h"
-#include "tcp/tcpgetgistogramms.h"
+#include "tcp/tcpteststartseparate.h"
+#include "tcp/tcptimeoutwigget.h"
+#include "tcp/tcplogswigtets.h"
 
 class testTableWidget : public QWidget
 {
@@ -16,7 +18,8 @@ public:
     explicit testTableWidget(QWidget *parent = 0);
 
     SPRMainModel *mainModel;
-    SPRSpectrumListItemsModel *spectrumModel;
+    SPRSpectrumListItemsModel *spectrumsBaseModel;
+    SPRSpectrumListItemsModel *kSpectrumsModel;
     SPRSeparateModel *separateModel;
 
     TCPGetSpectrumsGistogramms *getGistogramm;
@@ -24,6 +27,10 @@ public:
     TCPCommand *getSeparate;
     TCPCommand *setSeparate;
 
+    TCPTestStartSeparate *startSeparate;
+
+    TCPTimeOutWigget *towidget;
+    TCPLogsWigtets *logs;
 
 //    ISPRModelData *setModel(SPRSpectrumListItemsModel *_model, SPRFormulaItemModel *_formulas){
 //        if(_model){

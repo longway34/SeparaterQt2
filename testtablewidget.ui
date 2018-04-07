@@ -13,50 +13,27 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="SPRSpectrumGraphicsWidget" name="graphic" native="true">
+  <widget class="SPRSpectrumGraphicsWidget" name="baseGrapthics" native="true">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>10</y>
-     <width>331</width>
-     <height>191</height>
+     <y>30</y>
+     <width>371</width>
+     <height>171</height>
     </rect>
-   </property>
-  </widget>
-  <widget class="QwtPlot" name="gist">
-   <property name="geometry">
-    <rect>
-     <x>340</x>
-     <y>10</y>
-     <width>421</width>
-     <height>211</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="SPRSpectrumSmallTable" name="kspectTable">
-   <property name="geometry">
-    <rect>
-     <x>7</x>
-     <y>250</y>
-     <width>751</width>
-     <height>121</height>
-    </rect>
-   </property>
-   <property name="alternatingRowColors">
-    <bool>true</bool>
-   </property>
-   <property name="selectionBehavior">
-    <enum>QAbstractItemView::SelectRows</enum>
    </property>
   </widget>
   <widget class="QComboBox" name="cbThread">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>210</y>
-     <width>131</width>
+     <x>770</x>
+     <y>100</y>
+     <width>161</width>
      <height>31</height>
     </rect>
+   </property>
+   <property name="currentIndex">
+    <number>4</number>
    </property>
    <item>
     <property name="text">
@@ -76,6 +53,11 @@
    <item>
     <property name="text">
      <string>thread 4</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>All threads</string>
     </property>
    </item>
   </widget>
@@ -184,13 +166,13 @@
     </property>
    </column>
   </widget>
-  <widget class="SPRSpectrumListTable" name="table">
+  <widget class="SPRSpectrumListTable" name="baseTable">
    <property name="geometry">
     <rect>
-     <x>770</x>
-     <y>180</y>
-     <width>191</width>
-     <height>192</height>
+     <x>10</x>
+     <y>220</y>
+     <width>561</width>
+     <height>151</height>
     </rect>
    </property>
   </widget>
@@ -237,7 +219,7 @@
    <property name="geometry">
     <rect>
      <x>770</x>
-     <y>150</y>
+     <y>130</y>
      <width>161</width>
      <height>31</height>
     </rect>
@@ -246,23 +228,83 @@
     <string>Set Separ</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="bStartSepar">
+   <property name="geometry">
+    <rect>
+     <x>770</x>
+     <y>170</y>
+     <width>161</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Start Separ</string>
+   </property>
+  </widget>
+  <widget class="SPRSpectrumGraphicsWidget" name="kSpertGraphic" native="true">
+   <property name="geometry">
+    <rect>
+     <x>390</x>
+     <y>30</y>
+     <width>371</width>
+     <height>171</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>67</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Base</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>410</x>
+     <y>10</y>
+     <width>67</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>kSpec</string>
+   </property>
+  </widget>
+  <widget class="SPRSpectrumSmallTable" name="kspectTable">
+   <property name="geometry">
+    <rect>
+     <x>580</x>
+     <y>220</y>
+     <width>391</width>
+     <height>151</height>
+    </rect>
+   </property>
+   <property name="alternatingRowColors">
+    <bool>true</bool>
+   </property>
+   <property name="selectionBehavior">
+    <enum>QAbstractItemView::SelectRows</enum>
+   </property>
+  </widget>
  </widget>
  <customwidgets>
-  <customwidget>
-   <class>QwtPlot</class>
-   <extends>QFrame</extends>
-   <header>qwt_plot.h</header>
-  </customwidget>
-  <customwidget>
-   <class>SPRSpectrumListTable</class>
-   <extends>QTableWidget</extends>
-   <header>sprspectrumlisttable.h</header>
-  </customwidget>
   <customwidget>
    <class>SPRSpectrumGraphicsWidget</class>
    <extends>QWidget</extends>
    <header>sprspectrumgraphicswidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SPRSpectrumListTable</class>
+   <extends>QTableWidget</extends>
+   <header>sprspectrumlisttable.h</header>
   </customwidget>
   <customwidget>
    <class>SPRSpectrumSmallTable</class>

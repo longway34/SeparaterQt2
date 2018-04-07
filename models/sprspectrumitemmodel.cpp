@@ -65,7 +65,7 @@ void SPRSpectrumItemModel::recomplite()
     *spectrumData.peak_value = 0;
     for(int i=0; i<(DEF_SPECTRUM_DATA_LENGTH / sizeof(uint16_t)); i++){
         uint32_t val = spectrumData.spect[i];
-        *spectrumData.summ = val;
+        *spectrumData.summ += val;
         foreach (EnumElements el, zones->items[*spectrumData.thread]->elements.keys()) {
             int min = zones->items[*spectrumData.thread]->elements[el].min->getData();
             int max = zones->items[*spectrumData.thread]->elements[el].max->getData();
@@ -79,6 +79,43 @@ void SPRSpectrumItemModel::recomplite()
         }
     }
     *spectrumData.center = *spectrumData.summ / (DEF_SPECTRUM_DATA_LENGTH / sizeof(uint16_t));
+
+    double up = (double)(*spectrumData.elementsSumm[formulas->itemsModel[0]->ElementUp1->getData()]) +
+            formulas->itemsModel[0]->MulUp->getData() * (*spectrumData.elementsSumm[formulas->itemsModel[0]->ElementUp2->getData()]);
+
+    double down = (double)(*spectrumData.elementsSumm[formulas->itemsModel[0]->ElementDown1->getData()]) +
+            formulas->itemsModel[0]->MulDown->getData() * (double)(*spectrumData.elementsSumm[formulas->itemsModel[0]->ElementDown2->getData()])
+                * (double)(*spectrumData.elementsSumm[formulas->itemsModel[0]->ElementDown3->getData()])
+                    / (double)(*spectrumData.elementsSumm[formulas->itemsModel[0]->ElementDown4->getData()]);
+    if(down != 0)
+        *spectrumData.H1 = up / down;
+    else
+        *spectrumData.H1 = 0;
+
+
+    up = (double)(*spectrumData.elementsSumm[formulas->itemsModel[1]->ElementUp1->getData()]) +
+            formulas->itemsModel[1]->MulUp->getData() * (double)(*spectrumData.elementsSumm[formulas->itemsModel[1]->ElementUp2->getData()]);
+
+    down = (double)(*spectrumData.elementsSumm[formulas->itemsModel[1]->ElementDown1->getData()]) +
+            formulas->itemsModel[1]->MulDown->getData() * (double)(*spectrumData.elementsSumm[formulas->itemsModel[1]->ElementDown2->getData()])
+                * (double)(*spectrumData.elementsSumm[formulas->itemsModel[1]->ElementDown3->getData()])
+                    / (double)(*spectrumData.elementsSumm[formulas->itemsModel[1]->ElementDown4->getData()]);
+    if(down != 0)
+        *spectrumData.H2 = up / down;
+    else
+        *spectrumData.H2 = 0;
+
+    up = (double)(*spectrumData.elementsSumm[formulas->itemsModel[2]->ElementUp1->getData()]) +
+            formulas->itemsModel[2]->MulUp->getData() * (double)(*spectrumData.elementsSumm[formulas->itemsModel[2]->ElementUp2->getData()]);
+
+    down = (double)(*spectrumData.elementsSumm[formulas->itemsModel[2]->ElementDown1->getData()]) +
+            formulas->itemsModel[2]->MulDown->getData() * (double)(*spectrumData.elementsSumm[formulas->itemsModel[2]->ElementDown2->getData()])
+                * (double)(*spectrumData.elementsSumm[formulas->itemsModel[2]->ElementDown3->getData()])
+                    / (double)(*spectrumData.elementsSumm[formulas->itemsModel[2]->ElementDown4->getData()]);
+    if(down != 0)
+        *spectrumData.H3 = up / down;
+    else
+        *spectrumData.H3 = 0;
 }
 
 void SPRSpectrumItemModel::setZonesTable(SPRSpectrumZonesTableModel *value)
@@ -125,6 +162,20 @@ void SPRSpectrumItemModel::setFormulas(SPRSettingsFormulaModel *value)
         formulas = value;
         setProperty("delete_formulas", QVariant(false));
     }
+}
+
+void SPRSpectrumItemModel::setTimeScope(uint32_t _time_in_ms){
+    *spectrumData.time = (double)_time_in_ms;
+}
+
+void SPRSpectrumItemModel::setSpectrumDateTime(QDateTime _dateTime){
+    *spectrumData.year = _dateTime.date().year();
+    *spectrumData.month = _dateTime.date().month();
+    *spectrumData.day = _dateTime.date().day();
+
+    *spectrumData.hours = _dateTime.time().hour();
+    *spectrumData.min = _dateTime.time().minute();
+    *spectrumData.sec = _dateTime.time().second();
 }
 
 SpectrumItemData *SPRSpectrumItemModel::getSpectrumData()

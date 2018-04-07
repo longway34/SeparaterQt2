@@ -2,8 +2,13 @@
 
 void SPRSpectrumGraphicsWidget::setModel(SPRSpectrumListItemsModel *value)
 {
-    model = value;
-    widgetsShow();
+    if(value){
+        model = value;
+
+        connect(model, SIGNAL(modelChanget()), this, SLOT(widgetsShow()));
+
+        widgetsShow();
+    }
 }
 
 

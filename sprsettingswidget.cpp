@@ -43,6 +43,7 @@ SPRMainModel *SPRSettingsWidget::setModel(SPRMainModel *_model)
     model = _model;
 
 
+
     imodel = ui.wSettingsMainWidget->setModel(model->getSettingsMainModel());
     connect(this,SIGNAL(doShow()), ui.wSettingsMainWidget, SLOT(widgetsShow()));
     connect(ui.wSettingsMainWidget,SIGNAL(doShow()), this, SLOT(widgetsShow()));
@@ -73,7 +74,7 @@ SPRMainModel *SPRSettingsWidget::setModel(SPRMainModel *_model)
     imodel = ui.wSpectrumZonesWidget->setModel(model->getSpectrumZonesTableModel());
     connect(this, SIGNAL(doShow()), ui.wSpectrumZonesWidget, SLOT(widgetsShow()));
 
-    emit doShow();
+//    emit doShow();
 
     return model;
 }

@@ -1,5 +1,10 @@
 #include "sprseparatemodel.h"
 
+SPRSettintsSeparate *SPRSeparateModel::getSettingsSeparate()
+{
+    return &settingsSeparate;
+}
+
 SPRSeparateModel::SPRSeparateModel(QDomDocument *_doc, ISPRModelData *parent):
     ISPRModelData(_doc, parent), mainModel(0), gmz(), gcol(nullptr), kruch(nullptr), usl(), alg(nullptr), sep_row()
 {

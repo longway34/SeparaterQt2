@@ -29,7 +29,14 @@ public:
 
     ISPRModelData *setZonesModel(SPRSpectrumZonesTableModel *_model);
     ISPRModelData *setFormulasModel(SPRSettingsFormulaModel *_formulas);
-    ISPRModelData *setModel(SPRSpectrumZonesTableModel *_zones, SPRSettingsFormulaModel *_formulas);
+    ISPRModelData *setModel(SPRSpectrumZonesTableModel *_zones, SPRSettingsFormulaModel *_formulas, uint8_t* inp=nullptr, int len=DEF_SPECTRUM_DATA_BUF_LENGTH);
+    ISPRModelData *setModel(SPRSpectrumListItemsModel *_model){
+        if(_model && _model !=this){
+            zonesTableModel = _model->getZonesTableModel();
+            formulas = _model->getFormulas();
+            spectrumsModel = *_model->getSpectrumsModel();
+        }
+    }
 
     QVector<SPRSpectrumItemModel *> *getSpectrumsModel();
     SPRSpectrumItemModel *getSpectrumItem(int index){
@@ -47,8 +54,13 @@ public:
     }
     SPRSettingsFormulaModel *getFormulas() const;
     void clearGraphicsItemModel(){
-        spectrumsModel.clear();
+        clearSpectrums();
     }
+    void *clearSpectrums();
+    SPRSpectrumItemModel *setSpectrum(uint8_t *buf, int bufLentgh);
+
+signals:
+    void modelChanget();
 };
 
 #endif // SPRSPECTRUMLISTITEMSMODEL_H
