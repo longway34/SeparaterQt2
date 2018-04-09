@@ -6,7 +6,7 @@ SPRSettintsSeparate *SPRSeparateModel::getSettingsSeparate()
 }
 
 SPRSeparateModel::SPRSeparateModel(QDomDocument *_doc, ISPRModelData *parent):
-    ISPRModelData(_doc, parent), mainModel(0), gmz(), gcol(nullptr), kruch(nullptr), usl(), alg(nullptr), sep_row()
+    ISPRModelData(_doc, parent), mainModel(0), gmz(), gcol(nullptr), kruch(nullptr), usl(), alg(nullptr), sep_row(nullptr)
 {
     mainModel = new SPRMainModel(doc);
     setProperty("delete_main", QVariant(true));

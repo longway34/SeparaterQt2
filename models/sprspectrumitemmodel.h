@@ -32,6 +32,15 @@ public:
     double *time, *center;
     uint32_t *year, *month, *day, *hours, *min, *sec;
 
+    QMap<EnumElements, QVector<double>> elementsDiff;
+    QMap<EnumElements, double> elementsDispersion;
+    QMap<EnumElements, double> elementsSigma;
+    QMap<EnumElements, double> elementsAverage;
+    QMap<EnumElements, double> elementsCount;
+
+    double avr, dispersion, sigma, correl;
+    QVector<double> diff;
+
     spectumItemData(): buf(nullptr){
         setData();
     }
@@ -77,6 +86,8 @@ public:
             setProperty("delete_formulas", QVariant(false));
         }
     }
+
+    double getCorrel(SPRSpectrumItemModel *ather, bool elementsOnly = false, EnumElements _elements = Ns);
 
     ISPRModelData *setModel(SPRSpectrumZonesTableModel *_ranges, SPRSettingsFormulaModel *_formulas){
         setZonesTable(_ranges);

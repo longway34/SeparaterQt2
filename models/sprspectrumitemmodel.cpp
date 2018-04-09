@@ -33,7 +33,6 @@ void spectumItemData::setData(uint8_t *inp, uint16_t inplength)
                                     {EnumElements::Zn, Zn},
                                     {EnumElements::Mg, Mg}
                                 });
-
         year = (uint32_t*)(buf + 0x2AC); // 684
         month = (uint32_t*)(buf + 0x2B0);  // 688
         day = (uint32_t*)(buf + 0x2B4);  // 692
@@ -63,6 +62,16 @@ void SPRSpectrumItemModel::recomplite()
 {
     memset(spectrumData.Ns, 0, 6 * sizeof(uint32_t));
     *spectrumData.peak_value = 0;
+    // ***********for correlation
+    foreach (EnumElements el, zones->items[*spectrumData.thread]->elements.keys()) {
+        /*spectrumData.elementsDiff[el] = 0;*/ spectrumData.elementsAverage[el] = 0;
+        spectrumData.elementsSigma[el] = 0;
+        spectrumData.elementsCount[el] = 0;
+        spectrumData.elementsDispersion[el] = 0;
+    }
+    /*spectrumData.diff = 0;*/ spectrumData.dispersion = 0; spectrumData.sigma = 0;
+    // ********************
+
     for(int i=0; i<(DEF_SPECTRUM_DATA_LENGTH / sizeof(uint16_t)); i++){
         uint32_t val = spectrumData.spect[i];
         *spectrumData.summ += val;
@@ -71,6 +80,7 @@ void SPRSpectrumItemModel::recomplite()
             int max = zones->items[*spectrumData.thread]->elements[el].max->getData();
             if(i >= min && i < max){
                 (*(spectrumData.elementsSumm[el])) += val;
+                spectrumData.elementsCount[el]++;
             }
             if(val > *spectrumData.peak_value){
                 *spectrumData.peak = i;
@@ -79,6 +89,33 @@ void SPRSpectrumItemModel::recomplite()
         }
     }
     *spectrumData.center = *spectrumData.summ / (DEF_SPECTRUM_DATA_LENGTH / sizeof(uint16_t));
+
+// for correlation
+    foreach (EnumElements el, zones->items[*spectrumData.thread]->elements.keys()) {
+        if(spectrumData.elementsCount[el] > 0){
+            spectrumData.elementsAverage[el] = ((double)*spectrumData.elementsSumm[el]) /
+                (spectrumData.elementsCount[el]);
+        } else {
+            spectrumData.elementsAverage[el] = 0;
+        }
+    }
+    for(int i=0; i<(DEF_SPECTRUM_DATA_LENGTH / sizeof(uint16_t)); i++){
+        uint32_t val = spectrumData.spect[i];
+
+        double d = (val - *spectrumData.center);
+        spectrumData.diff.push_back(d);
+        spectrumData.dispersion += d*d;
+
+        foreach (EnumElements el, zones->items[*spectrumData.thread]->elements.keys()) {
+            int min = zones->items[*spectrumData.thread]->elements[el].min->getData();
+            int max = zones->items[*spectrumData.thread]->elements[el].max->getData();
+            if(i >= min && i < max){
+                double ed = (val - spectrumData.elementsAverage[el]);
+                spectrumData.elementsDiff[el].push_back(ed);
+                spectrumData.elementsDispersion[el] += ed * ed;
+            }
+        }
+    }
 
     double up = (double)(*spectrumData.elementsSumm[formulas->itemsModel[0]->ElementUp1->getData()]) +
             formulas->itemsModel[0]->MulUp->getData() * (*spectrumData.elementsSumm[formulas->itemsModel[0]->ElementUp2->getData()]);
@@ -116,6 +153,33 @@ void SPRSpectrumItemModel::recomplite()
         *spectrumData.H3 = up / down;
     else
         *spectrumData.H3 = 0;
+}
+
+double SPRSpectrumItemModel::getCorrel(SPRSpectrumItemModel *ather, bool elementsOnly, EnumElements _elements)
+{
+    if(ather){
+        double covr=0;
+        double sqrSummDisp = 0;
+        double correl = 0;
+        if(!elementsOnly){
+            for(int i=0; i<this->spectrumData.diff.size() && i<ather->spectrumData.diff.size();i++){
+                covr += ather->spectrumData.diff[i] * this->spectrumData.diff[i];
+            }
+            double sdiff = ather->spectrumData.dispersion * this->spectrumData.dispersion;
+            sqrSummDisp = sqrt(sdiff);
+        } else {
+            for(int i=0; i<spectrumData.elementsCount[_elements] && i<ather->spectrumData.elementsCount[_elements]; i++){
+                covr += ather->spectrumData.elementsDiff[_elements][i] * this->spectrumData.elementsDiff[_elements][i];
+            }
+            double sdiff = ather->spectrumData.elementsDispersion[_elements] * this->spectrumData.elementsDispersion[_elements];
+            sqrSummDisp = sqrt(sdiff);
+        }
+        if(sqrSummDisp > 1e-6)
+            correl = covr / sqrSummDisp;
+
+        spectrumData.correl = correl;
+        return correl;
+    }
 }
 
 void SPRSpectrumItemModel::setZonesTable(SPRSpectrumZonesTableModel *value)
@@ -216,4 +280,5 @@ SPRSpectrumItemModel::SPRSpectrumItemModel(SPRSpectrumZonesTableModel *_ranges, 
     setProperty("delete_ranges", QVariant(false));
     setProperty("delete_formulas", QVariant(false));
 }
+
 

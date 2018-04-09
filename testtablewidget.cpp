@@ -158,6 +158,12 @@ void testTableWidget::onCommandComplite(TCPCommand *_command)
             uint32_t t = getKSpectrums->getKSpectrumTime(th);
             item->setTimeScope(t);
 
+            SPRSpectrumItemModel *bItem = spectrumsBaseModel->getSpectrumItem((th) % MAX_SPR_MAIN_THREADS);
+            if(bItem){
+                double correl = item->getCorrel(bItem);
+                qDebug() << "Correl :" << correl /*<< std::endl*/;
+            }
+
 //            SPRSpectrumItemModel *mod = ui.kspectTable->addSpectrum(spec, DEF_SPECTRUM_DATA_LENGTH);
 //            ui.kspectTable->addSpectrum(spec, DEF_SPECTRUM_DATA_LENGTH, th);
 
