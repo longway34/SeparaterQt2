@@ -68,7 +68,9 @@ public:
         return res;
     }
 
-    void setThreadTimer(const uint &value, uint _timeOut = 1);
+    void setThreadTimer(const uint &value, uint _time_in_sec = 1);
+
+    virtual EnumCommands getDataType() const;
 
 protected slots:
     virtual void go(TCPCommand *_command = NULL);

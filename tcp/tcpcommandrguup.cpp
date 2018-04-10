@@ -8,6 +8,7 @@ TCPCommandRGUUp::TCPCommandRGUUp()
 TCPCommandRGUUp::TCPCommandRGUUp(ServerConnect *_server, TCPTimeOutWigget *_widget):
     TCPCommandSet(_server, _widget, {})
 {
+    this->command  = setRGUUp;
     QByteArray rguUp = QByteArray::fromRawData("\x01", 1);
 //    addCommand(new TCPCommand(getrgu2));
     TCPCommand *crgu = new TCPCommand(setrgu2); crgu->setSendData(rguUp);

@@ -13,6 +13,7 @@ TCPCommandSeparatorOn::TCPCommandSeparatorOn()
 TCPCommandSeparatorOn::TCPCommandSeparatorOn(ServerConnect *_server, TCPTimeOutWigget *_widget, SPRSettingsRentgenModel *_model)
     :TCPCommandSet(_server, _widget, {}), model(_model)
 {
+    command = setSeparatorOn;
     addCommand(new TCPCommand(initada))->
     addCommand(new TCPCommand(onsep))->
     addCommand(new TCPCommand(onosw));

@@ -28,6 +28,7 @@ TCPCommandGetSpectrums::TCPCommandGetSpectrums()
 TCPCommandGetSpectrums::TCPCommandGetSpectrums(ServerConnect *_server, TCPTimeOutWigget *_widget, SPRMainModel *_model, int _time)
     :TCPCommandSet(_server, _widget, {}), model(_model)
 {
+    command = setGetSpectrums;
     setTimeOfSpectrum(_time);
 
     char ch0 = '\0';

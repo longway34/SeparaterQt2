@@ -3,6 +3,7 @@
 
 bool IModelVariable::isIAm(IModelVariable::IsIAmData *data, QString path, QDomElement el, int count)
 {
+
     if(el.nodeName() != data->tagName){
         return false;
     } else {

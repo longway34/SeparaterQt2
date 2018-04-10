@@ -7,8 +7,12 @@
 #include "tcp/TCPCommand.h"
 #include "tcp/tcpgetspectrumsgistogramms.h"
 #include "tcp/tcpteststartseparate.h"
+
+#include "tcp/tcpteststopseparate.h"
+
 #include "tcp/tcptimeoutwigget.h"
 #include "tcp/tcplogswigtets.h"
+#include "tcp/tcpseparatego.h"
 
 class testTableWidget : public QWidget
 {
@@ -29,8 +33,12 @@ public:
 
     TCPTestStartSeparate *startSeparate;
 
-    TCPTimeOutWigget *towidget;
-    TCPLogsWigtets *logs;
+    TCPTestStopSeparate *stopSeparate;
+
+    TCPSeparateGo *separateGo;
+
+//    TCPTimeOutWigget *towidget;
+//    TCPLogsWigtets *logs;
 
 //    ISPRModelData *setModel(SPRSpectrumListItemsModel *_model, SPRFormulaItemModel *_formulas){
 //        if(_model){
@@ -44,11 +52,13 @@ public:
     void widgetsShow();
 
     void addSpectrumsModel(QFile *inp);
+    void onKSpectrumReady(TCPGetSpectrumsGistogramms *_command);
 public slots:
     void onClickAdd(bool);
     void onModelChanged();
     void onGetButtomsClick(bool);
     void onCommandComplite(TCPCommand *_command);
+    void onCommandError(TCPCommand *_command);
 private:
     Ui::testTableWidget ui;
 };

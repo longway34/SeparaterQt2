@@ -25,7 +25,7 @@ protected:
     
 public:
     TCPCommandSet();
-    TCPCommandSet(TCPTimeOutWigget *_widget): TCPTimeOutCommand(nocommand, 0, 1, _widget, "", ""){}
+//    TCPCommandSet(TCPTimeOutWigget *_widget): TCPTimeOutCommand(nocommand, 0, 1, _widget, "", ""){}
     TCPCommandSet(ServerConnect *_server, TCPTimeOutWigget *_widget, QVector<TCPCommand*> _vcomm): TCPTimeOutCommand(nocommand, 0, 1, _widget, "", ""){
         server = _server;
         addCommand(_vcomm);
@@ -47,6 +47,9 @@ public:
     
     virtual void send(ServerConnect *_server){
         server = _server;
+        if(server){
+            server->timerStop();
+        }
         go();
     }
     virtual int getErrors(){
@@ -57,6 +60,22 @@ public:
         return ret;
     }
 
+    virtual void setSendData(QByteArray sendData, EnumCommands _command = nocommand){
+        setSendData((void*)sendData.constData(), sendData.size(), _command);
+    }
+
+    virtual void setSendData(void *data, uint len, EnumCommands _command = nocommand){
+        TCPCommand *_comm;
+        if(_command == nocommand){
+            _comm = commandSet.last();
+        } else {
+            _comm = findCommands(_command).last();
+        }
+        if(_comm){
+            _comm->setSendData(data, len);
+        }
+    }
+
     virtual int getState(){
         if(commandSet.size() > 0){
             return commandSet.last()->getState();
@@ -64,7 +83,6 @@ public:
             return nocommand;
         }
     }
-
     virtual int getState(EnumCommands _comm){
         if(_comm == lastcommand){
             return getState();

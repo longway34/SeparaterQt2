@@ -36,7 +36,7 @@ protected:
     
 public:
     TCPTimeOutCommand();
-    TCPTimeOutCommand(EnumCommands _command, uint _timeout = 0, uint parts = 1, TCPTimeOutWigget *_widget = NULL, QString _title = "", QString _message = "");
+    TCPTimeOutCommand(EnumCommands _command, uint _timeout_in_msec = 0, uint parts = 1, TCPTimeOutWigget *_widget = NULL, QString _title = "", QString _message = "");
     virtual ~TCPTimeOutCommand();
     virtual void setReplayData(QByteArray replayData);
 

@@ -17,7 +17,7 @@
 #include <QByteArray>
 #include <QString>
 
-typedef enum _tcp_commands: char{
+typedef enum _tcp_commands: unsigned char{
             getstate    = 0x0A,
             testim      = 0x0B,
             initada     = 0x0C,
@@ -61,9 +61,28 @@ typedef enum _tcp_commands: char{
                     
             lastcommand         = 0x7D,
             timeoutcommand      = 0x7E,
-            nocommand           = 0x7F
+            nocommand           = 0x7F,
+
+            setRentgenOn        = 0x80,
+            setRGUUpDown        = 0x81,
+            setStartPitatel     = 0x82,
+            setStopPitatel      = 0x83,
+            setGetSpectrumsGistorfamms  =0x84,
+            setStartStopIMS    =0x85,
+            setStartRudospusk   =0x86,
+            setStartStopSeparate = 0x87,
+            setTestStartSeparate = 0x88,
+            setGetSpectrums      = 0x89,
+            setRGUUp             = 0x8A,
+            setSeparatorOn       = 0x8B,
+            setStopRudospuk      = 0x8C,
+            setGetRentgenParams  = 0x8D,
+            setTestStopSeparate  = 0x8E,
+            setSeparateGo        = 0x8F
+
 } EnumCommands;
 
+typedef QMap<EnumCommands, QString> TCPPseudoName;
 
 class ITCPCommand :public QObject{
     

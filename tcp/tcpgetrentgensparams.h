@@ -13,7 +13,7 @@ public:
     TCPGetRentgensParams(ServerConnect *_server) :
         TCPCommandSet(_server, nullptr, {}), rentgens(DEF_SPR_MAIN_RENTGENS)
     {
-
+        command = setGetRentgenParams;
     }
 
     uint getVARentgen(bool VA, int num = -1){

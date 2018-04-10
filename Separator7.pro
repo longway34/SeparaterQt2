@@ -111,7 +111,9 @@ SOURCES += \
     tcp/tcpgetspectrumsgistogramms.cpp \
     tcp/tcpgetrentgensparams.cpp \
     sprspectrumsmalltable.cpp \
-    tcp/tcpteststartseparate.cpp
+    tcp/tcpteststartseparate.cpp \
+    tcp/tcpteststopseparate.cpp \
+    tcp/tcpseparatego.cpp
 
 HEADERS += \
     _types.h \
@@ -193,7 +195,9 @@ HEADERS += \
     tcp/tcpgetspectrumsgistogramms.h \
     tcp/tcpgetrentgensparams.h \
     sprspectrumsmalltable.h \
-    tcp/tcpteststartseparate.h
+    tcp/tcpteststartseparate.h \
+    tcp/tcpteststopseparate.h \
+    tcp/tcpseparatego.h
 
 FORMS += \
     sprsettingsrentgenmainwidget.ui \

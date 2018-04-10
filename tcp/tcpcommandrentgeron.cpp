@@ -13,18 +13,20 @@ TCPCommandRentgerOn::TCPCommandRentgerOn()
 TCPCommandRentgerOn::TCPCommandRentgerOn(ServerConnect *_server, TCPTimeOutWigget *_widget, SPRSettingsRentgenModel *_model):
     TCPCommandSet(_server, _widget, {}), model(_model)
 {
-    rentgenNum = DEF_SPR_MAIN_RENTGENS;
+    command = setRentgenOn;
+    rentgenNum = 1; /* DEF_SPR_MAIN_RENTGENS;*/
     addCommand(new TCPCommand(onren)); // 0
-    addCommand(new TCPTimeOutCommand(timeoutcommand, DEF_SPR_RENTGEN_TIME_ON_RA*1000, 5, widget, tr("Включение рентгена."), tr("Ожидание включения рентгена.")));
+    addCommand(new TCPTimeOutCommand(timeoutcommand, DEF_SPR_RENTGEN_TIME_ON_RA*1000, 50, widget, tr("Включение рентгена."), tr("Разогрев трубок...")));
     addCommand(new TCPCommand(nocommand)); // 2
 
     addCommand(new TCPCommand(setren)); // 3
-    addCommand(new TCPTimeOutCommand(timeoutcommand, 2000, 5, widget, tr("Включение рентгена."), tr("Установка значений тока и напряжения."))); // 4
+    addCommand(new TCPTimeOutCommand(timeoutcommand, 2000, 5, widget, tr("Включение рентгена."), tr("Установка значений рентгена."))); // 4
 
     addCommand(new TCPCommand(setudeu)); // 5
     addCommand(new TCPTimeOutCommand(timeoutcommand, 2000, 5, widget, tr("Включение рентгена."), tr("Установка кодов ДЭУ."))); // 4
     addCommand(new TCPCommand(setptdeu)); // 7
     addCommand(new TCPTimeOutCommand(timeoutcommand, 2000, 5, widget, tr("Включение рентгена."), tr("Установка кодов СР."))); // 4
+    addCommand(new TCPTimeOutCommand(timeoutcommand, DEF_SPR_RENTGEN_TIME_ON_RA*1000*2, 50, widget, tr("Включение рентгена."), tr("Разогрев трубок...")));
 
 //    addCommand(new TCPCommand(setudeu));
 //    addCommand(new TCPTimeOutCommand(timeoutcommand, 500, 1));
@@ -42,10 +44,10 @@ void TCPCommandRentgerOn::go(TCPCommand *_command)
         uint16_t d = DEF_SPR_RENTGEN_DEU_CODE;
         uint16_t cp = DEF_SPR_RENTGEN_CP_CODE;
         uint8_t threads = DEF_SPR_MAIN_THREADS;
-        rentgenNum = DEF_SPR_MAIN_RENTGENS;
+        rentgenNum = 1 /*DEF_SPR_MAIN_RENTGENS*/;
         if(model){
             threads = model->getThreads()->getData();
-            rentgenNum = model->getRentgens()->getData();
+//            rentgenNum = model->getRentgens()->getData();
         }
         for(uint8_t i=0; i<threads; i++){
             if(model){

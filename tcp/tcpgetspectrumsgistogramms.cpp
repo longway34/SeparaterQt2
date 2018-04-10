@@ -1,8 +1,8 @@
 #include "tcpgetspectrumsgistogramms.h"
 
-void TCPGetSpectrumsGistogramms::setThreadTimer(const uint &value, uint _timeOut)
+void TCPGetSpectrumsGistogramms::setThreadTimer(const uint &value, uint _time_in_sec)
 {
-    threadNum = value; tTimeOut = _timeOut;
+    threadNum = value; tTimeOut = _time_in_sec;
     for(int i=0; i< commandSet.size(); i++){
         delete commandSet[i];
     }
@@ -16,7 +16,7 @@ void TCPGetSpectrumsGistogramms::setThreadTimer(const uint &value, uint _timeOut
 //           data.append((char*)&tArg, sizeof(tArg));
            setRen->setSendData(&tArg, sizeof(tArg));
            addCommand(setRen);
-           addCommand(new TCPTimeOutCommand(timeoutcommand, tTimeOut+2, tTimeOut, this->widget, tr("Накопление спектра"), tr("Накопление спектра")));
+           addCommand(new TCPTimeOutCommand(timeoutcommand, tTimeOut*1000+2000, tTimeOut, this->widget, tr("Накопление спектра"), tr("Накопление спектра")));
        }
        for(uint8_t i=0; i<threadNum; i++){
            TCPCommand *comm = new TCPCommand(dataType);
@@ -29,6 +29,11 @@ void TCPGetSpectrumsGistogramms::setThreadTimer(const uint &value, uint _timeOut
 
 }
 
+EnumCommands TCPGetSpectrumsGistogramms::getDataType() const
+{
+    return dataType;
+}
+
 TCPGetSpectrumsGistogramms::TCPGetSpectrumsGistogramms()
 {
 }
@@ -36,6 +41,7 @@ TCPGetSpectrumsGistogramms::TCPGetSpectrumsGistogramms()
 TCPGetSpectrumsGistogramms::TCPGetSpectrumsGistogramms(ServerConnect *_server, EnumCommands _dataType, TCPTimeOutWigget *_widget, uint _threads):
     TCPCommandSet(_server, _widget, {}), threadNum(_threads), dataType(_dataType)
 {
+    command = setGetSpectrumsGistorfamms;
     setThreadTimer(threadNum);
 }
 

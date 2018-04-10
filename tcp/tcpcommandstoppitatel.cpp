@@ -8,6 +8,7 @@ TCPCommandStopPitatel::TCPCommandStopPitatel()
 TCPCommandStopPitatel::TCPCommandStopPitatel(ServerConnect *_server, TCPTimeOutWigget *_widget):
     TCPCommandSet(_server, _widget, {})
 {
+    command = setStopPitatel;
     addCommand(new TCPCommand(stoppuw));
 }
 

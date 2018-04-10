@@ -262,7 +262,7 @@ void SPRTestIMSWidget::onCommand(bool){
             return;
         }
         if(sender() == ui.bGetSpectrum){
-            getSpectrumsCommand->setThreadTimer(model->getSettingsMainModel()->getThreads()->getData(), 5);
+            getSpectrumsCommand->setThreadTimer(model->getSettingsMainModel()->getThreads()->getData(), 5000);
             getSpectrumsCommand->send(model->getServer());
             return;
         }

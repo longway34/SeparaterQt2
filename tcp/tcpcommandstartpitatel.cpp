@@ -9,6 +9,7 @@ TCPCommandStartPitatel::TCPCommandStartPitatel()
 TCPCommandStartPitatel::TCPCommandStartPitatel(ServerConnect *_server, TCPTimeOutWigget *_widget):
     TCPCommandSet(_server, _widget, {})
 {
+    command = setStartPitatel;
     addCommand(new TCPCommand(getrgu2))->addCommand(new TCPCommand(setpuw))->addCommand(new TCPCommand(startpuw));
 //    percents = 44;
 }

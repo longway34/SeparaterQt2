@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>975</width>
-    <height>576</height>
+    <width>1108</width>
+    <height>689</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,7 @@
     <rect>
      <x>10</x>
      <y>30</y>
-     <width>371</width>
+     <width>451</width>
      <height>171</height>
     </rect>
    </property>
@@ -26,8 +26,8 @@
   <widget class="QComboBox" name="cbThread">
    <property name="geometry">
     <rect>
-     <x>770</x>
-     <y>100</y>
+     <x>940</x>
+     <y>98</y>
      <width>161</width>
      <height>31</height>
     </rect>
@@ -66,7 +66,7 @@
     <rect>
      <x>10</x>
      <y>380</y>
-     <width>971</width>
+     <width>1091</width>
      <height>192</height>
     </rect>
    </property>
@@ -179,8 +179,8 @@
   <widget class="QPushButton" name="bGetGist">
    <property name="geometry">
     <rect>
-     <x>770</x>
-     <y>70</y>
+     <x>940</x>
+     <y>68</y>
      <width>161</width>
      <height>31</height>
     </rect>
@@ -192,8 +192,8 @@
   <widget class="QPushButton" name="bGETSepar">
    <property name="geometry">
     <rect>
-     <x>770</x>
-     <y>40</y>
+     <x>940</x>
+     <y>38</y>
      <width>161</width>
      <height>31</height>
     </rect>
@@ -205,8 +205,8 @@
   <widget class="QPushButton" name="bGetKSPK">
    <property name="geometry">
     <rect>
-     <x>770</x>
-     <y>10</y>
+     <x>940</x>
+     <y>8</y>
      <width>161</width>
      <height>31</height>
     </rect>
@@ -218,8 +218,8 @@
   <widget class="QPushButton" name="bSetSepar">
    <property name="geometry">
     <rect>
-     <x>770</x>
-     <y>130</y>
+     <x>940</x>
+     <y>128</y>
      <width>161</width>
      <height>31</height>
     </rect>
@@ -231,8 +231,8 @@
   <widget class="QPushButton" name="bStartSepar">
    <property name="geometry">
     <rect>
-     <x>770</x>
-     <y>170</y>
+     <x>940</x>
+     <y>158</y>
      <width>161</width>
      <height>25</height>
     </rect>
@@ -244,9 +244,9 @@
   <widget class="SPRSpectrumGraphicsWidget" name="kSpertGraphic" native="true">
    <property name="geometry">
     <rect>
-     <x>390</x>
+     <x>470</x>
      <y>30</y>
-     <width>371</width>
+     <width>461</width>
      <height>171</height>
     </rect>
    </property>
@@ -267,7 +267,7 @@
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>410</x>
+     <x>470</x>
      <y>10</y>
      <width>67</width>
      <height>17</height>
@@ -282,7 +282,7 @@
     <rect>
      <x>580</x>
      <y>220</y>
-     <width>391</width>
+     <width>521</width>
      <height>151</height>
     </rect>
    </property>
@@ -291,6 +291,39 @@
    </property>
    <property name="selectionBehavior">
     <enum>QAbstractItemView::SelectRows</enum>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="bStopSepar">
+   <property name="geometry">
+    <rect>
+     <x>940</x>
+     <y>180</y>
+     <width>161</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Stop Separ</string>
+   </property>
+  </widget>
+  <widget class="TCPLogsWigtets" name="logWidget" native="true">
+   <property name="geometry">
+    <rect>
+     <x>9</x>
+     <y>580</y>
+     <width>731</width>
+     <height>101</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="TCPTimeOutWigget" name="towidget" native="true">
+   <property name="geometry">
+    <rect>
+     <x>750</x>
+     <y>580</y>
+     <width>351</width>
+     <height>101</height>
+    </rect>
    </property>
   </widget>
  </widget>
@@ -310,6 +343,18 @@
    <class>SPRSpectrumSmallTable</class>
    <extends>QTableWidget</extends>
    <header>sprspectrumsmalltable.h</header>
+  </customwidget>
+  <customwidget>
+   <class>TCPLogsWigtets</class>
+   <extends>QWidget</extends>
+   <header>tcp/tcplogswigtets.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>TCPTimeOutWigget</class>
+   <extends>QWidget</extends>
+   <header>tcp/tcptimeoutwigget.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

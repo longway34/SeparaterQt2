@@ -26,12 +26,18 @@ void TCPCommandSet::go(TCPCommand* _command){
         if(num < commandSet.size() - 1){
             commandSet[num+1]->send(server);
         } else {
+            if(server){
+                server->timerStart();
+            }
             emit commandComplite(this);
         }
     } else {
         if(commandSet.size() > 0){
             commandSet[0]->send(server);
         } else {
+            if(server){
+                server->timerStart();
+            }
             emit commandComplite(this);
         }
     }

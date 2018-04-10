@@ -8,6 +8,7 @@ TCPStopRudostuskCommand::TCPStopRudostuskCommand()
 TCPStopRudostuskCommand::TCPStopRudostuskCommand(ServerConnect *_server, TCPTimeOutWigget *_widget)
     :TCPCommandSet(_server, _widget, {})
 {
+    command = setStopRudospuk;
     addCommand(new TCPCommandStopPitatel(_server, _widget));
     addCommand(new TCPCommand(offiw));
 }

@@ -1,6 +1,8 @@
 #include "testtablewidget.h"
 #include "models/sprspectrumlistitemsmodel.h"
 #include <QFile>
+#include <QMessageBox>
+
 
 testTableWidget::testTableWidget(QWidget *parent) :
     QWidget(parent), mainModel(nullptr), separateModel(nullptr)
@@ -20,16 +22,24 @@ testTableWidget::testTableWidget(QWidget *parent) :
     connect(ui.bSetSepar,  SIGNAL(clicked(bool)), this, SLOT(onGetButtomsClick(bool)));
 
     connect(ui.bStartSepar, SIGNAL(clicked(bool)), this, SLOT(onGetButtomsClick(bool)));
+    connect(ui.bStopSepar, SIGNAL(clicked(bool)), this, SLOT(onGetButtomsClick(bool)));
     
     connect(getSeparate, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
     connect(setSeparate, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
 
-    towidget = new TCPTimeOutWigget(this);
+    ui.towidget->setVisible(false);
 
     ui.baseGrapthics->getCanvas()->setAxisScale(QwtPlot::Axis::xBottom, 0, 256, 25);
     ui.kSpertGraphic->getCanvas()->setAxisScale(QwtPlot::Axis::xBottom, 0, 256, 25);
 
-    startSeparate = new TCPTestStartSeparate(nullptr, towidget);
+    startSeparate = new TCPTestStartSeparate(nullptr, ui.towidget);
+    TCPCommand *getRen = startSeparate->findCommands(getren).last();
+    connect(getRen, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
+    connect(startSeparate, SIGNAL(errorCommand(TCPCommand*)), this, SLOT(onCommandError(TCPCommand*)));
+
+
+    stopSeparate = new TCPTestStopSeparate(ui.towidget);
+    connect(stopSeparate, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
 }
 
 ISPRModelData *testTableWidget::setModel(SPRMainModel *_model){
@@ -54,6 +64,13 @@ ISPRModelData *testTableWidget::setModel(SPRMainModel *_model){
 
         startSeparate->setSeparateModel(separateModel);
         connect(startSeparate, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
+        connect(startSeparate, SIGNAL(errorCommand(TCPCommand*)), this, SLOT(onCommandError(TCPCommand*)));
+        QVector<TCPCommand*> vcomm = startSeparate->findCommands(setGetSpectrumsGistorfamms);
+        for(int i=0; i<vcomm.size();i++){
+            connect(((TCPGetSpectrumsGistogramms*)vcomm[i]), SIGNAL(commandComplite(TCPCommand*)), SLOT(onCommandComplite(TCPCommand*)));
+        }
+
+
     }
 
     //        model->setModel(_model);
@@ -133,8 +150,32 @@ void testTableWidget::onGetButtomsClick(bool)
         if(sender() == ui.bStartSepar){
             startSeparate->send(mainModel->getServer());
         }
+        if(sender() == ui.bStopSepar){
+            stopSeparate->send(mainModel->getServer());
+        }
     }
 }
+
+void testTableWidget::onKSpectrumReady(TCPGetSpectrumsGistogramms *_command){
+    QVector<TCPCommand*> vkspect = _command->findCommands(getkspk);
+    for(int th=0; th<vkspect.size();th++){
+        QByteArray res = _command->getKSpectrumData(th);
+        uint8_t *spec = (uint8_t*)(res.left(DEF_SPECTRUM_DATA_LENGTH).constData());
+
+        SPRSpectrumItemModel *item = kSpectrumsModel->addSpectrum(spec, DEF_SPECTRUM_DATA_LENGTH);
+        uint32_t t = _command->getKSpectrumTime(th);
+        item->setTimeScope(t);
+        if(spectrumsBaseModel){
+            SPRSpectrumItemModel *bItem = spectrumsBaseModel->getSpectrumItem((th % spectrumsBaseModel->getSpectrumsModel()->size()));
+            if(bItem){
+                double correl = item->getCorrel(bItem);
+                qDebug() << "Correl :" << correl /*<< std::endl*/;
+            }
+        }
+    }
+
+}
+
 
 void testTableWidget::onCommandComplite(TCPCommand *_command)
 {
@@ -148,27 +189,43 @@ void testTableWidget::onCommandComplite(TCPCommand *_command)
         widgetsShow();
         return;
     }
+    if(_command->getDataType() == getsepar){
+        QByteArray res = getSeparate->getReplayData();
+        separateModel->addWorkSeparateData(res);
+        widgetsShow();
+        return;
+    }
     if(sender() == getKSpectrums){
         kSpectrumsModel->clearSpectrums();
-        for(uint th=0; th<MAX_SPR_MAIN_THREADS; th++){
-            QByteArray res = getKSpectrums->getKSpectrumData(th);
-            uint8_t *spec = (uint8_t*)(res.left(DEF_SPECTRUM_DATA_LENGTH).constData());
+//        for(uint th=0; th<MAX_SPR_MAIN_THREADS; th++){
+//            QByteArray res = getKSpectrums->getKSpectrumData(th);
+//            uint8_t *spec = (uint8_t*)(res.left(DEF_SPECTRUM_DATA_LENGTH).constData());
 
-            SPRSpectrumItemModel *item = kSpectrumsModel->addSpectrum(spec, DEF_SPECTRUM_DATA_LENGTH);
-            uint32_t t = getKSpectrums->getKSpectrumTime(th);
-            item->setTimeScope(t);
+//            SPRSpectrumItemModel *item = kSpectrumsModel->addSpectrum(spec, DEF_SPECTRUM_DATA_LENGTH);
+//            uint32_t t = getKSpectrums->getKSpectrumTime(th);
+//            item->setTimeScope(t);
 
-            SPRSpectrumItemModel *bItem = spectrumsBaseModel->getSpectrumItem((th) % MAX_SPR_MAIN_THREADS);
-            if(bItem){
-                double correl = item->getCorrel(bItem);
-                qDebug() << "Correl :" << correl /*<< std::endl*/;
-            }
+//            SPRSpectrumItemModel *bItem = spectrumsBaseModel->getSpectrumItem((th) % MAX_SPR_MAIN_THREADS);
+//            if(bItem){
+//                double correl = item->getCorrel(bItem);
+//                qDebug() << "Correl :" << correl /*<< std::endl*/;
+//            }
 
 //            SPRSpectrumItemModel *mod = ui.kspectTable->addSpectrum(spec, DEF_SPECTRUM_DATA_LENGTH);
 //            ui.kspectTable->addSpectrum(spec, DEF_SPECTRUM_DATA_LENGTH, th);
 
 //            ui.kSpertGraphic->setModel(ui.kspectTable->getModels());
-        }
+//        }
+
+
+        onKSpectrumReady(getKSpectrums);
+        ui.kSpertGraphic->setVisibleAll();
+        widgetsShow();
+        return;
+    }
+    if(_command->getDataType() == getkspk){
+        kSpectrumsModel->clearSpectrums();
+        onKSpectrumReady((TCPGetSpectrumsGistogramms*)_command);
         ui.kSpertGraphic->setVisibleAll();
         widgetsShow();
         return;
@@ -178,6 +235,7 @@ void testTableWidget::onCommandComplite(TCPCommand *_command)
     }
     if(sender() == startSeparate){
         spectrumsBaseModel->clearSpectrums();
+
 //        for(uint th=0;th<MAX_SPR_MAIN_THREADS; th++){
         QVector<TCPCommand*> vspk = startSeparate->findCommands(getspk);
         for(int i=0; i<vspk.size();i++){
@@ -187,8 +245,38 @@ void testTableWidget::onCommandComplite(TCPCommand *_command)
         }
 //            ui.baseTable->setModel(spectrumsBaseModel);
 //        }
+
         ui.baseGrapthics->setVisibleAll();
         widgetsShow();
+        return;
+    }
+    if(sender() == stopSeparate){
+        ui.logWidget->onLogsCommand(startSeparate, "Сепаратор остановлен...");
+        return;
+    }
+    if(_command){
+        if(_command->getCommand() == getren){
+            QByteArray res = _command->getReplayData();
+            uint16_t mka, v;
+            memcpy(&v, res.constData()+1, sizeof(v));
+            memcpy(&mka, res.constData()+3, sizeof(mka));
+
+            ui.logWidget->onLogsCommand(_command, "return: v="+QString::number(v, 16)+" mka="+QString::number(mka, 16));
+            return;
+        }
+    }
+}
+
+void testTableWidget::onCommandError(TCPCommand *_command)
+{
+    if(sender() == startSeparate){
+        uint16_t kV, mka;
+        QByteArray res = _command->getReplayData();
+        memcpy(&kV, res.constData()+1, sizeof(kV));
+        memcpy(&mka, res.constData()+3, sizeof(mka));
+        QString msg = QString(tr("Ошибка...\nРентген не вышел на рабочий режим kV=0x%1, mka=0x%2 < 0х600")).
+                arg(QString::number(kV, 16)).arg(QString::number(mka, 16));
+        ui.logWidget->onErrorLogsCommand(msg);
         return;
     }
 }

@@ -16,6 +16,8 @@ public slots:
     void onClear(bool);
     void onLogsCommand(TCPCommand *command);
     void onLogsCommand(TCPCommand *command, QString msg);
+    void onLogsCommand(QString msg);
+    void onErrorLogsCommand(QString msg, TCPCommand *command = nullptr);
 private:
 };
 

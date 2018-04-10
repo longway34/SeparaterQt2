@@ -20,6 +20,8 @@ public:
 
 protected slots:
     virtual void go(TCPCommand *_command = NULL);
+signals:
+    void errorSetRentgenCommand(TCPCommand *);
 };
 
 #endif // TCPCOMMANDRENTGERON_H

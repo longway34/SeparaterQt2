@@ -46,13 +46,14 @@ public:
         return replayData.size();
     }
 
-    void setSendData(QByteArray sendData) {
+    virtual void setSendData(QByteArray sendData) {
         this->sendData = sendData;
     }
 
-    void setSendData(void *data, uint len){
-        QByteArray ba; ba.append((char*)data, len);
-        this->sendData = ba;
+    virtual void setSendData(void *data, uint len){
+        QByteArray ba;
+        ba.append((char*)data, len);
+        setSendData(ba);
     }
 
     QByteArray getSendData() {
@@ -98,6 +99,9 @@ public:
         return res;
     }
 
+    virtual EnumCommands getDataType(){
+        return command;
+    }
     virtual QVector<TCPCommand*> findCommands(EnumCommands _command=lastcommand){
         if(_command == lastcommand){
             return QVector<TCPCommand*>({this});

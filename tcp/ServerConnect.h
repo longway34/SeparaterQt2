@@ -149,13 +149,16 @@ public:
 //        connect(this, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
         connect(this, SIGNAL(addData()), this, SLOT(queueComplite()));
         getStateCommand = new getCommand(getstate);
-        toGetStateCommand.setInterval(10000);
+        toGetStateCommand.setInterval(25000);
         connect(&toGetStateCommand, SIGNAL(timeout()), this, SLOT(onTimeOutGetState()));
         toGetStateCommand.start();
 
     }
     virtual ~ServerConnect();
     
+    void timerStart(){toGetStateCommand.start();}
+    void timerStop(){toGetStateCommand.start();}
+
     void addSendCommand(ITCPCommand* _sender);
     void setPort(uint16_t port);
     uint16_t getPort() const;

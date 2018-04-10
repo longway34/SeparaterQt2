@@ -17,6 +17,7 @@ TCPCommandRGUUpDown::TCPCommandRGUUpDown()
 TCPCommandRGUUpDown::TCPCommandRGUUpDown(ServerConnect *_server, TCPTimeOutWigget *_widget, bool _upDown):
     TCPCommandSet(_server, _widget, {}), upDown(_upDown)
 {
+    this->command = setRGUUpDown;
     QByteArray rguUpDown;
     char chDown = '\02', chUp = '\01';
     if(upDown){
