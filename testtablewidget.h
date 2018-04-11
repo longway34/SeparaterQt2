@@ -37,6 +37,11 @@ public:
 
     TCPSeparateGo *separateGo;
 
+    TCPGetSpectrumsGistogramms *getBaseSpectrumCommand;
+    TCPGetSpectrumsGistogramms *kspecCommand;
+    TCPGetSpectrumsGistogramms *hiskCommand;
+    TCPCommand *getseparCommand;
+
 //    TCPTimeOutWigget *towidget;
 //    TCPLogsWigtets *logs;
 

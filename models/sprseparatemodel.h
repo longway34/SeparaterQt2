@@ -108,6 +108,10 @@ public:
             SPRWorkSeparate *str = (SPRWorkSeparate*)malloc(sizeof(SPRWorkSeparate));
             fullWorkSeparate(str, rawData);
             workSeparate.push_front(str);
+            if(workSeparate.size() > 4){
+                delete workSeparate[workSeparate.size()-1];
+                workSeparate.pop_back();
+            }
         }
     }
 

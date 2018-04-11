@@ -16,7 +16,7 @@
 TCPTimeOutCommand::TCPTimeOutCommand(): TCPCommand() {
     parts = 0;
     timeout = 0;
-    command = nocommand;
+    command = timeoutcommand;
 }
 
 TCPTimeOutCommand::TCPTimeOutCommand(EnumCommands _command, uint _timeout_in_msec, uint _parts, TCPTimeOutWigget *_widget, QString _title, QString _message):
@@ -68,5 +68,6 @@ TCPTimeOutCommand::~TCPTimeOutCommand() {
 void TCPTimeOutCommand::setTimeOut(int _timeout)
 {
     timeout = _timeout;
+    timer.setInterval(timeout);
     countParts = 0;
 }

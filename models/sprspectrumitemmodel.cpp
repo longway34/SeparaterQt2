@@ -88,7 +88,21 @@ void SPRSpectrumItemModel::recomplite()
             }
         }
     }
+    uint RS = 0; int ch= *spectrumData.peak; int hsumm = round(((double)(*spectrumData.peak_value)) / 2.);
+
+    while(spectrumData.spect[ch] < hsumm){
+        RS++; ch--;
+        if(ch < 0) break;
+    }
+    ch= *spectrumData.peak + 1;
+    if(ch < (DEF_SPECTRUM_DATA_LENGTH / sizeof(uint16_t)));
+    while(spectrumData.spect[ch] < hsumm){
+          RS++; ch++;
+          if(ch >= (DEF_SPECTRUM_DATA_LENGTH / sizeof(uint16_t))) break;
+    }
+
     *spectrumData.center = *spectrumData.summ / (DEF_SPECTRUM_DATA_LENGTH / sizeof(uint16_t));
+    *spectrumData.Rs = RS;
 
 // for correlation
     foreach (EnumElements el, zones->items[*spectrumData.thread]->elements.keys()) {

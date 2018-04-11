@@ -16,6 +16,26 @@ void TCPSeparateGo::setModel(SPRMainModel *value)
     }
 }
 
+void TCPSeparateGo::setLogWidget(TCPLogsWigtets *value)
+{
+    logWidget = value;
+}
+
+TCPGetSpectrumsGistogramms *TCPSeparateGo::getKspectCommand() const
+{
+    return kspectCommand;
+}
+
+TCPGetSpectrumsGistogramms *TCPSeparateGo::getHistCommand() const
+{
+    return histCommand;
+}
+
+TCPCommand *TCPSeparateGo::getGetseparCommand() const
+{
+    return getseparCommand;
+}
+
 TCPSeparateGo::TCPSeparateGo()
 {
 
@@ -26,39 +46,42 @@ TCPSeparateGo::TCPSeparateGo(TCPLogsWigtets *log):
 {
 
     command = setSeparateGo;
+    setTimeOut(1000);
 
-    addCommand(new TCPTimeOutCommand(timeoutcommand, 1000));
+//    addCommand(new TCPTimeOutCommand(timeoutcommand, 1000));
     addCommand(new TCPCommand(getstate));
-    addCommand(new TCPCommand(getsepar));
-    addCommand(new TCPGetSpectrumsGistogramms(nullptr, getkspk));
-    addCommand(new TCPGetSpectrumsGistogramms(nullptr, getgist));
-    addCommand(new TCPCommand(nocommand));
+    getseparCommand = new TCPCommand(getsepar);
+    addCommand(getseparCommand);
+    kspectCommand = new TCPGetSpectrumsGistogramms(nullptr, getkspk);
+    addCommand(kspectCommand);
+    histCommand = new TCPGetSpectrumsGistogramms(nullptr, getgist);
+    addCommand(histCommand);
+//    addCommand(new TCPCommand(nocommand));
 }
 
 void TCPSeparateGo::go(TCPCommand *_command)
 {
     if(!_command){
         toCount = 0;
-
         commandSet[0]->send(server);
+        timer.start();
+        return;
     } else {
-        if(_command->getCommand() == timeoutcommand){
-            toCount++; if(toCount > 1000000) toCount = 1;
-        }
+//        if(_command->getCommand() == timeoutcommand){
+//            toCount++; if(toCount > 1000000) toCount = 1;
+//        }
         if(_command->getCommand() == getstate){
-            struct {uint8_t state;
-                    uint8_t error;} state;
             QByteArray res = _command->getReplayData();
-            memcpy(&state, res.constData(), sizeof(state));
+            memcpy(&stateResult, res.constData(), sizeof(stateResult));
             uint tick;
-            if(state.error == 0 && state.state == 0x02){
+            if(stateResult.error == 0 && stateResult.state == 0x02){
                 if(model){
                     tick = model->getSettingsControlModel()->tMeassureForData->getData();
                 } else {
                     tick = DEF_SPR_CONTROL_T_MEASSURE_FOR_DATA;
                 }
                 if(toCount % tick == 0){
-                     findCommands(getsepar).first()->send(server);
+                     getseparCommand->send(server);
                 }
 
                 if(model){
@@ -67,7 +90,7 @@ void TCPSeparateGo::go(TCPCommand *_command)
                     tick = DEF_SPR_CONTROL_T_MEASSURE_FOR_SPECTRUM;
                 }
                 if(toCount % tick == 0){
-                    findCommands(setGetSpectrumsGistorfamms).first()->send(server);
+                    kspectCommand->send(server);
                 }
 
                 if(model){
@@ -76,38 +99,55 @@ void TCPSeparateGo::go(TCPCommand *_command)
                     tick = DEF_SPR_CONTROL_T_MEASSURE_FOR_HISTOGRAMM;
                 }
                 if(toCount % tick == 0){
-                    findCommands(setGetSpectrumsGistorfamms).last()->send(server);
+                    histCommand->send(server);
                 }
-                commandSet[0]->send(server);
+//                commandSet[0]->send(server);
                 return;
             } else {
-                findCommands(nocommand).last()->send(server);
+                if(logWidget){
+                    logWidget->onLogsCommand(_command, tr("Сепарация завершена..."));
+                }
+                timer.stop();
+                server->timerStart();
+                emit commandComplite(this);
             }
         }
-        if(_command->getCommand() == getsepar){
+        if(_command == getseparCommand){
             if(logWidget){
                logWidget->onLogsCommand("separate data ready...");
             }
-//            emit separateDataReady(_command);
-            commandSet[0]->send(server);
+//            emit commandComplite(_command);
+//            commandSet[0]->send(server);
             return;
         }
-        if(_command == findCommands(setGetSpectrumsGistorfamms).first()){
-//            emit kspectrumsDataReady(_command);
+        if(_command == kspectCommand){
             if(logWidget){
                logWidget->onLogsCommand("kspectrums data ready...");
             }
-            commandSet[0]->send(server);
+//            emit commandComplite(_command);
+//            commandSet[0]->send(server);
             return;
         }
-        if(_command == findCommands(setGetSpectrumsGistorfamms).last()){
-//            emit gistogrammsDataReady(_command);
+        if(_command == histCommand){
             if(logWidget){
                logWidget->onLogsCommand("historgamms data ready...");
             }
-            commandSet[0]->send(server);
+//            emit commandComplite(_command);
+//            commandSet[0]->send(server);
             return;
         }
     }
-    TCPCommandSet::go(_command);
+//    TCPCommandSet::go(_command);
+}
+
+void TCPSeparateGo::onTimeOut()
+{
+    toCount++; if(toCount > 1000000) toCount = 1;
+    dtime = QDateTime::currentDateTime();
+    sdt = dtime.toString("hh:mm:ss");
+
+//    qDebug() << "next:" << sdt << "time:" << this->timeout << " parts:" << this->parts << "timer:" << timer.interval();
+
+    findCommands(getstate).last()->send(server);
+    return;
 }

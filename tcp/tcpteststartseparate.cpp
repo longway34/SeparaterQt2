@@ -6,6 +6,16 @@
 #include <QMessageBox>
 
 
+TCPSeparateGo *TCPTestStartSeparate::getSeparateGoCommand() const
+{
+    return separateGoCommand;
+}
+
+TCPGetSpectrumsGistogramms *TCPTestStartSeparate::getGetBaseSpectrumCommand() const
+{
+    return getBaseSpectrumCommand;
+}
+
 TCPTestStartSeparate::TCPTestStartSeparate(ServerConnect *_server, TCPTimeOutWigget *_widget, TCPLogsWigtets *log):
     TCPCommandSet(server, _widget, {}), separateModel(nullptr)
 {
@@ -28,15 +38,18 @@ TCPTestStartSeparate::TCPTestStartSeparate(ServerConnect *_server, TCPTimeOutWig
 //    addCommand(new TCPTimeOutCommand(timeoutcommand, ))
 
 
-    TCPGetSpectrumsGistogramms *spect = new TCPGetSpectrumsGistogramms(_server, getspk, _widget);
-    spect->setThreadTimer(MAX_SPR_MAIN_THREADS, 1);
-    addCommand(spect); // 10
+    getBaseSpectrumCommand = new TCPGetSpectrumsGistogramms(_server, getspk, _widget);
+    getBaseSpectrumCommand->setThreadTimer(MAX_SPR_MAIN_THREADS, 1);
+    addCommand(getBaseSpectrumCommand); // 10
 
     addCommand(new TCPCommand(setsepar)); // 11
     addCommand(new TCPCommand(startsep)); // 12
     addCommand(new TCPTimeOutCommand(timeoutcommand, 2000));
 
-    addCommand(new TCPSeparateGo(log));
+    separateGoCommand = new TCPSeparateGo(log);
+//    separateGoCommand->setLogWidget(log);
+    addCommand(separateGoCommand);
+
 
     addCommand(new TCPCommand(nocommand));
 

@@ -26,7 +26,7 @@ protected:
 public:
     TCPCommandSet();
 //    TCPCommandSet(TCPTimeOutWigget *_widget): TCPTimeOutCommand(nocommand, 0, 1, _widget, "", ""){}
-    TCPCommandSet(ServerConnect *_server, TCPTimeOutWigget *_widget, QVector<TCPCommand*> _vcomm): TCPTimeOutCommand(nocommand, 0, 1, _widget, "", ""){
+    TCPCommandSet(ServerConnect *_server, TCPTimeOutWigget *_widget, QVector<TCPCommand*> _vcomm): TCPTimeOutCommand(timeoutcommand, 0, 1, _widget, "", ""){
         server = _server;
         addCommand(_vcomm);
     }

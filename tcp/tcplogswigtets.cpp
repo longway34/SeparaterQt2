@@ -33,7 +33,7 @@ void TCPLogsWigtets::onLogsCommand(TCPCommand *command){
     if(command){
         QDateTime dt(QDateTime::currentDateTime());
         QString sdt = dt.toString("hh:mm:ss ");
-        QString msg = "command "+QString::number((int8_t(command->getCommand())))+"; result: ";
+        QString msg = "command 0x"+QString::number((int8_t(command->getCommand()), 16))+"; result: ";
         msg += command->getReplayData().toHex(':');
 
         ui.ptLogs->appendPlainText(sdt+": "+msg);

@@ -47,7 +47,7 @@ public:
 private:
 
 public slots:
-    void onTimeOut();
+    virtual void onTimeOut();
     
 signals:
     void copliteParts(int, int);

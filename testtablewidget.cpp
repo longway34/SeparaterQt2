@@ -32,7 +32,7 @@ testTableWidget::testTableWidget(QWidget *parent) :
     ui.baseGrapthics->getCanvas()->setAxisScale(QwtPlot::Axis::xBottom, 0, 256, 25);
     ui.kSpertGraphic->getCanvas()->setAxisScale(QwtPlot::Axis::xBottom, 0, 256, 25);
 
-    startSeparate = new TCPTestStartSeparate(nullptr, ui.towidget);
+    startSeparate = new TCPTestStartSeparate(nullptr, ui.towidget, ui.logWidget);
     TCPCommand *getRen = startSeparate->findCommands(getren).last();
     connect(getRen, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
     connect(startSeparate, SIGNAL(errorCommand(TCPCommand*)), this, SLOT(onCommandError(TCPCommand*)));
@@ -65,11 +65,23 @@ ISPRModelData *testTableWidget::setModel(SPRMainModel *_model){
         startSeparate->setSeparateModel(separateModel);
         connect(startSeparate, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
         connect(startSeparate, SIGNAL(errorCommand(TCPCommand*)), this, SLOT(onCommandError(TCPCommand*)));
+
+        getBaseSpectrumCommand = startSeparate->getGetBaseSpectrumCommand();
+        connect(getBaseSpectrumCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
+
+        kspecCommand = startSeparate->getSeparateGoCommand()->getKspectCommand();
+        connect(kspecCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
+
+        hiskCommand = startSeparate->getSeparateGoCommand()->getHistCommand();
+        connect(hiskCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
+
+        getseparCommand = startSeparate->getSeparateGoCommand()->getGetseparCommand();
+        connect(getseparCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
+
         QVector<TCPCommand*> vcomm = startSeparate->findCommands(setGetSpectrumsGistorfamms);
         for(int i=0; i<vcomm.size();i++){
             connect(((TCPGetSpectrumsGistogramms*)vcomm[i]), SIGNAL(commandComplite(TCPCommand*)), SLOT(onCommandComplite(TCPCommand*)));
         }
-
 
     }
 
@@ -84,7 +96,12 @@ void testTableWidget::widgetsShow(){
     }
 
     if(separateModel){
+        while(ui.workSeparTable->rowCount()>0){
+            ui.workSeparTable->removeRow(0);
+        }
         ui.workSeparTable->setRowCount(separateModel->workSeparate.size() * MAX_SPR_MAIN_THREADS);
+        qDebug() << "ws_model rows:" << separateModel->workSeparate.size() << " workspase table rows:" << ui.workSeparTable->rowCount();
+
         uint row = 0;
         for(int i=0; i<separateModel->workSeparate.size(); i++){
 
@@ -189,7 +206,7 @@ void testTableWidget::onCommandComplite(TCPCommand *_command)
         widgetsShow();
         return;
     }
-    if(_command->getDataType() == getsepar){
+    if(sender() == getseparCommand){
         QByteArray res = getSeparate->getReplayData();
         separateModel->addWorkSeparateData(res);
         widgetsShow();
@@ -223,9 +240,11 @@ void testTableWidget::onCommandComplite(TCPCommand *_command)
         widgetsShow();
         return;
     }
-    if(_command->getDataType() == getkspk){
+    if(sender() == kspecCommand){
+
+//        TCPGetSpectrumsGistogramms *kspk = startSeparate->findCommands(setGetRentgenParams).first();
         kSpectrumsModel->clearSpectrums();
-        onKSpectrumReady((TCPGetSpectrumsGistogramms*)_command);
+        onKSpectrumReady((TCPGetSpectrumsGistogramms*)kspecCommand);
         ui.kSpertGraphic->setVisibleAll();
         widgetsShow();
         return;
@@ -233,11 +252,11 @@ void testTableWidget::onCommandComplite(TCPCommand *_command)
     if(sender() == setSeparate){
         return;
     }
-    if(sender() == startSeparate){
+    if(sender() == getBaseSpectrumCommand){
         spectrumsBaseModel->clearSpectrums();
 
 //        for(uint th=0;th<MAX_SPR_MAIN_THREADS; th++){
-        QVector<TCPCommand*> vspk = startSeparate->findCommands(getspk);
+        QVector<TCPCommand*> vspk = getBaseSpectrumCommand->findCommands(getspk);
         for(int i=0; i<vspk.size();i++){
             QByteArray spk = vspk[i]->getReplayData().right(DEF_SPECTRUM_DATA_LENGTH);
             SPRSpectrumItemModel *item = spectrumsBaseModel->addSpectrum(spk);
