@@ -26,32 +26,12 @@ class SPRSpectrumGraphicsWidget : public QWidget, public ISPRWidget
         graphItem(QwtPlotCurve *_spect, QwtPlot *_plot): spect(_spect), plot(_plot){}
         graphItem(SPRSpectrumItemModel *_model, QwtPlot *_plot): spect(nullptr), plot(_plot){
             setModel(_model);
-
-        }
-        void setModel(SPRSpectrumItemModel *_model){
-            model = _model;
-            if(model){
-                spect = new QwtPlotCurve(QString(model->getSpectrumData()->name));
-                spect->setSamples(model->getSpectrumGraphics());
-                spect->setPen(QPen(model->getSpectrumColor(), 0.5));
-                foreach (EnumElements el, model->getZones()->elements.keys()) {
-                    zones[el] = new QwtPlotHistogram(DEF_SPR_FORMULA_ELEMENTS_PROPERTY[el].name);
-                    zones[el]->setSamples(model->getZonesGaphics()[el]);
-                    if(plot){
-                        zones[el]->attach(plot);
-                    }
-                }
-                if(plot){
-                    spect->attach(plot);
-                }
-            }
-
         }
 
         void setVisible(bool visible, bool current, bool showZones = true){
             foreach(EnumElements el, zones.keys()){
                 QColor color = model->getZones()->elements[el].color;
-                color.setAlpha(64);
+                color.setAlpha(32);
                 zones[el]->setBrush(QBrush(color));
                 zones[el]->setVisible(current && showZones);
             }
@@ -72,6 +52,35 @@ class SPRSpectrumGraphicsWidget : public QWidget, public ISPRWidget
                 }
             }
         }
+
+        ~graphItem(){
+            foreach (EnumElements el, model->getZones()->elements.keys()) {
+                zones[el]->detach();
+                delete zones[el];
+            }
+            spect->detach();
+            delete spect;
+        }
+    protected:
+        void setModel(SPRSpectrumItemModel *_model){
+            model = _model;
+            if(model){
+                spect = new QwtPlotCurve(QString(model->getSpectrumData()->name));
+                spect->setSamples(model->getSpectrumGraphics());
+                spect->setPen(QPen(model->getSpectrumColor(), 0.5));
+                foreach (EnumElements el, model->getZones()->elements.keys()) {
+                    zones[el] = new QwtPlotHistogram(DEF_SPR_FORMULA_ELEMENTS_PROPERTY[el].name);
+                    zones[el]->setSamples(model->getZonesGaphics()[el]);
+                    if(plot){
+                        zones[el]->attach(plot);
+                    }
+                }
+                if(plot){
+                    spect->attach(plot);
+                }
+            }
+
+        }
 //        void clear(){
 //            QPolygonF nullPolygon();
 //            spect
@@ -80,12 +89,15 @@ class SPRSpectrumGraphicsWidget : public QWidget, public ISPRWidget
 
 
     SPRSpectrumListItemsModel *model;
+    QVector<SPRSpectrumItemModel*> *spectrums;
     QVector<GraphItem*> graphItems;
 
     QList<int> visibleItems;
     int currentItem;
     bool allCurrent;
     bool zonesShow;
+
+    SPRTypeSpectrumSet typeSpectrumSet;
 
 public:
     explicit SPRSpectrumGraphicsWidget(QWidget *parent = 0);
@@ -98,10 +110,10 @@ public:
 
 
     virtual SPRSpectrumListItemsModel *getModel(){return model;}
-    void setModel(SPRSpectrumListItemsModel *value);
+    void setModel(SPRSpectrumListItemsModel *value, SPRTypeSpectrumSet typeSpectrumSet, bool _zonesShow);
     void setVisibleAll(){
         visibleItems.clear();
-        for(int i=0; i<model->getSpectrumsModel()->size(); i++){
+        for(int i=0; i<spectrums->size(); i++){
             visibleItems.push_back(i);
         }
     }

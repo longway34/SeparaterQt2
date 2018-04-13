@@ -42,7 +42,7 @@ SPRGrSpectrumItemModel *SPRGrSpectrumItemModel::complite()
             value = 0.5;
         }
         spectGraphData.clear();
-        for(int i=0; i < DEF_SPECTRUM_DATA_LENGTH / sizeof(uint16_t); i++){
+        for(int i=0; i < DEF_SPECTRUM_DATA_LENGTH_BYTE / sizeof(uint16_t); i++){
             if(spectModel){
                 uint16_t *rawSpect = spectModel->getSpectrumData()->spect;
                 if(rawSpect){

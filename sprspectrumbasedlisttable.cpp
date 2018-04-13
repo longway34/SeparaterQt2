@@ -18,7 +18,7 @@ SPRSpectrumBasedListTable::SPRSpectrumBasedListTable(QWidget *parent)
 void SPRSpectrumBasedListTable::widgetsShow()
 {
     for(int row=0; row < rowCount(); row++){
-        SpectrumItemData *mod = model->getSpectrumsModel()->at(row)->getSpectrumData();
+        SpectrumItemData *mod = spectrums->at(row)->getSpectrumData();
         FirstColumn *fc = ((FirstColumn*)cellWidget(row, 0));
         QColor col(*mod->red, *mod->green, *mod->blue);
         fc->setData(row, col);

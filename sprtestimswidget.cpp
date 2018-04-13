@@ -437,8 +437,8 @@ void SPRTestIMSWidget::onCommandComplite(TCPCommand *_comm){
             for(int ch=0; MAX_SPR_MAIN_THREADS; ch++){
                 QByteArray sp = getSpectrumsCommand->getSpectrumData(ch);
                 ui.wSpectrumWidget->getModel()->addSpectrum(sp);
-                QColor col = colors[ch % colors.size()];
-                ui.wSpectrumWidget->getModel()->getSpectrumItem(ch)->setSpectrumColor(col);
+//                QColor col = colors[ch % colors.size()];
+//                ui.wSpectrumWidget->getModel()->getSpectrumItem(ch)->setSpectrumColor(col);
             }
 
             ui.wSpectrumWidget->setVisibleAll();
@@ -495,7 +495,7 @@ ISPRModelData *SPRTestIMSWidget::setModel(SPRMainModel *_model)
     connect(model->getServer(), SIGNAL(serverReadWriteTimeOutError(ITCPCommand*)), this, SLOT(onServerReadWriteError(ITCPCommand*)));
     connect(model->getServer(), SIGNAL(serverStateChange(uint32_t)), this, SLOT(onServerConnectChangeState(uint32_t)));
 
-    ui.wSpectrumWidget->setModel(new SPRSpectrumListItemsModel(model->getSpectrumZonesTableModel(), model->getSettingsFormulaModel()));
+    ui.wSpectrumWidget->setModel(new SPRSpectrumListItemsModel(model->getSpectrumZonesTableModel(), model->getSettingsFormulaModel(),model->getSettingsMainModel()->getThreads(), model->getSettingsMainModel()->getSpectrumFileName()), spectrumsOnly, true);
 
     getSpectrumsCommand->setThreadTimer(model->getSettingsMainModel()->getThreads()->getData());
     separatorOnCommand->setModel(model->getSettingsRentgenModel());

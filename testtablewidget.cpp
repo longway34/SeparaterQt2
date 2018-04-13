@@ -45,16 +45,16 @@ testTableWidget::testTableWidget(QWidget *parent) :
 ISPRModelData *testTableWidget::setModel(SPRMainModel *_model){
     if(_model){
         mainModel = _model;
-        spectrumsBaseModel = new SPRSpectrumListItemsModel(_model->getSpectrumZonesTableModel(), _model->getSettingsFormulaModel());
-        kSpectrumsModel = new SPRSpectrumListItemsModel(_model->getSpectrumZonesTableModel(), _model->getSettingsFormulaModel());
+//        spectrumsBaseModel = new SPRSpectrumListItemsModel(_model->getSpectrumZonesTableModel(), _model->getSettingsFormulaModel(),_model->getSettingsMainModel()->getThreads(), _model->getSettingsMainModel()->getSpectrumFileName());
+        kSpectrumsModel = new SPRSpectrumListItemsModel(_model->getSpectrumZonesTableModel(), _model->getSettingsFormulaModel(),_model->getSettingsMainModel()->getThreads(), _model->getSettingsMainModel()->getSpectrumFileName());
         separateModel = new SPRSeparateModel(mainModel->getDoc());
         separateModel->setMainModel(_model);
 
-        ui.kspectTable->setModel(kSpectrumsModel);
-        ui.kSpertGraphic->setModel(kSpectrumsModel);
+        ui.kspectTable->setModel(kSpectrumsModel, spectrumsOnly);
+        ui.kSpertGraphic->setModel(kSpectrumsModel, spectrumsOnly, true);
 
-        ui.baseTable->setModel(spectrumsBaseModel);
-        ui.baseGrapthics->setModel(spectrumsBaseModel);
+        ui.baseTable->setModel(kSpectrumsModel, spectrumBase);
+        ui.baseGrapthics->setModel(kSpectrumsModel, spectrumBase, true);
 
         getGistogramm = new TCPGetSpectrumsGistogramms(mainModel->getServer(), getgist);
         getKSpectrums = new TCPGetSpectrumsGistogramms(mainModel->getServer(), getkspk);
@@ -86,6 +86,7 @@ ISPRModelData *testTableWidget::setModel(SPRMainModel *_model){
     }
 
     //        model->setModel(_model);
+    widgetsShow();
     return mainModel;
 }
 
@@ -138,8 +139,8 @@ void testTableWidget::widgetsShow(){
 }
 
 void testTableWidget::onModelChanged(){
-    ui.baseGrapthics->setModel(mainModel->getSpectrumListItemsModel());
-    ui.baseTable->setModel(mainModel->getSpectrumListItemsModel());
+    ui.baseGrapthics->setModel(mainModel->getSpectrumListItemsModel(), spectrumBase, true);
+    ui.baseTable->setModel(mainModel->getSpectrumListItemsModel(), spectrumBase);
     ui.baseGrapthics->widgetsShow();
     ui.baseTable->widgetsShow();
     
@@ -177,13 +178,13 @@ void testTableWidget::onKSpectrumReady(TCPGetSpectrumsGistogramms *_command){
     QVector<TCPCommand*> vkspect = _command->findCommands(getkspk);
     for(int th=0; th<vkspect.size();th++){
         QByteArray res = _command->getKSpectrumData(th);
-        uint8_t *spec = (uint8_t*)(res.left(DEF_SPECTRUM_DATA_LENGTH).constData());
+        uint8_t *spec = (uint8_t*)(res.left(DEF_SPECTRUM_DATA_LENGTH_BYTE).constData());
 
-        SPRSpectrumItemModel *item = kSpectrumsModel->addSpectrum(spec, DEF_SPECTRUM_DATA_LENGTH);
+        SPRSpectrumItemModel *item = kSpectrumsModel->addSpectrum(spec, DEF_SPECTRUM_DATA_LENGTH_BYTE);
         uint32_t t = _command->getKSpectrumTime(th);
         item->setTimeScope(t);
-        if(spectrumsBaseModel){
-            SPRSpectrumItemModel *bItem = spectrumsBaseModel->getSpectrumItem((th % spectrumsBaseModel->getSpectrumsModel()->size()));
+        if(kSpectrumsModel){
+            SPRSpectrumItemModel *bItem = kSpectrumsModel->getSpectrumBaseItem((th % kSpectrumsModel->getSpectrumsModelBase()->size()));
             if(bItem){
                 double correl = item->getCorrel(bItem);
                 qDebug() << "Correl :" << correl /*<< std::endl*/;
@@ -253,13 +254,13 @@ void testTableWidget::onCommandComplite(TCPCommand *_command)
         return;
     }
     if(sender() == getBaseSpectrumCommand){
-        spectrumsBaseModel->clearSpectrums();
+//        spectrumsBaseModel->clearSpectrums();
 
 //        for(uint th=0;th<MAX_SPR_MAIN_THREADS; th++){
         QVector<TCPCommand*> vspk = getBaseSpectrumCommand->findCommands(getspk);
         for(int i=0; i<vspk.size();i++){
-            QByteArray spk = vspk[i]->getReplayData().right(DEF_SPECTRUM_DATA_LENGTH);
-            SPRSpectrumItemModel *item = spectrumsBaseModel->addSpectrum(spk);
+            QByteArray spk = vspk[i]->getReplayData().right(DEF_SPECTRUM_DATA_LENGTH_BYTE);
+            SPRSpectrumItemModel *item = kSpectrumsModel->setSpectrumData(i, spk);
             item->setTimeScope(1);
         }
 //            ui.baseTable->setModel(spectrumsBaseModel);
@@ -299,32 +300,32 @@ void testTableWidget::onCommandError(TCPCommand *_command)
         return;
     }
 }
-void testTableWidget::addSpectrumsModel(QFile *inp)
-{
-    if(inp){
-        bool res = true;
-        if(!inp->isOpen()){
-            res = inp->open(QIODevice::ReadOnly);
-        }
-        if(res){
-            char begin[2];
-            uint8_t *buf = (uint8_t*)malloc(DEF_SPECTRUM_DATA_BUF_LENGTH);
-            inp->read(begin, 2);
-            while(inp->read((char*)buf, DEF_SPECTRUM_DATA_BUF_LENGTH)){
-                mainModel->getSpectrumListItemsModel()->addSpectrum(buf, DEF_SPECTRUM_DATA_BUF_LENGTH);
-            }
-            free(buf);
-        }
-    }
-}
+//void testTableWidget::addSpectrumsModel(QFile *inp)
+//{
+//    if(inp){
+//        bool res = true;
+//        if(!inp->isOpen()){
+//            res = inp->open(QIODevice::ReadOnly);
+//        }
+//        if(res){
+//            char begin[2];
+//            uint8_t *buf = (uint8_t*)malloc(DEF_SPECTRUM_DATA_BUF_LENGTH);
+//            inp->read(begin, 2);
+//            while(inp->read((char*)buf, DEF_SPECTRUM_DATA_BUF_LENGTH)){
+//                mainModel->getSpectrumListItemsModel()->addSpectrum(buf, DEF_SPECTRUM_DATA_BUF_LENGTH);
+//            }
+//            free(buf);
+//        }
+//    }
+//}
 
-void testTableWidget::onClickAdd(bool)
-{
-    QString fName("F:\\Projects\\Separator\\Real spectors\\СРФ3.spc");
-    QFile in(fName);
-    if(in.open(QIODevice::ReadOnly)){
-        addSpectrumsModel(&in);
-        ui.baseTable->widgetsShow();
-        ui.baseGrapthics->widgetsShow();
-    }
-}
+//void testTableWidget::onClickAdd(bool)
+//{
+//    QString fName("F:\\Projects\\Separator\\Real spectors\\СРФ3.spc");
+//    QFile in(fName);
+//    if(in.open(QIODevice::ReadOnly)){
+//        addSpectrumsModel(&in);
+//        ui.baseTable->widgetsShow();
+//        ui.baseGrapthics->widgetsShow();
+//    }
+//}

@@ -35,7 +35,7 @@ SPRSettingsMainModel::SPRSettingsMainModel(QDomDocument *_doc, ISPRModelData *pa
     color = new SPRColorVariable(doc, SPR_SETTINGS_MAIN_COLOR_XPATH, DEF_SPR_MAIN_COLOR,this);
 //    date = new SPRDateVariable(doc, SPR_SETTINGS_MAIN_DATE_XPATH, DEF_SPR_MAIN_DATE);
 //    version = new SPRQStringVariable(doc, SPR_SETTINGS_MAIN_VERSION_XPATH, DEF_SPR_MAIN_VERSION);
-    spectrumFileName = new SPRQStringVariable(doc, SPR_SETTINGS_MAIN_SPECTRUM_FNAME_XPATH, DEF_SPR_MAIN_SPECTRUM_FNAME, this);
+    spectrumFileName = new SPRQStringVariable(doc, SPR_SETTINGS_MAIN_SPECTRUM_FNAME_XPATH, DEF_SPR_MAIN_SETTINGS_FNAME+DEF_SPR_MAIN_SPECTRUM_FNAME_SUFFIX, this);
 }
 
 SPRSettingsMainModel::~SPRSettingsMainModel()

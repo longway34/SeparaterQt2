@@ -2,6 +2,8 @@
 
 #include <QApplication>
 
+#include "models/sprspectrumlistitemsmodel.h"
+
 #include <QDomDocument>
 #include <QFile>
 #include <QDir>
@@ -15,16 +17,25 @@ int main(int argc, char *argv[])
     bool y = QDir::setCurrent("/home/longway/");
 #endif
 
+    SPRSpectrumListItemsModel *model;
+
     QDomDocument doc;
     QFile in("СРФ1.xml");
     if(in.open(QIODevice::ReadOnly)){
         if(doc.setContent(&in)){
 
+
+            model = new SPRSpectrumListItemsModel(&doc);
+
+            model->store();
             in.close();
 
         }
 
     }
+
+
+
 
     QApplication a(argc, argv);
 

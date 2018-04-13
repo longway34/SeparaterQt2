@@ -22,7 +22,7 @@ public:
     explicit testTableWidget(QWidget *parent = 0);
 
     SPRMainModel *mainModel;
-    SPRSpectrumListItemsModel *spectrumsBaseModel;
+//    SPRSpectrumListItemsModel *spectrumsBaseModel;
     SPRSpectrumListItemsModel *kSpectrumsModel;
     SPRSeparateModel *separateModel;
 
@@ -56,10 +56,10 @@ public:
 
     void widgetsShow();
 
-    void addSpectrumsModel(QFile *inp);
+//    void addSpectrumsModel(QFile *inp);
     void onKSpectrumReady(TCPGetSpectrumsGistogramms *_command);
 public slots:
-    void onClickAdd(bool);
+//    void onClickAdd(bool);
     void onModelChanged();
     void onGetButtomsClick(bool);
     void onCommandComplite(TCPCommand *_command);

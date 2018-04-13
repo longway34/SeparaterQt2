@@ -45,11 +45,11 @@ void spectumItemData::setData(uint8_t *inp, uint16_t inplength)
             memcpy(buf, inp, bufLength);
             return;
         }
-        if(inplength == DEF_SPECTRUM_DATA_LENGTH){
+        if(inplength == DEF_SPECTRUM_DATA_LENGTH_BYTE){
             memcpy(spect, inp, inplength);
             return;
         }
-        qDebug() << "Error Data Length... Try " << QString::number(DEF_SPECTRUM_DATA_BUF_LENGTH) << " to all spectrum data or " << QString::number(DEF_SPECTRUM_DATA_LENGTH) << " for spectrum only...";
+        qDebug() << "Error Data Length... Try " << QString::number(DEF_SPECTRUM_DATA_BUF_LENGTH) << " to all spectrum data or " << QString::number(DEF_SPECTRUM_DATA_LENGTH_BYTE) << " for spectrum only...";
     }
 }
 
@@ -62,6 +62,7 @@ void SPRSpectrumItemModel::recomplite()
 {
     memset(spectrumData.Ns, 0, 6 * sizeof(uint32_t));
     *spectrumData.peak_value = 0;
+    *spectrumData.summ = 0;
     // ***********for correlation
     foreach (EnumElements el, zones->items[*spectrumData.thread]->elements.keys()) {
         /*spectrumData.elementsDiff[el] = 0;*/ spectrumData.elementsAverage[el] = 0;
@@ -72,7 +73,7 @@ void SPRSpectrumItemModel::recomplite()
     /*spectrumData.diff = 0;*/ spectrumData.dispersion = 0; spectrumData.sigma = 0;
     // ********************
 
-    for(int i=0; i<(DEF_SPECTRUM_DATA_LENGTH / sizeof(uint16_t)); i++){
+    for(int i=0; i<(DEF_SPECTRUM_DATA_LENGTH); i++){
         uint32_t val = spectrumData.spect[i];
         *spectrumData.summ += val;
         foreach (EnumElements el, zones->items[*spectrumData.thread]->elements.keys()) {
@@ -90,18 +91,18 @@ void SPRSpectrumItemModel::recomplite()
     }
     uint RS = 0; int ch= *spectrumData.peak; int hsumm = round(((double)(*spectrumData.peak_value)) / 2.);
 
-    while(spectrumData.spect[ch] < hsumm){
+    while(spectrumData.spect[ch] > hsumm){
         RS++; ch--;
         if(ch < 0) break;
     }
     ch= *spectrumData.peak + 1;
-    if(ch < (DEF_SPECTRUM_DATA_LENGTH / sizeof(uint16_t)));
-    while(spectrumData.spect[ch] < hsumm){
-          RS++; ch++;
-          if(ch >= (DEF_SPECTRUM_DATA_LENGTH / sizeof(uint16_t))) break;
+    if(ch < (DEF_SPECTRUM_DATA_LENGTH)){
+        while(spectrumData.spect[ch] > hsumm){
+              RS++; ch++;
+              if(ch >= (DEF_SPECTRUM_DATA_LENGTH)) break;
+        }
     }
-
-    *spectrumData.center = *spectrumData.summ / (DEF_SPECTRUM_DATA_LENGTH / sizeof(uint16_t));
+    *spectrumData.center = *spectrumData.summ / (DEF_SPECTRUM_DATA_LENGTH);
     *spectrumData.Rs = RS;
 
 // for correlation
@@ -113,7 +114,12 @@ void SPRSpectrumItemModel::recomplite()
             spectrumData.elementsAverage[el] = 0;
         }
     }
-    for(int i=0; i<(DEF_SPECTRUM_DATA_LENGTH / sizeof(uint16_t)); i++){
+    spectrumData.diff.clear();
+    foreach (EnumElements el, zones->items[*spectrumData.thread]->elements.keys()) {
+        spectrumData.elementsDiff[el].clear();
+    }
+
+    for(int i=0; i<(DEF_SPECTRUM_DATA_LENGTH); i++){
         uint32_t val = spectrumData.spect[i];
 
         double d = (val - *spectrumData.center);
@@ -138,7 +144,7 @@ void SPRSpectrumItemModel::recomplite()
             formulas->itemsModel[0]->MulDown->getData() * (double)(*spectrumData.elementsSumm[formulas->itemsModel[0]->ElementDown2->getData()])
                 * (double)(*spectrumData.elementsSumm[formulas->itemsModel[0]->ElementDown3->getData()])
                     / (double)(*spectrumData.elementsSumm[formulas->itemsModel[0]->ElementDown4->getData()]);
-    if(down != 0)
+    if(down >1e-6)
         *spectrumData.H1 = up / down;
     else
         *spectrumData.H1 = 0;
@@ -151,7 +157,7 @@ void SPRSpectrumItemModel::recomplite()
             formulas->itemsModel[1]->MulDown->getData() * (double)(*spectrumData.elementsSumm[formulas->itemsModel[1]->ElementDown2->getData()])
                 * (double)(*spectrumData.elementsSumm[formulas->itemsModel[1]->ElementDown3->getData()])
                     / (double)(*spectrumData.elementsSumm[formulas->itemsModel[1]->ElementDown4->getData()]);
-    if(down != 0)
+    if(down >1e-6)
         *spectrumData.H2 = up / down;
     else
         *spectrumData.H2 = 0;
@@ -163,7 +169,7 @@ void SPRSpectrumItemModel::recomplite()
             formulas->itemsModel[2]->MulDown->getData() * (double)(*spectrumData.elementsSumm[formulas->itemsModel[2]->ElementDown2->getData()])
                 * (double)(*spectrumData.elementsSumm[formulas->itemsModel[2]->ElementDown3->getData()])
                     / (double)(*spectrumData.elementsSumm[formulas->itemsModel[2]->ElementDown4->getData()]);
-    if(down != 0)
+    if(down >1e-6)
         *spectrumData.H3 = up / down;
     else
         *spectrumData.H3 = 0;
@@ -227,7 +233,7 @@ QMap<EnumElements, QVector<QwtIntervalSample> > SPRSpectrumItemModel::getZonesGa
 
 QPolygonF SPRSpectrumItemModel::getSpectrumGraphics(){
     spectGraphData.clear();
-    for(int i=0; i<DEF_SPECTRUM_DATA_LENGTH / sizeof(uint16_t); i++){
+    for(int i=0; i<(DEF_SPECTRUM_DATA_LENGTH); i++){
         QPointF val(qreal(i), qreal(spectrumData.spect[i]));
         spectGraphData.push_back(val);
     }
@@ -264,7 +270,7 @@ SpectrumItemData *SPRSpectrumItemModel::getSpectrumData()
 void SPRSpectrumItemModel::setSpectrumData(uint8_t *buf, uint16_t len)
 {
     spectrumData.setData(buf, len);
-    if(len == DEF_SPECTRUM_DATA_LENGTH){
+    if(len == DEF_SPECTRUM_DATA_LENGTH_BYTE){
         recomplite();
     }
 }

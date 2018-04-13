@@ -25,7 +25,8 @@ public:
                 thread = vspect.size()-1;
 
             res0 = vspect[thread]->getReplayData();
-            res = res0.right(res0.size() - (5));
+//            res = res0.right(res0.size() - (5));
+            res = res0.right(DEF_SPECTRUM_DATA_LENGTH_BYTE);
         }
         return res;
     }
@@ -51,7 +52,7 @@ public:
             if(thread < 0 || thread >= vspect.size())
                 thread = vspect.size()-1;
 
-            res = vspect[thread]->getReplayData().right(DEF_SPECTRUM_DATA_LENGTH);
+            res = vspect[thread]->getReplayData().right(DEF_SPECTRUM_DATA_LENGTH_BYTE);
         }
         return res;
     }

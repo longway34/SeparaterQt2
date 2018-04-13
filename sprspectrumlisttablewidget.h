@@ -2,9 +2,10 @@
 #define SPRSPECTRUMLISTTABLEWIDGET_H
 
 #include "ui_sprspectrumlisttablewidget.h"
-#include "models/sprspectrumzonestablemodel.h"
-#include "models/sprspectrumzonestablemodel.h"
+//#include "models/sprspectrumzonestablemodel.h"
+//#include "models/sprspectrumzonestablemodel.h"
 #include "models/sprgrspectrumitemmodel.h"
+#include "models/sprmainmodel.h"
 #include "isprwidget.h"
 
 #include "qwt_plot_curve.h"
@@ -46,7 +47,9 @@ class SPRSpectrumListTableWidget : public QWidget, public ISPRWidget
 {
     Q_OBJECT
 
-    SPRSpectrumZonesTableModel *rangesModel;
+    SPRMainModel *model;
+//    SPRSpectrumZonesTableModel *rangesModel;
+    SPRSpectrumListItemsModel *spectrums;
     QVector<SPRGrSpectrumItemModel*> spectGrData;
     QVector<SPRGrSpectrumItemModel*> spectBaseGrData;
 
@@ -55,6 +58,8 @@ class SPRSpectrumListTableWidget : public QWidget, public ISPRWidget
     QVector<GraphItem> grItems;
     QVector<GraphItem> baseItems;
 
+
+
     GraphItem nullGrItems;
 
     void initNullGraphItems();
@@ -62,8 +67,8 @@ class SPRSpectrumListTableWidget : public QWidget, public ISPRWidget
 public:
     explicit SPRSpectrumListTableWidget(QWidget *parent = 0);
 
-    ISPRModelData *setModel(SPRSpectrumListItemsModel *spectrumListItems, QFile *inp = nullptr);
-    ISPRModelData *setModel(SPRSpectrumListItemsModel *spectrumListItems, QString fName);
+//    ISPRModelData *setModel(SPRSpectrumListItemsModel *spectrumListItems, QFile *inp = nullptr);
+    ISPRModelData *setModel(SPRMainModel *mainModel);
     void setSpectrumsData(QFile *inp);
 
 public slots:
@@ -91,7 +96,7 @@ private:
 
     // ISPRWidget interface
 public:
-    virtual SPRSpectrumZonesTableModel *getModel();
+    virtual SPRMainModel *getModel();
 signals:
     void doShow();
 

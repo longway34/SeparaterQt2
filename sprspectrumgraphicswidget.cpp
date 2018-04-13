@@ -1,9 +1,19 @@
 #include "sprspectrumgraphicswidget.h"
 
-void SPRSpectrumGraphicsWidget::setModel(SPRSpectrumListItemsModel *value)
+void SPRSpectrumGraphicsWidget::setModel(SPRSpectrumListItemsModel *value, SPRTypeSpectrumSet _typeSpectrumSet, bool _zonesShow)
 {
     if(value){
         model = value;
+
+        this->typeSpectrumSet = _typeSpectrumSet;
+        if(_typeSpectrumSet == spectrumBase){
+            spectrums = model->getSpectrumsModelBase();
+        } else if(_typeSpectrumSet == spectrumsOnly){
+            spectrums = model->getSpectrumsModel();
+        } else {
+            spectrums = model->getSpectrumsModelAll();
+        }
+        this->zonesShow = _zonesShow;
 
         connect(model, SIGNAL(modelChanget()), this, SLOT(widgetsShow()));
 
@@ -55,11 +65,11 @@ void SPRSpectrumGraphicsWidget::widgetsShow()
 {
     ui.canvas->detachItems();
     graphItems.clear();
-    for(int i=0; i<model->getSpectrumsModel()->size(); i++){
-        if(i >= graphItems.size()){ // add new sectrum
-            GraphItem *gi = new GraphItem(model->getSpectrumItem(i), ui.canvas);
+    for(int i=0; i<spectrums->size(); i++){
+//        if(i >= graphItems.size()){ // add new sectrum
+            GraphItem *gi = new GraphItem(spectrums->at(i), ui.canvas);
             graphItems.push_back(gi);
-        }
+//        }
     }
     onChangeSelectedCheckedItems(visibleItems, currentItem);
     ui.canvas->replot();

@@ -141,43 +141,48 @@ void SPRSpectrumListTable::onCurrentPosChanged(int row, int col){
     emit rowSelectedChecked(getSelectedItems(), row);
 }
 
-ISPRModelData *SPRSpectrumListTable::setModel(SPRSpectrumListItemsModel *_model, uint8_t *inp, int _bufSize)
+ISPRModelData *SPRSpectrumListTable::setModel(SPRSpectrumListItemsModel *_model, SPRTypeSpectrumSet _type)
 {
     if(model != _model){
         model = _model;
-        connect(model, SIGNAL(modelChanget()), this, SLOT(widgetsShow()));
-        if(inp){
-            addSpectrum(inp, _bufSize);
+        this->typeData = _type;
+        if(typeData == spectrumBase){
+            spectrums = model->getSpectrumsModelBase();
+        } else if(typeData == spectrumsOnly){
+            spectrums = model->getSpectrumsModel();
+        } else {
+            spectrums = model->getSpectrumsModelAll();
         }
-        widgetsShow();
+
+        connect(model, SIGNAL(modelChanget()), this, SLOT(widgetsShow()));
     }
     return model;
 }
 
-SPRSpectrumItemModel *SPRSpectrumListTable::addSpectrum(uint8_t *_inp, int _bufSize, int _thread)
-{
-    if(model){
-        SPRSpectrumItemModel *item = model->addSpectrum(_inp, _bufSize);
+//SPRSpectrumItemModel *SPRSpectrumListTable::addSpectrum(uint8_t *_inp, int _bufSize, int _thread)
+//{
+//    if(model){
+//        SPRSpectrumItemModel *item = spectr->addSpectrum(_inp, _bufSize);
 
-        if(_bufSize == DEF_SPECTRUM_DATA_LENGTH){
-            if(_thread >= 0 && _thread < MAX_SPR_MAIN_THREADS){
-                item->getSpectrumData()->setThread(_thread);
-            }
-        }
-        addRowTable(item->getSpectrumData());
-        widgetsShow();
-        return item;
-    }
-    return nullptr;
-}
+//        if(_bufSize == DEF_SPECTRUM_DATA_LENGTH){
+//            if(_thread >= 0 && _thread < MAX_SPR_MAIN_THREADS){
+//                item->getSpectrumData()->setThread(_thread);
+//            }
+//        }
+//        addRowTable(item->getSpectrumData());
+//        widgetsShow();
+//        return item;
+//    }
+//    return nullptr;
+//}
 
 void SPRSpectrumListTable::widgetsShow()
 {
 
     while(rowCount() > 0) this->removeRow(0);
 
-    for(int row=0; row<model->getSpectrumsModel()->size(); row++){
-        SpectrumItemData *mod = model->getSpectrumsModel()->at(row)->getSpectrumData();
+    for(int row=0; row<spectrums->size(); row++){
+        SpectrumItemData *mod = spectrums->at(row)->getSpectrumData();
         int rc = rowCount();
         if(row > rc-1){
             addRowTable(mod);
@@ -218,12 +223,9 @@ void SPRSpectrumListTable::widgetsShow()
     }
 }
 
-ISPRModelData *SPRSpectrumListTable::getModel()
+SPRSpectrumListItemsModel *SPRSpectrumListTable::getModel()
 {
-    if(model->getZonesTableModel()->items.size() > 0){
-        return model->getZonesTableModel()->items[0];
-    }
-    return nullptr;
+    return model;
 }
 
 void SPRSpectrumListTable::viewChange(QColor color)
@@ -231,9 +233,9 @@ void SPRSpectrumListTable::viewChange(QColor color)
     if(sender()->property("tw").value<QTableWidget*>() == this){
         int row = sender()->property("row").toInt();
 
-        *model->getSpectrumsModel()->at(row)->getSpectrumData()->red = color.red();
-        *model->getSpectrumsModel()->at(row)->getSpectrumData()->green = color.green();
-        *model->getSpectrumsModel()->at(row)->getSpectrumData()->blue = color.blue();
+        *spectrums->at(row)->getSpectrumData()->red = color.red();
+        *spectrums->at(row)->getSpectrumData()->green = color.green();
+        *spectrums->at(row)->getSpectrumData()->blue = color.blue();
 //        emit rowChangeColor(row);
         widgetsShow();
     }
@@ -243,7 +245,7 @@ void SPRSpectrumListTable::viewChange()
 {
     if(sender()->property("tw").value<QTableWidget*>() == this){
         int row = sender()->property("row").toInt();
-        SpectrumItemData *data = model->getSpectrumsModel()->at(row)->getSpectrumData();
+        SpectrumItemData *data = spectrums->at(row)->getSpectrumData();
         const char *value = ((QLineEdit*)sender())->text().toStdString().c_str();
         strcpy(data->name, value);
         widgetsShow();

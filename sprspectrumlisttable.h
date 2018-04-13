@@ -16,9 +16,11 @@ class SPRSpectrumListTable : public QTableWidget, public ISPRWidget
 {
     Q_OBJECT
 
+    SPRSpectrumListItemsModel* model;
 
 protected:
-    SPRSpectrumListItemsModel* model;
+
+    QVector<SPRSpectrumItemModel*> *spectrums;
 
     QList<int> storeCheckedRows;
     int storeCurrentRow;
@@ -29,20 +31,22 @@ protected:
     virtual void addRowTable(SpectrumItemData *data, int pastRow = -1);
     virtual void connectFirstTable(FirstColumn *fc);
     virtual void insertContentColumns(SpectrumItemData *data, int row);
+
+    SPRTypeSpectrumSet typeData;
 public:
     explicit SPRSpectrumListTable(QWidget *parent = 0);
 
-    ISPRModelData *setModel(SPRSpectrumListItemsModel *_model, uint8_t *inp = nullptr, int _bufSize = DEF_SPECTRUM_DATA_BUF_LENGTH);
+    ISPRModelData *setModel(SPRSpectrumListItemsModel *_model, SPRTypeSpectrumSet _type);
     // ISPRWidget interface
     SPRSpectrumListItemsModel *getModels(){ return model; }
     SPRSpectrumItemModel *getModel(int index){
-        if(index < model->getSpectrumsModel()->size()){
-            return model->getSpectrumsModel()->at(index);
+        if(index < spectrums->size()){
+            return spectrums->at(index);
         } else {
             return nullptr;
         }
     }
-    SPRSpectrumItemModel *addSpectrum(uint8_t *_inp, int _bufSize = DEF_SPECTRUM_DATA_BUF_LENGTH, int _thread = -1);
+//    SPRSpectrumItemModel *addSpectrum(uint8_t *_inp, int _bufSize = DEF_SPECTRUM_DATA_BUF_LENGTH, int _thread = -1);
 //    ISPRModelData *setZonesTableModel(SPRSpectrumZonesTableModel *ranges);
 
     QList<int> getSelectedItems(){
@@ -62,7 +66,7 @@ public:
     }
     QColor getColorSpectrum(int row){
 
-        SPRSpectrumItemModel *mod = model->getSpectrumItem(row);
+        SPRSpectrumItemModel *mod = spectrums->at(row);
         if(mod){
             QColor ret = mod->getSpectrumColor();
             return ret;
@@ -83,7 +87,7 @@ public:
     }
 public slots:
     virtual void widgetsShow();
-    virtual ISPRModelData *getModel();
+    virtual SPRSpectrumListItemsModel *getModel();
     virtual void viewChange(QColor color);
     virtual void viewChange();
     virtual void viewChange(int num);

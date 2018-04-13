@@ -36,9 +36,9 @@ void SPRMainModel::setDoc(QDomDocument *value)
     spectrumZonesTableModel->setThreads(settingsMainModel->getThreads());
 
     if(spectrumListItemsModel) {delete spectrumListItemsModel; spectrumListItemsModel = nullptr;}
-    spectrumListItemsModel = new SPRSpectrumListItemsModel(doc, this);
-    spectrumListItemsModel->setFormulasModel(settingsFormulaModel);
-    spectrumListItemsModel->setZonesModel(spectrumZonesTableModel);
+    spectrumListItemsModel = new SPRSpectrumListItemsModel(spectrumZonesTableModel, settingsFormulaModel, settingsMainModel->getThreads(), settingsMainModel->getSpectrumFileName(), this);
+
+
 }
 
 SPRQStringVariable *SPRMainModel::getSpectrumFName() const

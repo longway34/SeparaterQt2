@@ -6,7 +6,7 @@ MainTabWidget::MainTabWidget(QWidget *parent) :
     QTabWidget(parent), model(nullptr)
 {
     ui.setupUi(this);
-    setDoc(DEF_SPR_SETTINGS_FNAME);
+    setDoc(DEF_SPR_MAIN_SETTINGS_FNAME+DEF_SPR_MAIN_SETTINGS_FNAME_SUFFIX);
 
     connect(ui.tabSettings, SIGNAL(changeFileSettinds(QString)), this, SLOT(onChangeFileSettings(QString)));
     connect(ui.tabSettings, SIGNAL(changeFileSpectrum(QString)), this, SLOT(onChangeFileSpectrum(QString)));
@@ -40,7 +40,7 @@ MainTabWidget::MainTabWidget(QString _fName, QWidget *parent): QTabWidget(parent
 
     if(createNewDoc){
 //        QString fName = model->getSettingsMainModel()->name->toString();
-        QString fName = "Separator.xml";
+        QString fName = DEF_SPR_MAIN_SETTINGS_FNAME+DEF_SPR_MAIN_SETTINGS_FNAME_SUFFIX;
         QFile out(fName);
         if(out.open(QIODevice::WriteOnly)){
         QTextStream stream( &out );
@@ -80,11 +80,11 @@ ISPRModelData *MainTabWidget::setModel(SPRMainModel *_model)
     if(model) delete model; model = nullptr;
     model = _model;
     ui.tabSettings->setModel(model);
-    QFile f(model->getSettingsMainModel()->spectrumFileName->getData());
-    if(f.open(QIODevice::ReadOnly)){
-        ui.tabSpectrum->setModel(model->getSpectrumListItemsModel(), &f);
-        f.close();
-    }
+//    QFile f(model->getSettingsMainModel()->spectrumFileName->getData());
+//    if(f.open(QIODevice::ReadOnly)){
+//        f.close();
+//    }
+    ui.tabSpectrum->setModel(model);
     ui.wTest->setModel(model);
 
     ui.tabTest->setModel(model);
@@ -121,7 +121,7 @@ void MainTabWidget::onChangeFileSpectrum(QString fName){
     QFile spc(fName);
     if(spc.open(QIODevice::ReadOnly)){
         //        ui.tabSpectrum->setModel(model->getSpectrumZonesTableModel(), &spc);
-        ui.wTest->addSpectrumsModel(&spc);
+//        ui.wTest->addSpectrumsModel(&spc);
         spc.close();
     }
 }
