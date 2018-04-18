@@ -15,7 +15,7 @@ void SPRSpectrumSmallTable::widgetsShow(){
     for(int row=0; row<spectrums->size(); row++){
         SPRSpectrumItemModel *mod = spectrums->at(row);
         ((QLabel*)cellWidget(row, 10))->setText(QString::number(*mod->getSpectrumData()->time / 1000, 'f', 3));
-        ((QLabel*)cellWidget(row, 9))->setText(QString::number(mod->getSpectrumData()->correl, 'f', 3));
+//        ((QLabel*)cellWidget(row, 9))->setText(QString::number(mod->getSpectrumData()->correl, 'f', 3));
     }
     resizeColumnsToContents();
 }

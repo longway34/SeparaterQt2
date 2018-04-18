@@ -26,7 +26,11 @@ void SPRSpectrumZonesTable::setModel(SPRSpectrumZonesTableModel *value)
         setContentsMargins(0,0,0,0);
         setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
     }
-    setHddenChannels(QList<bool>({false, false, false, false}));
+    hidenCollumns.clear();
+    for(int i=0; i < model->getThreads()->getData(); i++){
+        hidenCollumns.push_back(true);
+    }
+    setHddenChannels(hidenCollumns);
     setFirtChannel(0);
 
     setHorizontalHeaderLabels(nameH);
@@ -47,57 +51,34 @@ void SPRSpectrumZonesTable::setFirtChannel(int ch){
     //        resizeColumnsToContents();
 }
 
-void SPRSpectrumZonesTable::setHddenChannels(QList<bool> hiddens){
+void SPRSpectrumZonesTable::setHddenChannels(QList<bool> hidden){
+    hidenCollumns = hidden;
     for(int i=0; i < columnCount(); i++){
-        bool value = hiddens.size() > i ? hiddens[i] : true;
-        setColumnHidden(i, value);
+        setColumnHidden(i, hidenCollumns[i]);
     }
 }
 
 void SPRSpectrumZonesTable::setVisibleOneChannel(int ch)
 {
-    QList<bool> hiddens;
-    for(int i=0; i < columnCount(); i++){
+    hidenCollumns.clear();
+    for(int i=0; i < model->getThreads()->getData(); i++){
         if(i == ch){
-            hiddens.push_back(false);
+            hidenCollumns.push_back(false);
         } else {
-            hiddens.push_back(true);
+            hidenCollumns.push_back(true);
         }
     }
     setFirtChannel(ch);
-    setHddenChannels(hiddens);
+    setHddenChannels(hidenCollumns);
 }
-
-//QSize SPRSpectrumRangesTable::sizeHint() const
-//{
-//    if(rowCount() > 0){
-//        int height = QTableWidget::sizeHint().height();
-//        int width = 0;
-//        for(int i=0; i<columnCount(); i++){
-//            if(!isColumnHidden(i)){
-//                width += columnWidth(i);
-//            }
-//        }
-//        return QSize(width,height);
-//    } else {
-//        QTableWidget::sizeHint();
-//    }
-//}
 
 void SPRSpectrumZonesTable::widgetsShow()
 {
     if(model){
-        for(int i=0; i< model->items.size(); i++){
-            SPRVariable<uint> *thr = model->getThreads();
-            if(i < model->getThreads()->getData()){
-                showColumn(i);
-                //                cellWidget(0, i)->setVisible(true);
-                ((SPRSpectrumRanges*)(cellWidget(0,i)))->widgetsShow();
-
-            } else {
-                hideColumn(i);
-                //                cellWidget(0, i)->setVisible(false);
-            }
+        while(rowCount() > 0) {
+            SPRSpectrumRanges *rande = (SPRSpectrumRanges*)cellWidget(0, 0);
+            delete rande;
+            removeRow(0);
         }
     }
 }

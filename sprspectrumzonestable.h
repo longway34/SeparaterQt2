@@ -21,12 +21,13 @@ public:
     // ISPRWidget interface
 
     SPRSpectrumZonesTableModel *model;
+    QList<bool> hidenCollumns;
 public:
     virtual ISPRModelData *getModel();
 
     void setModel(SPRSpectrumZonesTableModel *value);
     void setFirtChannel(int ch);
-    void setHddenChannels(QList<bool> hiddens);
+    void setHddenChannels(QList<bool> hidden);
     void setVisibleOneChannel(int ch);
 //    QSize sizeHint() const;
 public slots:

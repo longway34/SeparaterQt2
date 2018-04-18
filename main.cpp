@@ -3,6 +3,7 @@
 #include <QApplication>
 
 #include "models/sprspectrumlistitemsmodel.h"
+#include "models/sprelementsmodel.h"
 
 #include <QDomDocument>
 #include <QFile>
@@ -17,18 +18,28 @@ int main(int argc, char *argv[])
     bool y = QDir::setCurrent("/home/longway/");
 #endif
 
-    SPRSpectrumListItemsModel *model;
+    SPRElementsModel *model;
 
     QDomDocument doc;
-    QFile in("СРФ1.xml");
+    QFile in("Separator.xml");
     if(in.open(QIODevice::ReadOnly)){
         if(doc.setContent(&in)){
 
 
-            model = new SPRSpectrumListItemsModel(&doc);
+            model = new SPRElementsModel(&doc);
 
             model->store();
             in.close();
+
+            QFile out("Separator1.xml");
+            if(out.open(QIODevice::WriteOnly)){
+            QTextStream stream( &out );
+              stream << doc.toString();
+
+              out.close();
+            }
+
+
 
         }
 

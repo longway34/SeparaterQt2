@@ -18,9 +18,9 @@ public:
     TypeVariable typeVariable;
 
     SPRVariable(QDomDocument *doc, QString xpath, T defValue, ISPRModelData *modelParent = nullptr):
-        ISPRVariable(modelParent), IModelVariable(doc, xpath, QString::number(defValue))
+        ISPRVariable(modelParent), IModelVariable(doc, xpath, QString::number(defValue), true)
     {
-        setRoot(doc, xpath, toString(defValue), false);
+        setRoot(doc, xpath, toString(defValue), true);
         fromXML();
     }
 

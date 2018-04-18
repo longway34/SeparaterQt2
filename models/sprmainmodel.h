@@ -11,6 +11,7 @@
 #include "models/sprsettingsrentgenmodel.h"
 #include "models/sprspectrumzonestablemodel.h"
 #include "models/sprspectrumlistitemsmodel.h"
+#include "models/sprelementsmodel.h"
 
 #include "tcp/ServerConnect.h"
 
@@ -24,6 +25,9 @@ class SPRMainModel : public ISPRModelData
     ServerConnect *server;
 
     SPRQStringVariable *spectrumFName;
+
+
+    SPRElementsModel *elements;
 
     SPRSettingsMainModel        *settingsMainModel;
     SPRSettingsControlModel     *settingsControlModel;

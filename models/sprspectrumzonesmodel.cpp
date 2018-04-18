@@ -7,6 +7,10 @@ SPRSpectrumZonesModel::SPRSpectrumZonesModel(QDomDocument *doc, int indexThread,
     if(!_elProperty){
         _elProperty = &DEF_SPR_FORMULA_ELEMENTS_PROPERTY;
     }
+
+
+
+
     foreach (EnumElements element, _elProperty->keys()) {
         QString xpath = SPR_SETTINGS_SPECTRUM_RANGES_XPATH_PREFIX +
                 QString("[@INDEX=")+QString::number(tIndex)+"]"+

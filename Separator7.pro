@@ -113,7 +113,9 @@ SOURCES += \
     sprspectrumsmalltable.cpp \
     tcp/tcpteststartseparate.cpp \
     tcp/tcpteststopseparate.cpp \
-    tcp/tcpseparatego.cpp
+    tcp/tcpseparatego.cpp \
+    sprspectrumbaselisttable2.cpp \
+    models/sprelementsmodel.cpp
 
 HEADERS += \
     _types.h \
@@ -197,7 +199,9 @@ HEADERS += \
     sprspectrumsmalltable.h \
     tcp/tcpteststartseparate.h \
     tcp/tcpteststopseparate.h \
-    tcp/tcpseparatego.h
+    tcp/tcpseparatego.h \
+    sprspectrumbaselisttable2.h \
+    models/sprelementsmodel.h
 
 FORMS += \
     sprsettingsrentgenmainwidget.ui \

@@ -5,6 +5,9 @@
 #include <QDomDocument>
 #include "models/isprmodeldata.h"
 #include "models/sprvariable.h"
+#include "models/sprqstringvariable.h"
+#include "models/sprcolorvariable.h"
+
 #include "_types.h"
 
 #define SPR_SETTINGS_SPECTRUM_RANGES_XPATH_PREFIX "SEPARATOR/SEPARATE_SETUP/OBL/CHANNEL"
@@ -12,10 +15,24 @@
 #define SPR_SETTINGS_SPECTRUM_RANGES_XPATH_MAX_ARGUMENT "[Rs]"
 
 typedef struct {
+public:
     SPRVariable<uint> *min;
     SPRVariable<uint> *max;
     QColor color;
+//    uint min;
+//    uint max;
+    SPRQStringVariable *sname;
+    SPRQStringVariable *fname;
+    SPRColorVariable *vcolor;
     int elIndex;
+//    uint getMin(){if(vmin) return vmin->getData()
+//                else return min};
+//    uint getMax();
+//    QColor getColor();
+//    QString getSName();
+//    QString getFName();
+//    int getElIndex;
+
 } SpectorRange;
 
 typedef QMap<EnumElements, SpectorRange> ElementsProperty;

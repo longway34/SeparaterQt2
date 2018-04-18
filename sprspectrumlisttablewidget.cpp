@@ -1,211 +1,56 @@
 #include "sprspectrumlisttablewidget.h"
 #include <QHeaderView>
 
-void SPRSpectrumListTableWidget::initNullGraphItems()
-{
-    foreach(EnumElements el, DEF_SPR_FORMULA_ELEMENTS_PROPERTY.keys()){
-        QwtPlotHistogram *nullHist = new QwtPlotHistogram();
-        DefaultElementsProperty ep = DEF_SPR_FORMULA_ELEMENTS_PROPERTY[el];
-        nullHist->setSamples(QVector<QwtIntervalSample>({QwtIntervalSample(0.001, ep.min, ep.max)}));
-        nullHist->setPen(QPen(ep.color, 1, Qt::SolidLine));
-        nullHist->setBrush(QBrush(ep.color));
-        nullGrItems.zones[el] = nullHist;
-        nullHist->attach(ui.qwtPlot);
-    }
-
-    ui.qwtPlot->setAxisScale(QwtPlot::xBottom, 0, MAX_SPR_SPECTOR_CHANNELS);
-}
-
 SPRSpectrumListTableWidget::SPRSpectrumListTableWidget(QWidget *parent) :
     QWidget(parent), model(0)
 {
     ui.setupUi(this);
-    ui.qwtPlot->setCanvasBackground(QBrush(Qt::black));
+//    ui.graphic->setCanvasBackground(QBrush(Qt::black));
 
 
     connect(ui.tListSpectrumItem, SIGNAL(cellClicked(int,int)), this, SLOT(viewChange(int,int)));
-//    connect(ui.tListSpectrumItem, SIGNAL(rowSelectedChecked(int)), this, SLOT(viewChange(int)));
     connect(ui.tRangesChannel, SIGNAL(changeColor(EnumElements,QColor)), this, SLOT(onChangeZoneColor(EnumElements,QColor)));
     connect(ui.tRangesChannel, SIGNAL(tableChange(EnumElements,int,int)), this, SLOT(onChangeZoneRange(EnumElements,int,int)));
-    initNullGraphItems();
 
     ui.gbBasetSpectrums->setVisible(ui.cbBasetSpectrumVisible->isChecked());
 
-//    connect(ui.cbBasetSpectrumVisible, SIGNAL(toggled(bool)), this, SLOT(viewChange(bool)));
-//    ui.gbSpectrumElements->setMinimumWidth(150);
 
 }
 
 ISPRModelData *SPRSpectrumListTableWidget::setModel(SPRMainModel *mainModel){
     model = mainModel;
     spectrums = mainModel->getSpectrumListItemsModel();
+
+    ui.graphic->setModel(spectrums, spectrumsAll, true);
+
+    ui.tListBasedSpectrumItem->setModel(spectrums, spectrumBase);
+    ui.tListSpectrumItem->setModel(spectrums, spectrumsOnly);
+
+    ui.tRangesChannel->setModel(mainModel->getSpectrumZonesTableModel());
+    ui.tRangesChannel->setVisibleOneChannel(0);
+    widgetsShow();
 }
-
-//ISPRModelData *SPRSpectrumListTableWidget::setModel(SPRSpectrumListItemsModel *spectrumListItems, QFile *inp)
-//{
-////    SPRSpectrumZonesModel *ranges = rangesModel->items[thread];
-
-
-//    for(int i=baseItems.size()-1; i >= 0; i--){
-////        if(i < rangesModel->items.size()){
-////        if(ui.tListBasedSpectrumItem->getModel(i)){
-////            SPRSpectrumItemModel *itModel = ui.tListBasedSpectrumItem->getModel(i);
-//            foreach (EnumElements el, baseItems[i].zones.keys()) {
-//                baseItems[i].zones[el]->detach();
-//            }
-////        }
-//        baseItems[i].spect->detach();
-//        baseItems.pop_back();
-//        ui.tListBasedSpectrumItem->removeRow(i);
-//    }
-
-//    for(int i=grItems.size()-1; i >= 0; i--){
-////        if(i < rangesModel->items.size()){
-//            foreach (EnumElements el, grItems[i].zones.keys()) {
-//                grItems[i].zones[el]->detach();
-//            }
-////        }
-//        grItems[i].spect->detach();
-//        grItems.pop_back();
-//        ui.tListSpectrumItem->removeRow(i);
-//    }
-
-//    rangesModel = spectrumListItems->getZonesTableModel();
-
-//    ui.tListBasedSpectrumItem->setModel(spectrumListItems, true);
-//    ui.tListSpectrumItem->setModel(spectrumListItems, false);
-//    bool res = true;
-
-
-//    if(rangesModel){
-//        int countBasedSpectrum = rangesModel->getThreads()->getData();
-//        if(!inp->isOpen()){
-//            bool res = inp->open(QIODevice::ReadOnly);
-//        }
-//        if(res){
-//           uint8_t buf[DEF_SPECTRUM_DATA_BUF_LENGTH];
-////            if(inp->open(QIODevice::ReadOnly)){
-//           inp->seek(0);
-//           char b[2];
-//           inp->read(b, 2);
-//           while(inp->read((char*)(buf), DEF_SPECTRUM_DATA_BUF_LENGTH)){
-//               if(countBasedSpectrum-- > 0){
-////                       ui.tListBasedSpectrumItem->setModel(buf, rangesModel);
-//                   ui.tListBasedSpectrumItem->getModel()->addSpectrumBase(buf, DEF_SPECTRUM_DATA_BUF_LENGTH);
-//               } else {
-//                   ui.tListSpectrumItem->getModel()->addSpectrum(buf, DEF_SPECTRUM_DATA_BUF_LENGTH);
-//               }
-//           }
-////            }
-//        }
-
-////        ui.tListSpectrumItem->setModel(inp, rangesModel);
-//        if(ui.tListSpectrumItem->columnCount() > 0){
-//            ui.tListSpectrumItem->selectRow(0);
-//        }
-//        ui.tRangesChannel->setModel(rangesModel);
-
-//        ui.tListBasedSpectrumItem->resizeRowsToContents();
-
-//        connect(ui.tRangesChannel, SIGNAL(changeColor(EnumElements,QColor)), this, SLOT(onChangeZoneColor(EnumElements,QColor)));
-//        int rc = ui.tListBasedSpectrumItem->rowCount();
-//        for(int row=0; row<ui.tListBasedSpectrumItem->rowCount(); row++){
-//            uint32_t thread = *ui.tListBasedSpectrumItem->getModel(row)->getSpectrumData()->thread;
-//            SPRSpectrumZonesModel *ranges = rangesModel->items[thread];
-//            SPRGrSpectrumItemModel *gr = new SPRGrSpectrumItemModel(ranges, ui.tListBasedSpectrumItem->getModel(row));
-//            QwtPlotCurve *curve = new QwtPlotCurve();
-
-//            QColor col(ui.tListSpectrumItem->getColorSpectrum(row));
-//            QPen pen(ui.tListSpectrumItem->getColorSpectrum(row), 1, Qt::SolidLine);
-//            curve->setPen(pen);
-//            col.setRgba(qRgba(255,255,255,64));
-//            QBrush brush(col);
-//            curve->setBrush(brush);
-
-//            GraphItem gri(curve);
-//            gri.thread = thread;
-//            foreach(EnumElements el, ranges->elements.keys()){
-//                QwtPlotHistogram *zonesItemHistogram = new QwtPlotHistogram();
-//                zonesItemHistogram->setSamples(gr->getIntervalSamples()[el]);
-
-//                QColor col(gr->getColorZone(el));
-//                QPen pen(col, 2, Qt::SolidLine);
-//                col.setAlpha(32);
-//                QBrush brush(col);
-//                zonesItemHistogram->setPen(pen);
-//                zonesItemHistogram->setBrush(brush);
-
-//                zonesItemHistogram->attach(ui.qwtPlot);
-//                gri.zones[el] = zonesItemHistogram;
-//            }
-
-//            baseItems.push_back(gri);
-//            spectBaseGrData.push_back(gr);
-
-//        }
-//        rc = ui.tListSpectrumItem->rowCount();
-//        for(int row=0; row<ui.tListSpectrumItem->rowCount(); row++){
-//            uint32_t thread = *ui.tListSpectrumItem->getModel(row)->getSpectrumData()->thread;
-
-//            SPRSpectrumZonesModel *ranges = rangesModel->items[thread];
-//            SPRGrSpectrumItemModel *gr = new SPRGrSpectrumItemModel(ranges, ui.tListSpectrumItem->getModel(row));
-
-//            QwtPlotCurve *curve = new QwtPlotCurve();
-//            curve->setSamples(gr->getSamples());
-//            QColor col(ui.tListSpectrumItem->getColorSpectrum(row));
-//            QPen pen(ui.tListSpectrumItem->getColorSpectrum(row), 1, Qt::SolidLine);
-//            curve->setPen(pen);
-//            col.setRgba(qRgba(255,255,255,64));
-//            QBrush brush(col);
-//            curve->setBrush(brush);
-
-
-//            GraphItem gri(curve);
-//            gri.thread = thread;
-
-//            foreach(EnumElements el, ranges->elements.keys()){
-//                QwtPlotHistogram *zonesItemHistogram = new QwtPlotHistogram();
-//                zonesItemHistogram->setSamples(gr->getIntervalSamples()[el]);
-
-//                QColor col(gr->getColorZone(el));
-//                QPen pen(col, 2, Qt::SolidLine);
-//                col.setAlpha(32);
-//                QBrush brush(col);
-//                zonesItemHistogram->setPen(pen);
-//                zonesItemHistogram->setBrush(brush);
-
-//                zonesItemHistogram->attach(ui.qwtPlot);
-//                gri.zones[el] = zonesItemHistogram;
-//            }
-
-//            curve->attach(ui.qwtPlot);
-
-//            grItems.push_back(gri);
-//            spectGrData.push_back(gr);
-//        }
-//    }
-
-//    widgetsShow();
-//    return rangesModel;
-//}
 
 void SPRSpectrumListTableWidget::widgetsShow()
 {
 
-    for(int row=0; row<ui.tListSpectrumItem->rowCount(); row++){
-        bool sel = ui.tListSpectrumItem->isSelectedItem(row);
-        if(row < grItems.size()){
-            bool current = ui.tListSpectrumItem->currentRow() == row;
-            grItems[row].setVisible(sel, current);
-        }
-    }
-    ui.qwtPlot->replot();
+//    for(int row=0; row<ui.tListSpectrumItem->rowCount(); row++){
+//        bool sel = ui.tListSpectrumItem->isSelectedItem(row);
+//        if(row < grItems.size()){
+//            bool current = ui.tListSpectrumItem->currentRow() == row;
+//            grItems[row].setVisible(sel, current);
+//        }
+//    }
+    ui.tListBasedSpectrumItem->widgetsShow();
+    ui.tListSpectrumItem->widgetsShow();
+    ui.tRangesChannel->widgetsShow();
+    ui.graphic->widgetsShow();
 }
 
 void SPRSpectrumListTableWidget::onChangeSpectColor(int row)
 {
     QColor color(ui.tListSpectrumItem->getColorSpectrum(row));
-    grItems[row].spect->setPen(color);
+//    grItems[row].spect->setPen(color);
     widgetsShow();
 }
 
@@ -246,16 +91,16 @@ void SPRSpectrumListTableWidget::viewChange(bool value)
 
 void SPRSpectrumListTableWidget::onChangeZoneRange(EnumElements el, int thread, int col)
 {
-    for(int i=0; i<grItems.size(); i++){
-        if(grItems[i].thread == thread){
+//    for(int i=0; i<grItems.size(); i++){
+//        if(grItems[i].thread == thread){
 
 
-            double value = grItems[i].zones[el]->sample(0).value;
-            SPRSpectrumZonesModel *ranges = spectrums->getZonesTableModel()->items[thread];
+//            double value = grItems[i].zones[el]->sample(0).value;
+//            SPRSpectrumZonesModel *ranges = spectrums->getZonesTableModel()->items[thread];
 
-            QwtIntervalSample samp(value, ranges->elements[el].min->getData(), ranges->elements[el].max->getData());
-            grItems[i].zones[el]->setSamples(QVector<QwtIntervalSample>{samp});
-        }
-    }
+//            QwtIntervalSample samp(value, ranges->elements[el].min->getData(), ranges->elements[el].max->getData());
+//            grItems[i].zones[el]->setSamples(QVector<QwtIntervalSample>{samp});
+//        }
+//    }
     widgetsShow();
 }

@@ -34,7 +34,7 @@
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
     <widget class="QWidget" name="widget" native="true">
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="10,90">
       <item>
        <widget class="QSplitter" name="splitter">
         <property name="orientation">
@@ -145,15 +145,10 @@
           </item>
          </layout>
         </widget>
-        <widget class="QwtPlot" name="qwtPlot">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Maximum" vsizetype="MinimumExpanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-        </widget>
        </widget>
+      </item>
+      <item>
+       <widget class="SPRSpectrumGraphicsWidget" name="graphic" native="true"/>
       </item>
      </layout>
     </widget>
@@ -268,21 +263,21 @@
      <property name="title">
       <string>Базовые спектры</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
+     <layout class="QVBoxLayout" name="verticalLayout" stretch="95,5">
       <item>
        <widget class="QWidget" name="widget_5" native="true">
         <layout class="QHBoxLayout" name="horizontalLayout_5">
          <item>
-          <widget class="SPRSpectrumBasedListTable" name="tListBasedSpectrumItem">
+          <widget class="SPRSpectrumBaseListTable2" name="tListBasedSpectrumItem">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
            <property name="minimumSize">
             <size>
-             <width>0</width>
+             <width>200</width>
              <height>0</height>
             </size>
            </property>
@@ -359,11 +354,6 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QwtPlot</class>
-   <extends>QFrame</extends>
-   <header>qwt_plot.h</header>
-  </customwidget>
-  <customwidget>
    <class>SPRSpectrumZonesTable</class>
    <extends>QTableWidget</extends>
    <header>sprspectrumzonestable.h</header>
@@ -374,9 +364,15 @@
    <header>sprspectrumlisttable.h</header>
   </customwidget>
   <customwidget>
-   <class>SPRSpectrumBasedListTable</class>
+   <class>SPRSpectrumGraphicsWidget</class>
+   <extends>QWidget</extends>
+   <header>sprspectrumgraphicswidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SPRSpectrumBaseListTable2</class>
    <extends>QTableWidget</extends>
-   <header>sprspectrumbasedlisttable.h</header>
+   <header>sprspectrumbaselisttable2.h</header>
   </customwidget>
  </customwidgets>
  <resources>

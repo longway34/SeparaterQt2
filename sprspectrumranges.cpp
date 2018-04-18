@@ -15,13 +15,6 @@ void SPRSpectrumRanges::setModel(SPRSpectrumZonesModel *value)
     if(model){
         this->clear();
         QStringList nameH; 
-//        if(model->tIndex != 0){
-//            nameH << tr("<<") << tr(">>");
-//            setColumnCount(2);
-//        } else {
-//            nameH << "*" << tr("<<") << tr(">>");
-//            setColumnCount(3);
-//        }
 
         nameH << "*" << tr("<<") << tr(">>");
         setColumnCount(3);
@@ -30,14 +23,13 @@ void SPRSpectrumRanges::setModel(SPRSpectrumZonesModel *value)
         this->setHorizontalHeaderLabels(nameH);
         setRowCount(model->elements.size());
         setAlternatingRowColors(true);
-//        setStyleSheet("alternate-background-color: rgb(201, 255, 198);");
-    //    setRowCount(1);
+
         QStringList nameV;
         int count = 0;
 //        actualSize = QSize(0,horizontalHeader()->height());
         foreach(EnumElements el, model->elements.keys()){
             int colCount = 0;
-//            if(model->tIndex == 0){
+
                 ColorButton *cb = new ColorButton(model->elements[el].color);
                 QVariant qv_tw;
                 qv_tw.setValue<QTableWidget*>(this);
@@ -47,7 +39,6 @@ void SPRSpectrumRanges::setModel(SPRSpectrumZonesModel *value)
                 setCellWidget(count, 0, cb);
                 connect(cb, SIGNAL(changeColor(QColor)), this, SLOT(viewChange(QColor)));
                 colCount++;
-//            }
             
             nameV.append(DEF_SPR_FORMULA_ELEMENTS_PROPERTY[el].sname);
             QString tt = tr("Минимальное значение канала для елемента'") +
@@ -69,25 +60,11 @@ void SPRSpectrumRanges::setModel(SPRSpectrumZonesModel *value)
             cell->setMaximumSize(std::max(fontMetrics().width("9999999"),fontMetrics().width(horizontalHeaderItem(1)->text())), 16777215);
             cell->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
             connect(cell, SIGNAL(editingFinished()), this, SLOT(viewChange()));
-    //        connect(cell, QWidget::focusInEvent(QFocusEvent * event), this, SLOT(onFocus(QFocusEvent*)));
-//            actualSize.setHeight(actualSize.height()+rowHeight(count));
-//            if(count == 0){
-//                if(model->tIndex == 0){
-//                    actualSize.setWidth(columnWidth(0) + columnWidth(1) * 2);
-//                } else {
-//                    actualSize.setWidth(columnWidth(0) * 2);
-//                }
-//            }
+
             count++;
         }
         this->setVerticalHeaderLabels(nameV);
-//        if(model->tIndex == 0){
-//            this->setVerticalHeaderLabels(nameV);
-//            actualSize.setWidth(actualSize.width() + verticalHeader()->size().width());
-//        } else {
-//    //        this->setVerticalHeader(nullptr);
-//            this->verticalHeader()->setVisible(false);
-//        }
+
         resizeColumnsToContents();
         resizeRowsToContents();
 
@@ -106,12 +83,9 @@ QPoint SPRSpectrumRanges::getSelectedPosition()
         int row = DEF_SPR_FORMULA_ELEMENTS_PROPERTY[el].index;
         QWidget *wid = cellWidget(row, 0);
         int col;
-//        if(firstStateView){
-//            if(model->tIndex == 0){
-            col = focusWidget() == cellWidget(row, 1) ? 1 : 2;
-//        } else {
-//            col = focusWidget() == cellWidget(row, 0) ? 0 : 1;
-//        }
+
+        col = focusWidget() == cellWidget(row, 1) ? 1 : 2;
+
         return QPoint(row, col);
     }
 }
@@ -140,8 +114,7 @@ SPRSpectrumRanges::SPRSpectrumRanges(QWidget *parent) :
 void SPRSpectrumRanges::widgetsShow()
 {
     if(model){
-//        int minColumn = model->tIndex == 0 ? 1 : 0;
-//        int maxColumn = model->tIndex == 0 ? 2 : 1;
+
         int minColumn = 1;
         int maxColumn = 2;
         foreach(EnumElements el, model->elements.keys()){
@@ -158,7 +131,7 @@ void SPRSpectrumRanges::widgetsShow()
             this->verticalHeader()->setVisible(false);
             this->setColumnHidden(0, true);
         }
-//        resizeColumnsToContents();
+
     }
 }
 

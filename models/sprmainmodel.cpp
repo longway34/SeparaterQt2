@@ -5,6 +5,8 @@ void SPRMainModel::setDoc(QDomDocument *value)
 {
     doc = value;
 
+    elements = new SPRElementsModel(doc, this);
+
     if(settingsMainModel) {delete settingsMainModel; settingsMainModel = nullptr;}
     settingsMainModel = new SPRSettingsMainModel(doc, this);
 
