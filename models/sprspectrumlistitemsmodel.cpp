@@ -38,7 +38,7 @@ void SPRSpectrumListItemsModel::store(QString fname)
 {
     if(fname == ""){
         if(spectrumsfName){
-            fname = spectrumsfName->getData();
+            fname = spectrumsfName->getValue();
         } else {
             fname = QString(DEF_SPR_MAIN_SETTINGS_FNAME) + QString(DEF_SPR_MAIN_SPECTRUM_FNAME_SUFFIX);
         }
@@ -93,7 +93,7 @@ void SPRSpectrumListItemsModel::addSpectrums(QString fName){
     if(in.open(QIODevice::ReadOnly)){
        QByteArray b2 = in.read(sizeof(b2));
        while(in.read((char*)buf, DEF_SPECTRUM_DATA_BUF_LENGTH) == DEF_SPECTRUM_DATA_BUF_LENGTH){
-           if(specCount < threads->getData()){
+           if(specCount < threads->getValue()){
                addSpect(buf, DEF_SPECTRUM_DATA_BUF_LENGTH, &spectrumsModelBase);
            } else {
                addSpect(buf, DEF_SPECTRUM_DATA_BUF_LENGTH, &spectrumsModel);
@@ -103,7 +103,7 @@ void SPRSpectrumListItemsModel::addSpectrums(QString fName){
        in.close();
     }
    memset(buf, 0, DEF_SPECTRUM_DATA_LENGTH_BYTE);
-   while (specCount < threads->getData()) {
+   while (specCount < threads->getValue()) {
        addSpect(buf, DEF_SPECTRUM_DATA_LENGTH_BYTE, &spectrumsModelBase);
 //       SPRSpectrumItemModel *item = new SPRSpectrumItemModel(zonesTableModel, formulas, this);
 //       item->setSpectrumName(QString("bspect_%1").arg(specCount));
@@ -119,7 +119,7 @@ void SPRSpectrumListItemsModel::setSpectrums()
 {
     QString fName = DEF_SPR_MAIN_SETTINGS_FNAME+DEF_SPR_MAIN_SPECTRUM_FNAME_SUFFIX;
     if(spectrumsfName){
-        fName = spectrumsfName->getData();
+        fName = spectrumsfName->getValue();
     }
     clearSpectrumsBase();
     clearSpectrums();

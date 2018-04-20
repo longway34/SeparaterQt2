@@ -33,9 +33,9 @@ void SPRPorogsWidget::widgetsShow()
         ui.tPorogsValues->clear();
         SPRVariable<TypeConditions> *condv = model->getConditions();
         SPRVariable<uint> *thr = model->getThreads();
-        int cond = mapConditions[model->getConditions()->getData()];
+        int cond = mapConditions[model->getConditions()->getValue()];
         ui.tPorogsValues->setRowCount(cond);
-        ui.tPorogsValues->setColumnCount(model->getThreads()->getData());
+        ui.tPorogsValues->setColumnCount(model->getThreads()->getValue());
         QVector<QString> *names = new QVector<QString>({ tr("H1 >"),
                                        tr("и H2 <"),
                                        tr("или H2 <"),
@@ -45,11 +45,11 @@ void SPRPorogsWidget::widgetsShow()
                                       });
         QStringList vnames;
         QStringList hnames;
-        for(int t=0, k=1; t < model->getThreads()->getData(); t++, k++){
+        for(int t=0, k=1; t < model->getThreads()->getValue(); t++, k++){
             hnames.append(QString::number(k));
             for(int c=0; c<cond; c++){
                 if(!t) vnames.append(names->at(c));
-                QLineEdit *cellValue = new QLineEdit(QString::number(model->porogs[t][c]->getData()),ui.tPorogsValues);
+                QLineEdit *cellValue = new QLineEdit(QString::number(model->porogs[t][c]->getValue()),ui.tPorogsValues);
                 cellValue->setFrame(false); cellValue->setAlignment(Qt::AlignCenter);
                 cellValue->setValidator(new QDoubleValidator(-99,99,2,cellValue));
                 cellValue->setToolTip(tr("Значение для ручья ")+QString::number(t)+tr(" условия ")+names->at(c));
@@ -73,7 +73,7 @@ void SPRPorogsWidget::viewChange()
     QTableWidget *tw = sender()->property("tw").value<QTableWidget*>();
     int row = le->property("row").toInt();
     int col = le->property("col").toInt();
-    model->porogs[col][row]->setData(value);
+    model->porogs[col][row]->setValue(value);
     emit tableChange(tw, row, col);
 }
 

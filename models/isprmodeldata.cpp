@@ -7,7 +7,7 @@ QDomDocument *ISPRModelData::getDoc() const
     return doc;
 }
 
-void ISPRModelData::setDoc(QDomDocument *_doc, ISPRModelData *parent)
+void ISPRModelData::setDoc(QDomDocument *_doc, IModelVariable *parent)
 {
     doc = _doc;
     if(parent){
@@ -15,25 +15,27 @@ void ISPRModelData::setDoc(QDomDocument *_doc, ISPRModelData *parent)
     }
 }
 
-void ISPRModelData::setDoc(QString fname, ISPRModelData *parent)
+void ISPRModelData::setDoc(QString fname, IModelVariable *parent)
 {
     QFile in(fname);
     if(in.open(QIODevice::ReadOnly)){
         if(!document.setContent(&in)){
             qDebug() << "Error!!! read content from " << fname << "new file created now...";
-            document.createElement("SEPARATOR");
+            doc = new QDomDocument("SEPARATOR");
+
+            document = *doc;
         }
     }
     setDoc(&document, parent);
 }
 
 
-ISPRModelData::ISPRModelData(QString fname, ISPRModelData *parent):doc(nullptr)
+ISPRModelData::ISPRModelData(QString fname, IModelVariable *parent):doc(nullptr)
 {
     setDoc(fname, parent);
 }
 
-ISPRModelData::ISPRModelData(QDomDocument *_doc, ISPRModelData *parent): doc(nullptr)
+ISPRModelData::ISPRModelData(QDomDocument *_doc, IModelVariable *parent): doc(nullptr)
 {
     setDoc(_doc, parent);
 }
@@ -52,5 +54,5 @@ void ISPRModelData::store(QString fname)
 }
 
 void ISPRModelData::store(){
-    emit goStore();
+    emit doStore();
 }

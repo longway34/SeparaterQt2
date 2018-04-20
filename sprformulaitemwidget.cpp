@@ -36,25 +36,25 @@ void SPRFormulaItemWidget::viewChange()
 {
     double val = ((QLineEdit*)sender())->text().toDouble();
     if(sender() == ui.leMulUp){
-        model->MulUp->setData(val);
+        model->MulUp->setValue(val);
         return;
     }
     if(sender() == ui.leMulDown){
-        model->MulDown->setData(val);
+        model->MulDown->setValue(val);
         return;
     }
     if(sender() == ui.leMin){
-        model->min->setData(val);
-        if(model->min->getData() > model->max->getData()){
-            model->max->setData(model->min->getData());
+        model->min->setValue(val);
+        if(model->min->getValue() > model->max->getValue()){
+            model->max->setValue(model->min->getValue());
             widgetsShow();
         }
         return;
     }
     if(sender() == ui.leMax){
-        model->max->setData(val);
-        if(model->max->getData()<model->min->getData()){
-            model->min->setData(model->max->getData());
+        model->max->setValue(val);
+        if(model->max->getValue()<model->min->getValue()){
+            model->min->setValue(model->max->getValue());
             widgetsShow();
         }
         return;
@@ -93,12 +93,12 @@ void SPRFormulaItemWidget::setElements(const DefaultMapElements *elements)
 
 void SPRFormulaItemWidget::widgetsShow()
 {
-    ui.lElementUp1->setCurrentElement(model->ElementUp1->getData());
-    ui.lElementUp2->setCurrentElement(model->ElementUp2->getData());
-    ui.lElementDown1->setCurrentElement(model->ElementDown1->getData());
-    ui.lElementDown2->setCurrentElement(model->ElementDown2->getData());
-    ui.lElementDown3->setCurrentElement(model->ElementDown3->getData());
-    ui.lElementDown4->setCurrentElement(model->ElementDown4->getData());
+    ui.lElementUp1->setCurrentElement(model->ElementUp1->getValue());
+    ui.lElementUp2->setCurrentElement(model->ElementUp2->getValue());
+    ui.lElementDown1->setCurrentElement(model->ElementDown1->getValue());
+    ui.lElementDown2->setCurrentElement(model->ElementDown2->getValue());
+    ui.lElementDown3->setCurrentElement(model->ElementDown3->getValue());
+    ui.lElementDown4->setCurrentElement(model->ElementDown4->getValue());
 
     ui.leMulUp->setText(model->MulUp->toString());
     ui.leMulDown->setText(model->MulDown->toString());

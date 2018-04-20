@@ -11,7 +11,7 @@ SPRSeparateModel::SPRSeparateModel(QDomDocument *_doc, ISPRModelData *parent):
     mainModel = new SPRMainModel(doc);
     setProperty("delete_main", QVariant(true));
 
-    for(int i=0; i< mainModel->getSettingsMainModel()->getThreads()->getData(); i++){
+    for(int i=0; i< mainModel->getSettingsMainModel()->getThreads()->getValue(); i++){
         QString path = SPR_SEPARATE_GMZ_PATH_PREFIX + QString::number(i)+"]";
         SPRVariable<double> *var = new SPRVariable<double>(doc, path, DEF_SPR_SEPARATE_GMZ, this);
         gmz.push_back(var);

@@ -172,7 +172,7 @@ void SPRTestIMSWidget::onChangeValue(double _val){
     if(sender() == ui.lePitatelPercents){
         if(model->getServer()->isState(spr_state_pitatel_on)){
             uint16_t code = round(_val) * 20;
-            model->getSettingsControlModel()->VEMSBeginCode->setData(code);
+            model->getSettingsControlModel()->VEMSBeginCode->setValue(code);
 
             commandChangePersentPitatel->setSendData(&code, sizeof(code));
             commandChangePersentPitatel->send(model->getServer());
@@ -231,7 +231,7 @@ void SPRTestIMSWidget::onCommand(bool){
         if(sender() == ui.bIMSStart){
             QVector<uint8_t> _vch;
     //        QVector<QCheckBox*> _cbCh= {ui.cbIMSThread0, ui.cbIMSThread1, ui.cbIMSThread2, ui.cbIMSThread3, ui.cbIMSThread4, ui.cbIMSThread5, ui.cbIMSThread6, ui.cbIMSThread7};
-            for(uint i=0; i < model->getSettingsMainModel()->getIms()->getData(); i++){
+            for(uint i=0; i < model->getSettingsMainModel()->getIms()->getValue(); i++){
                 if(ui.cbIMSAllThreads->isChecked() || vectorIms[i]->isChecked()){
                     _vch.push_back(i);
                 }
@@ -262,7 +262,7 @@ void SPRTestIMSWidget::onCommand(bool){
             return;
         }
         if(sender() == ui.bGetSpectrum){
-            getSpectrumsCommand->setThreadTimer(model->getSettingsMainModel()->getThreads()->getData(), 5000);
+            getSpectrumsCommand->setThreadTimer(model->getSettingsMainModel()->getThreads()->getValue(), 5000);
             getSpectrumsCommand->send(model->getServer());
             return;
         }
@@ -497,12 +497,12 @@ ISPRModelData *SPRTestIMSWidget::setModel(SPRMainModel *_model)
 
     ui.wSpectrumWidget->setModel(new SPRSpectrumListItemsModel(model->getSpectrumZonesTableModel(), model->getSettingsFormulaModel(),model->getSettingsMainModel()->getThreads(), model->getSettingsMainModel()->getSpectrumFileName()), spectrumsOnly, true);
 
-    getSpectrumsCommand->setThreadTimer(model->getSettingsMainModel()->getThreads()->getData());
+    getSpectrumsCommand->setThreadTimer(model->getSettingsMainModel()->getThreads()->getValue());
     separatorOnCommand->setModel(model->getSettingsRentgenModel());
     rentgenOnCommand->setModel(model->getSettingsRentgenModel());
     commandStartPitatel->setModelVariable(model->getSettingsControlModel()->VEMSBeginCode);
 
-    uint16_t code = model->getSettingsControlModel()->VEMSBeginCode->getData();
+    uint16_t code = model->getSettingsControlModel()->VEMSBeginCode->getValue();
     commandChangePersentPitatel->setSendData(&code, sizeof(code));
 
 //    commandRaskladStart
@@ -516,13 +516,13 @@ ISPRModelData *SPRTestIMSWidget::setModel(SPRMainModel *_model)
 void SPRTestIMSWidget::widgetsShow()
 {
     if(model){
-        ui.lePitatelPercents->setValue((double)model->getSettingsControlModel()->VEMSBeginCode->getData());
-        ui.thPitatelPercents->setValue((double)model->getSettingsControlModel()->VEMSBeginCode->getData());
+        ui.lePitatelPercents->setValue((double)model->getSettingsControlModel()->VEMSBeginCode->getValue());
+        ui.thPitatelPercents->setValue((double)model->getSettingsControlModel()->VEMSBeginCode->getValue());
 
-        for(int i=0; i<model->getSettingsMainModel()->getIms()->getData(); i++){
+        for(int i=0; i<model->getSettingsMainModel()->getIms()->getValue(); i++){
             vectorIms[i]->setVisible(true);
         }
-        for(int i=model->getSettingsMainModel()->getIms()->getData(); i<vectorIms.size(); i++){
+        for(int i=model->getSettingsMainModel()->getIms()->getValue(); i<vectorIms.size(); i++){
             vectorIms[i]->setVisible(false);
         }
         onServerConnectChangeState(model->getServer()->getState());

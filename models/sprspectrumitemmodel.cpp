@@ -77,8 +77,8 @@ void SPRSpectrumItemModel::recomplite()
         uint32_t val = spectrumData.spect[i];
         *spectrumData.summ += val;
         foreach (EnumElements el, zones->items[*spectrumData.thread]->elements.keys()) {
-            int min = zones->items[*spectrumData.thread]->elements[el].min->getData();
-            int max = zones->items[*spectrumData.thread]->elements[el].max->getData();
+            int min = zones->items[*spectrumData.thread]->elements[el].min->getValue();
+            int max = zones->items[*spectrumData.thread]->elements[el].max->getValue();
             if(i >= min && i < max){
                 (*(spectrumData.elementsSumm[el])) += val;
                 spectrumData.elementsCount[el]++;
@@ -127,8 +127,8 @@ void SPRSpectrumItemModel::recomplite()
         spectrumData.dispersion += d*d;
 
         foreach (EnumElements el, zones->items[*spectrumData.thread]->elements.keys()) {
-            int min = zones->items[*spectrumData.thread]->elements[el].min->getData();
-            int max = zones->items[*spectrumData.thread]->elements[el].max->getData();
+            int min = zones->items[*spectrumData.thread]->elements[el].min->getValue();
+            int max = zones->items[*spectrumData.thread]->elements[el].max->getValue();
             if(i >= min && i < max){
                 double ed = (val - spectrumData.elementsAverage[el]);
                 spectrumData.elementsDiff[el].push_back(ed);
@@ -137,38 +137,38 @@ void SPRSpectrumItemModel::recomplite()
         }
     }
 
-    double up = (double)(*spectrumData.elementsSumm[formulas->itemsModel[0]->ElementUp1->getData()]) +
-            formulas->itemsModel[0]->MulUp->getData() * (*spectrumData.elementsSumm[formulas->itemsModel[0]->ElementUp2->getData()]);
+    double up = (double)(*spectrumData.elementsSumm[formulas->itemsModel[0]->ElementUp1->getValue()]) +
+            formulas->itemsModel[0]->MulUp->getValue() * (*spectrumData.elementsSumm[formulas->itemsModel[0]->ElementUp2->getValue()]);
 
-    double down = (double)(*spectrumData.elementsSumm[formulas->itemsModel[0]->ElementDown1->getData()]) +
-            formulas->itemsModel[0]->MulDown->getData() * (double)(*spectrumData.elementsSumm[formulas->itemsModel[0]->ElementDown2->getData()])
-                * (double)(*spectrumData.elementsSumm[formulas->itemsModel[0]->ElementDown3->getData()])
-                    / (double)(*spectrumData.elementsSumm[formulas->itemsModel[0]->ElementDown4->getData()]);
+    double down = (double)(*spectrumData.elementsSumm[formulas->itemsModel[0]->ElementDown1->getValue()]) +
+            formulas->itemsModel[0]->MulDown->getValue() * (double)(*spectrumData.elementsSumm[formulas->itemsModel[0]->ElementDown2->getValue()])
+                * (double)(*spectrumData.elementsSumm[formulas->itemsModel[0]->ElementDown3->getValue()])
+                    / (double)(*spectrumData.elementsSumm[formulas->itemsModel[0]->ElementDown4->getValue()]);
     if(down >1e-6)
         *spectrumData.H1 = up / down;
     else
         *spectrumData.H1 = 0;
 
 
-    up = (double)(*spectrumData.elementsSumm[formulas->itemsModel[1]->ElementUp1->getData()]) +
-            formulas->itemsModel[1]->MulUp->getData() * (double)(*spectrumData.elementsSumm[formulas->itemsModel[1]->ElementUp2->getData()]);
+    up = (double)(*spectrumData.elementsSumm[formulas->itemsModel[1]->ElementUp1->getValue()]) +
+            formulas->itemsModel[1]->MulUp->getValue() * (double)(*spectrumData.elementsSumm[formulas->itemsModel[1]->ElementUp2->getValue()]);
 
-    down = (double)(*spectrumData.elementsSumm[formulas->itemsModel[1]->ElementDown1->getData()]) +
-            formulas->itemsModel[1]->MulDown->getData() * (double)(*spectrumData.elementsSumm[formulas->itemsModel[1]->ElementDown2->getData()])
-                * (double)(*spectrumData.elementsSumm[formulas->itemsModel[1]->ElementDown3->getData()])
-                    / (double)(*spectrumData.elementsSumm[formulas->itemsModel[1]->ElementDown4->getData()]);
+    down = (double)(*spectrumData.elementsSumm[formulas->itemsModel[1]->ElementDown1->getValue()]) +
+            formulas->itemsModel[1]->MulDown->getValue() * (double)(*spectrumData.elementsSumm[formulas->itemsModel[1]->ElementDown2->getValue()])
+                * (double)(*spectrumData.elementsSumm[formulas->itemsModel[1]->ElementDown3->getValue()])
+                    / (double)(*spectrumData.elementsSumm[formulas->itemsModel[1]->ElementDown4->getValue()]);
     if(down >1e-6)
         *spectrumData.H2 = up / down;
     else
         *spectrumData.H2 = 0;
 
-    up = (double)(*spectrumData.elementsSumm[formulas->itemsModel[2]->ElementUp1->getData()]) +
-            formulas->itemsModel[2]->MulUp->getData() * (double)(*spectrumData.elementsSumm[formulas->itemsModel[2]->ElementUp2->getData()]);
+    up = (double)(*spectrumData.elementsSumm[formulas->itemsModel[2]->ElementUp1->getValue()]) +
+            formulas->itemsModel[2]->MulUp->getValue() * (double)(*spectrumData.elementsSumm[formulas->itemsModel[2]->ElementUp2->getValue()]);
 
-    down = (double)(*spectrumData.elementsSumm[formulas->itemsModel[2]->ElementDown1->getData()]) +
-            formulas->itemsModel[2]->MulDown->getData() * (double)(*spectrumData.elementsSumm[formulas->itemsModel[2]->ElementDown2->getData()])
-                * (double)(*spectrumData.elementsSumm[formulas->itemsModel[2]->ElementDown3->getData()])
-                    / (double)(*spectrumData.elementsSumm[formulas->itemsModel[2]->ElementDown4->getData()]);
+    down = (double)(*spectrumData.elementsSumm[formulas->itemsModel[2]->ElementDown1->getValue()]) +
+            formulas->itemsModel[2]->MulDown->getValue() * (double)(*spectrumData.elementsSumm[formulas->itemsModel[2]->ElementDown2->getValue()])
+                * (double)(*spectrumData.elementsSumm[formulas->itemsModel[2]->ElementDown3->getValue()])
+                    / (double)(*spectrumData.elementsSumm[formulas->itemsModel[2]->ElementDown4->getValue()]);
     if(down >1e-6)
         *spectrumData.H3 = up / down;
     else
@@ -217,13 +217,13 @@ QMap<EnumElements, QVector<QwtIntervalSample> > SPRSpectrumItemModel::getZonesGa
     foreach (EnumElements el, zone->elements.keys()) {
 
         double value = 0.5;
-        for(int i=zone->elements[el].min->getData(); i<zone->elements[el].max->getData(); i++){
+        for(int i=zone->elements[el].min->getValue(); i<zone->elements[el].max->getValue(); i++){
             if(value < spectrumData.spect[i]){
                 value = (double(spectrumData.spect[i]));
             }
         }
-        double xmin = qreal(zone->elements[el].min->getData());
-        double xmax = qreal(zone->elements[el].max->getData());
+        double xmin = qreal(zone->elements[el].min->getValue());
+        double xmax = qreal(zone->elements[el].max->getValue());
         QVector<QwtIntervalSample> inter;
         inter.push_back(QwtIntervalSample(value, xmin, xmax));
         zonesGraphData[el] = inter;

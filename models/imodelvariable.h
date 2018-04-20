@@ -10,54 +10,123 @@
 #include <QDomText>
 #include <QDomNode>
 #include <QDebug>
+#include <QByteArray>
 
 #include "models/isprmodeldata.h"
-
-class IModelVariable
-{
-protected:
-    typedef enum : int{
-        XPathPath = 0,
-        XPathValue,
-        XPathAttribute,
-        XPathAttributeCondition
-    }  TypeXPath;
-
-    typedef struct sIsIAmData {
-        int count;
-        QString tagName;
-        QString keyName;
-        QString keyValue;
-        QString argName;
-        TypeXPath typeXPath;
-        sIsIAmData(): count(0), tagName(""), keyName(""), keyValue(""), argName(""), typeXPath(XPathPath){}
-        sIsIAmData(QString path);
-    } IsIAmData;
-
-    TypeXPath typeXPath;
-    QDomAttr attribute;
-    QStringList path;
-
-    bool isIAm(IsIAmData *data, QString path,  QDomElement el, int count = 0);
-    void setRoot(QDomDocument *doc, QString _xpath, QString defValue, bool create = false){
-        root = doc->documentElement();
-        QDomElement el = root.toElement();
-        setRoot(&el, _xpath, defValue, create);
-    }
-
-    void setRoot(QDomElement *element, QString _xpath, QString defValue, bool create = false){
-        path = _xpath.split(("/"), QString::SkipEmptyParts);
-        setRoot(element, path, defValue, create);
-    }
-    bool setRoot(QDomElement *element, QStringList _xpath, QString defValue, int count = 0, bool create = false);
+class FindData {
+    QString xpath;
+    QStringList nextXPath;
+    QString tagName;
+    QString keyName;
+    QString keyValue;
+    QString attributeName;
+    QDomNode findedNode;
+    QString defValue;
+    FindData *next;
+    int orderNum;
 public:
-    QDomNode root;
+    virtual ~FindData()
+    {
+        if(next) {
+            delete next;
+        }
+//        if(next) delete next;
+    }
+    void init(QStringList _xpath, QString _defValue);
+    FindData(QStringList xpath, QString _defValue=QString()){
+        init(xpath, _defValue);
+    }
 
-//    IModelVariable(){}
-    IModelVariable(QDomDocument *doc, QString _xpath, QString _defValue, bool create = false);
+    QDomElement find(QDomNode *parent);
 
-    void setData(QString data);
-    QString getData();
+    void toDebug(QStringList params = {});
+
+    QDomElement create(QDomNode *parent, int findOrderNum);
+    QDomNode getFindedNode();
 };
 
+class IModelVariable: public QObject
+{
+    Q_OBJECT
+
+    QDomDocument *doc;
+    QString value;
+    QDomNode xmlNode;
+    IModelVariable *mvparent;
+
+    void fromXml(){
+        value = xmlNode.nodeValue();
+    }
+    void toXml(){
+        xmlNode.setNodeValue(value);
+    }
+
+    void mconnect(IModelVariable *_mvparent){
+        if(_mvparent){
+            if(mvparent){
+                disconnect(mvparent, SIGNAL(doStore()), this, SLOT(store()));
+                disconnect(mvparent, SIGNAL(doRestore()), this, SLOT(restore()));
+            }
+            mvparent = _mvparent;
+            connect(mvparent, SIGNAL(doStore()), this, SLOT(store()));
+            connect(mvparent, SIGNAL(doRestore()), this, SLOT(restore()));
+        }
+    }
+protected:
+    IModelVariable(){}
+    IModelVariable(QDomDocument *parent, IModelVariable *_mvparent=nullptr): doc(parent), mvparent(nullptr){
+        mconnect(_mvparent);
+    }
+
+    IModelVariable(QDomDocument *parent, QString xpath, QString defValue, IModelVariable *_mvparent=nullptr): doc(parent), mvparent(nullptr){
+        Init(parent, xpath, defValue, _mvparent);
+    }
+    void Init(QDomDocument *parent, QString xpath, QString defValue, IModelVariable *mvparent=nullptr);
+
+public:
+
+    QString getData(){
+        return value;
+    }
+    void setData(QString _value){
+        value = _value;
+    }
+
+    void toDebug(QDomNode element=QDomNode()){
+        if(element.isNull()) element = xmlNode;
+
+        if(element.isAttr()) element = element.toAttr().parentNode();
+        if(element.isText()) element = element.toText().parentNode();
+        if(element.isElement()){
+            qDebug() << "tag    :" << element.toElement().tagName();
+            QDomNamedNodeMap attrs = element.toElement().attributes();
+            if(attrs.size()>0){
+                qDebug() << "***********************";
+                qDebug() << "tag : "<<element.toElement().tagName() << " = " << element.toElement().text();
+                qDebug() << "****** atributes ******";
+                for(int i=0; i<attrs.size(); i++) {
+                    qDebug() << i << " " << attrs.item(i).nodeName() << " : "<< attrs.item(i).nodeValue();
+                }
+            }
+        }
+        qDebug() << "value :"<<value;
+        qDebug() << "";
+    }
+
+    QString toString(){
+        return getData();
+    }
+public slots:
+    void store(){
+        toXml();
+        emit doStore();
+    }
+    void restore(){
+        fromXml();
+        emit doRestore();
+    }
+signals:
+    void doStore();
+    void doRestore();
+};
 #endif // IMODELVARIABLE_H

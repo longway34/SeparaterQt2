@@ -106,7 +106,7 @@ void testTableWidget::widgetsShow(){
         uint row = 0;
         for(int i=0; i<separateModel->workSeparate.size(); i++){
 
-            for(uint th=0; th<mainModel->getSettingsMainModel()->getThreads()->getData(); th++){
+            for(uint th=0; th<mainModel->getSettingsMainModel()->getThreads()->getValue(); th++){
                 QVector<double> data = {
                     separateModel->workSeparate[i]->i_prd[th][0],separateModel->workSeparate[i]->i_prd[th][1],separateModel->workSeparate[i]->i_prd[th][2],separateModel->workSeparate[i]->i_prd[th][3],
                     separateModel->workSeparate[i]->p_prd[th][0],separateModel->workSeparate[i]->p_prd[th][1],separateModel->workSeparate[i]->p_prd[th][2],separateModel->workSeparate[i]->p_prd[th][3],

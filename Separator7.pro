@@ -57,15 +57,9 @@ SOURCES += \
     sprspectrumtableadv.cpp \
     models/imodelvariable.cpp \
     models/isprmodeldata.cpp \
-    models/isprvariable.cpp \
-    models/sprcolorvariable.cpp \
-    models/sprdatevariable.cpp \
-    models/sprelementvariable.cpp \
     models/sprformulaitemmodel.cpp \
     models/sprgrspectrumitemmodel.cpp \
-    models/sprkprvariable.cpp \
     models/sprporogsmodel.cpp \
-    models/sprqstringvariable.cpp \
     models/sprsettingscontrolmodel.cpp \
     models/sprsettingsformulamodel.cpp \
     models/sprsettingsimsmodel.cpp \
@@ -74,7 +68,6 @@ SOURCES += \
     models/sprsettingsrentgenmodel.cpp \
     models/sprsettingsrmtautosetmodel.cpp \
     models/sprsettingsspectrumrangesmodel.cpp \
-    models/sprvariable.cpp \
     verticallabel.cpp \
     maintabwidget.cpp \
     sprsettingswidget.cpp \
@@ -115,7 +108,14 @@ SOURCES += \
     tcp/tcpteststopseparate.cpp \
     tcp/tcpseparatego.cpp \
     sprspectrumbaselisttable2.cpp \
-    models/sprelementsmodel.cpp
+    models/sprelementsmodel.cpp \
+    sprenumvariable.cpp \
+    variables/sprdatetimevariable.cpp \
+    variables/sprenumvariable.cpp \
+    variables/sprqcolorvariable.cpp \
+    variables/sprqstringvariable.cpp \
+    variables/sprvariable.cpp \
+    variables/sprkprvariable.cpp
 
 HEADERS += \
     _types.h \
@@ -143,15 +143,9 @@ HEADERS += \
     sprspectrumtableadv.h \
     models/imodelvariable.h \
     models/isprmodeldata.h \
-    models/isprvariable.h \
-    models/sprcolorvariable.h \
-    models/sprdatevariable.h \
-    models/sprelementvariable.h \
     models/sprformulaitemmodel.h \
     models/sprgrspectrumitemmodel.h \
-    models/sprkprvariable.h \
     models/sprporogsmodel.h \
-    models/sprqstringvariable.h \
     models/sprsettingscontrolmodel.h \
     models/sprsettingsformulamodel.h \
     models/sprsettingsimsmodel.h \
@@ -160,7 +154,6 @@ HEADERS += \
     models/sprsettingsrentgenmodel.h \
     models/sprsettingsrmtautosetmodel.h \
     models/sprsettingsspectrumrangesmodel.h \
-    models/sprvariable.h \
     tcp/TCPCommandSet.h \
     verticallabel.h \
     maintabwidget.h \
@@ -201,7 +194,14 @@ HEADERS += \
     tcp/tcpteststopseparate.h \
     tcp/tcpseparatego.h \
     sprspectrumbaselisttable2.h \
-    models/sprelementsmodel.h
+    models/sprelementsmodel.h \
+    sprenumvariable.h \
+    variables/sprdatetimevariable.h \
+    variables/sprenumvariable.h \
+    variables/sprqcolorvariable.h \
+    variables/sprqstringvariable.h \
+    variables/sprvariable.h \
+    variables/sprkprvariable.h
 
 FORMS += \
     sprsettingsrentgenmainwidget.ui \

@@ -7,32 +7,30 @@
 #include <QDomDocument>
 #include <QFile>
 #include <iostream>
+#include "models/imodelvariable.h"
 
 //#include "models/isprvariable.h"
 
-class ISPRModelData : public QObject
+class ISPRModelData : public IModelVariable
 {
     Q_OBJECT
 
 protected:
     QDomDocument document;
-    QDomDocument *doc;
+//    QDomDocument *doc;
 //    QDomElement root;
 
 public:
     ISPRModelData(){}
-    ISPRModelData(QString fname, ISPRModelData *parent = nullptr);
-    ISPRModelData(QDomDocument *_doc, ISPRModelData *parent = nullptr);
+    ISPRModelData(QString fname, IModelVariable *parent = nullptr);
+    ISPRModelData(QDomDocument *_doc, IModelVariable *parent = nullptr);
 
     QDomDocument *getDoc() const;
-    void setDoc(QDomDocument *_doc, ISPRModelData *parent = nullptr);
-    void setDoc(QString fname, ISPRModelData *parent = nullptr);
+    void setDoc(QDomDocument *_doc, IModelVariable *parent = nullptr);
+    void setDoc(QString fname, IModelVariable *parent = nullptr);
 
-signals:
-    void goStore();
 public slots:
     virtual void store(QString fname);
-    virtual void store();
 };
 
 #endif // ISPRMODELDATA_H

@@ -12,7 +12,7 @@ void TCPSeparateGo::setModel(SPRMainModel *value)
     model = value;
     QVector<TCPCommand*> vcomm= findCommands(setGetSpectrumsGistorfamms);
     for(int i=0; i<vcomm.size();i++){
-        ((TCPGetSpectrumsGistogramms*)vcomm[i])->setThreadTimer(model->getSettingsMainModel()->getThreads()->getData());
+        ((TCPGetSpectrumsGistogramms*)vcomm[i])->setThreadTimer(model->getSettingsMainModel()->getThreads()->getValue());
     }
 }
 
@@ -76,7 +76,7 @@ void TCPSeparateGo::go(TCPCommand *_command)
             uint tick;
             if(stateResult.error == 0 && stateResult.state == 0x02){
                 if(model){
-                    tick = model->getSettingsControlModel()->tMeassureForData->getData();
+                    tick = model->getSettingsControlModel()->tMeassureForData->getValue();
                 } else {
                     tick = DEF_SPR_CONTROL_T_MEASSURE_FOR_DATA;
                 }
@@ -85,7 +85,7 @@ void TCPSeparateGo::go(TCPCommand *_command)
                 }
 
                 if(model){
-                    tick = model->getSettingsControlModel()->tMeassureForSpectrum->getData();
+                    tick = model->getSettingsControlModel()->tMeassureForSpectrum->getValue();
                 } else {
                     tick = DEF_SPR_CONTROL_T_MEASSURE_FOR_SPECTRUM;
                 }
@@ -94,7 +94,7 @@ void TCPSeparateGo::go(TCPCommand *_command)
                 }
 
                 if(model){
-                    tick = model->getSettingsControlModel()->tMeassureForHistogramm->getData();
+                    tick = model->getSettingsControlModel()->tMeassureForHistogramm->getValue();
                 } else {
                     tick = DEF_SPR_CONTROL_T_MEASSURE_FOR_HISTOGRAMM;
                 }

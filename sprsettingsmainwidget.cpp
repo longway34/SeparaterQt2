@@ -8,10 +8,10 @@ ISPRModelData *SPRSettingsMainWidget::setModel(ISPRModelData *data)
     model = (SPRSettingsMainModel*)data;
 
     if(model){
-        ui.leName->setText(model->name->getData());
-        ui.leAddress->setText(model->ipAddress->getData());
+        ui.leName->setText(model->name->getValue());
+        ui.leAddress->setText(model->ipAddress->getValue());
         ui.lePort->setText(model->ipPort->toString());
-        ui.leSpectrumsFName->setText(model->spectrumFileName->getData());
+        ui.leSpectrumsFName->setText(model->spectrumFileName->getValue());
 
         const QString strs[] = {
             tr("1 ручей"), tr("2 ручья"), tr("3 ручья"), tr("4 ручья"),
@@ -23,21 +23,21 @@ ISPRModelData *SPRSettingsMainWidget::setModel(ISPRModelData *data)
         for(int i=0, r=1; i<MAX_SPR_MAIN_THREADS; i++, r++){
             ui.cbThreads->addItem(strs[i], r);
         }
-        int d = model->threads->getData();
-        int cind = ui.cbThreads->findData(QVariant(model->threads->getData()));
+        int d = model->threads->getValue();
+        int cind = ui.cbThreads->findData(QVariant(model->threads->getValue()));
         ui.cbThreads->setCurrentIndex(cind);
         ui.cbThreads->blockSignals(false);
 
         ui.cbRentgens->blockSignals(true);
         ui.cbRentgens->clear();
         const QString rstr[] = {tr(" рентген"), tr(" рентгена")};
-        int maxRen = model->threads->getData() > 3 ? 2 : 1;
+        int maxRen = model->threads->getValue() > 3 ? 2 : 1;
         for(int i=0, r=1; i<maxRen; i++, r++){
             ui.cbRentgens->addItem(QString::number(r) + rstr[i], r);
         }
-        int ind = ui.cbRentgens->findData(QVariant(model->rentgens->getData()));
+        int ind = ui.cbRentgens->findData(QVariant(model->rentgens->getValue()));
         if(ind < 0){
-            ind = 0; model->rentgens->setData(DEF_SPR_MAIN_RENTGENS);
+            ind = 0; model->rentgens->setValue(DEF_SPR_MAIN_RENTGENS);
         }
         ui.cbRentgens->setCurrentIndex(ind);
         ui.cbRentgens->blockSignals(false);
@@ -110,7 +110,7 @@ void SPRSettingsMainWidget::widgetsShow()
 
         ui.cbIMCount->blockSignals(true);
         ui.cbIMCount->clear();
-        switch (model->threads->getData()) {
+        switch (model->threads->getValue()) {
         case 1:
             ui.cbIMCount->addItem(tr("1 механизм"), 1);
             ui.cbIMCount->addItem(tr("2 механизма"), 2);
@@ -128,20 +128,20 @@ void SPRSettingsMainWidget::widgetsShow()
             ui.cbIMCount->addItem(tr("8 механизмов"), 8);
             break;
         }
-        int ind = ui.cbIMCount->findData(QVariant(model->ims->getData()));
+        int ind = ui.cbIMCount->findData(QVariant(model->ims->getValue()));
         if(ind < 0){
             ind = 0;
             ui.cbIMCount->setCurrentIndex(ind);
-            model->ims->setData(ui.cbIMCount->itemData(ind).toUInt());
+            model->ims->setValue(ui.cbIMCount->itemData(ind).toUInt());
         } else {
             ui.cbIMCount->setCurrentIndex(ind);
         }
         ui.cbIMCount->blockSignals(false);
 
-        ind = ui.cbTypePRAM->findData(QVariant(model->typePRAM->getData()));
+        ind = ui.cbTypePRAM->findData(QVariant(model->typePRAM->getValue()));
         ui.cbTypePRAM->setCurrentIndex(ind);
 
-        ind = ui.cbTypeThermo->findData(QVariant(model->typeThermo->getData()));
+        ind = ui.cbTypeThermo->findData(QVariant(model->typeThermo->getValue()));
         ui.cbTypeThermo->setCurrentIndex(ind);
     }
 }
@@ -156,32 +156,32 @@ void SPRSettingsMainWidget::viewChange(int)
     if(model){
         if(sender() == ui.cbThreads){ // Изменилось кол-во ручьев
             int value = ui.cbThreads->currentData().toInt();
-            model->threads->setData(value);
+            model->threads->setValue(value);
             widgetsShow();
             emit doShow();
             return;
         }
         if(sender() == ui.cbRentgens){ // изменилось количество рентренов
             int value = ui.cbRentgens->currentData().toInt();
-            model->rentgens->setData(value);
+            model->rentgens->setValue(value);
             widgetsShow();
             emit doShow();
             return;
         }
         if(sender() == ui.cbIMCount){ // изменилось количество исполнительных механизмов
             qint16 value = ui.cbIMCount->currentData().toInt();
-            model->ims->setData(value);
+            model->ims->setValue(value);
             emit doShow();
             return;
         }
         if(sender() == ui.cbTypePRAM){ // измениля тип ПРАМ
             TypePRAM value = ui.cbTypePRAM->currentData().value<TypePRAM>();
-            model->typePRAM->setData(value);
+            model->typePRAM->setValue(value);
             return;
         }
         if(sender() == ui.cbTypeThermo){ // измениля тип терморегулятора
             TypeThermo value = ui.cbTypeThermo->currentData().value<TypeThermo>();
-            model->typeThermo->setData(value);
+            model->typeThermo->setValue(value);
             return;
         }
     }
@@ -191,15 +191,15 @@ void SPRSettingsMainWidget::viewChange()
 {
     if(model){
         if(sender() == ui.leName){ // изменилось название сепаратора
-            model->name->setData(ui.leName->text());
+            model->name->setValue(ui.leName->text());
             return;
         }
         if(sender() == ui.leAddress){ // изменился IP адрес сепаратора
-            model->ipAddress->setData(ui.leAddress->text());
+            model->ipAddress->setValue(ui.leAddress->text());
             return;
         }
         if(sender() == ui.lePort){ // изменился IP порт сепаратора
-            model->ipPort->setData(QString(ui.lePort->text()).toInt());
+            model->ipPort->setValue(QString(ui.lePort->text()).toInt());
             return;
         }
     }
@@ -208,7 +208,7 @@ void SPRSettingsMainWidget::viewChange()
 void SPRSettingsMainWidget::viewChange(bool)
 {
     if(sender() == ui.bFNameSelect){
-        QString fName = model->getName()->getData()+".xml";
+        QString fName = model->getName()->getValue()+".xml";
         QString fileName = QFileDialog::getOpenFileName(this, tr("Открыть файл..."), "",
             tr("Файлы настроек (*.xml)"));
         if(!fileName.isEmpty()){
@@ -223,14 +223,14 @@ void SPRSettingsMainWidget::viewChange(bool)
         return;
     }
     if(sender() == ui.bSpectrumFNameSelect){
-        QString fName = model->getSpectrumFileName()->getData()+".spc";
+        QString fName = model->getSpectrumFileName()->getValue()+".spc";
         QString fileName = QFileDialog::getOpenFileName(this, tr("Открыть файл..."), "",
             tr("Файлы сохраненных спектров (*.spc)"));
         if(!fileName.isEmpty()){
             QFile f(fileName);
             if(f.open(QIODevice::ReadWrite)){
                 if(fName != fileName){
-                    model->getSpectrumFileName()->setData(fileName);
+                    model->getSpectrumFileName()->setValue(fileName);
                     emit changeFileSpectrum(fileName);
                 }
             }

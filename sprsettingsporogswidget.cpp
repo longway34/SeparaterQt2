@@ -15,9 +15,9 @@ void SPRSettingsPorogsWidget::repaintGraphic(double)
 {
     QVector<QPointF> grData = {
         {0, ui.leMinStone->value() * 10},
-        {model->getTMeteringMinStone()->getData(), ui.leMinStone->value() * 10},
-        {model->getTMeteringMaxStone()->getData(), ui.leMaxStone->value() * 10},
-        {model->getTMeteringMaxStone()->getData() * 1.05, ui.leMaxStone->value() * 10}
+        {model->getTMeteringMinStone()->getValue(), ui.leMinStone->value() * 10},
+        {model->getTMeteringMaxStone()->getValue(), ui.leMaxStone->value() * 10},
+        {model->getTMeteringMaxStone()->getValue() * 1.05, ui.leMaxStone->value() * 10}
     };
 
 //    double x[] = {0, 15, 100, 115};
@@ -28,7 +28,7 @@ void SPRSettingsPorogsWidget::repaintGraphic(double)
 
 
     curve->setSamples(grData);
-    ui.plotKoeffLengths->setAxisScale(QwtPlot::xBottom, 0, model->getTMeteringMaxStone()->getData() * 1.05);
+    ui.plotKoeffLengths->setAxisScale(QwtPlot::xBottom, 0, model->getTMeteringMaxStone()->getValue() * 1.05);
     ui.plotKoeffLengths->replot();
 }
 
@@ -80,18 +80,18 @@ SPRSettingsPorogsWidget::SPRSettingsPorogsWidget(QWidget *parent) :
 
 void SPRSettingsPorogsWidget::widgetsShow()
 {
-    ui.leMinStone->setValue(model->forMinStone->getData());
-    ui.leMaxStone->setValue(model->forMaxStone->getData());
-    ui.leXRayCorrection->setValue(model->xRayCorrection->getData());
+    ui.leMinStone->setValue(model->forMinStone->getValue());
+    ui.leMaxStone->setValue(model->forMaxStone->getValue());
+    ui.leXRayCorrection->setValue(model->xRayCorrection->getValue());
 
-    TypeSelection type = model->typeSelection->getData();
+    TypeSelection type = model->typeSelection->getValue();
     if(type == OnConsentrate){
         ui.rbConcentrat->setChecked(true);
     } else if(type == OnTail){
         ui.rbTail->setChecked(true);
     }
 
-    TypeConditions cond = model->getConditions()->getData();
+    TypeConditions cond = model->getConditions()->getValue();
     switch (cond) {
     case H1:
         ui.rbH1Resume->setChecked(true);
@@ -122,7 +122,7 @@ void SPRSettingsPorogsWidget::viewChange(int data)
 void SPRSettingsPorogsWidget::viewChange(bool data)
 {
     if(sender() == ui.cbInvert){ // изменили инверсию отбора
-        model->invertSelection->setData(data);
+        model->invertSelection->setValue(data);
         return;
     }
 }
@@ -131,16 +131,16 @@ void SPRSettingsPorogsWidget::viewChange(double data)
 {
     if(sender() == ui.leMaxStone){ // изменили коэффициент для максимального камня
        double k = ui.leMaxStone->value();
-       model->forMaxStone->setData(k);
+       model->forMaxStone->setValue(k);
     }
     if(sender() == ui.leMinStone){ // изменили коэффициент для минимального камня
         double k = ui.leMinStone->value();
-        model->forMinStone->setData(k);
+        model->forMinStone->setValue(k);
         return;
     }
     if(sender() == ui.leXRayCorrection){ // изменили коэффициент коррекции X-Ray
         double k = ui.leXRayCorrection->value();
-        model->xRayCorrection->setData(k);
+        model->xRayCorrection->setValue(k);
         return;
     }
 }
@@ -149,12 +149,12 @@ void SPRSettingsPorogsWidget::viewChange(QAbstractButton *btn)
 {
     if(sender() == bgTypeConditions){ // изменили состояние выводов по сепарации
         TypeConditions val = btn->property("conditions").value<TypeConditions>();
-        model->getConditions()->setData(val);
+        model->getConditions()->setValue(val);
         emit doShow();
     }
     if(sender() == bgTypeSelection){ // изменили состояние сортировки хвост/концентрат
         TypeSelection val = btn->property("selections").value<TypeSelection>();;
-        model->typeSelection->setData(val);
+        model->typeSelection->setValue(val);
         return;
     }
 }

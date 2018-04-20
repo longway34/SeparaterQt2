@@ -57,7 +57,7 @@ void SPRSpectrumZonesTableWidget::viewChange(bool)
     uint val = focusedLe->text().toUInt();
     EnumElements el = static_cast<EnumElements>(QVariant(focusedLe->property("element")).toInt());
     SPRSpectrumZonesTableModel *mod = (SPRSpectrumZonesTableModel*)ui.wSpectrumTable->getModel();
-    uint th = mod->getThreads()->getData();
+    uint th = mod->getThreads()->getValue();
 
     for(int i=0; i<th; i++){
         if(column == 0){

@@ -27,7 +27,7 @@ void SPRSpectrumZonesTable::setModel(SPRSpectrumZonesTableModel *value)
         setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
     }
     hidenCollumns.clear();
-    for(int i=0; i < model->getThreads()->getData(); i++){
+    for(int i=0; i < model->getThreads()->getValue(); i++){
         hidenCollumns.push_back(true);
     }
     setHddenChannels(hidenCollumns);
@@ -61,7 +61,7 @@ void SPRSpectrumZonesTable::setHddenChannels(QList<bool> hidden){
 void SPRSpectrumZonesTable::setVisibleOneChannel(int ch)
 {
     hidenCollumns.clear();
-    for(int i=0; i < model->getThreads()->getData(); i++){
+    for(int i=0; i < model->getThreads()->getValue(); i++){
         if(i == ch){
             hidenCollumns.push_back(false);
         } else {

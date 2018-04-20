@@ -22,15 +22,15 @@ ISPRModelData *SPRSettingsRentgenControlWidget::setModel(SPRSettingsRentgenModel
         QStringList nameV; nameV << tr("%"); ui.tDiffParams->setVerticalHeaderLabels(nameV);
 
         QString tt = QString(tr("Допустимое значение отклонения параметров (0-100), (%)"));
-        QLineEdit *le = setNumberCell(ui.tDiffParams, 0, 0, model->diffParamAllow->getData(), 0, 100, tt);
+        QLineEdit *le = setNumberCell(ui.tDiffParams, 0, 0, model->diffParamAllow->getValue(), 0, 100, tt);
         connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
         tt = QString(tr("Критичное значение отклонения параметров (0-100), (%)"));
-        le = setNumberCell(ui.tDiffParams, 0, 1, model->diffParamDisallow->getData(), 0, 100, tt);
+        le = setNumberCell(ui.tDiffParams, 0, 1, model->diffParamDisallow->getValue(), 0, 100, tt);
         connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
         QStringList nameH; nameH << tr("Допустимое") << tr("Критичное");
         ui.tDiffParams->setHorizontalHeaderLabels(nameH);
 
-        ui.slTimeMoveRGU->setValue(model->timeMoveRGU->getData());
+        ui.slTimeMoveRGU->setValue(model->timeMoveRGU->getValue());
 
         ui.tPapamsRA->clear();
         ui.tPapamsRA->setColumnCount(3);
@@ -41,13 +41,13 @@ ISPRModelData *SPRSettingsRentgenControlWidget::setModel(SPRSettingsRentgenModel
         ui.tPapamsRA->setVerticalHeaderLabels(hh);
 
         tt = tr("Время включения рентгеноского аррарата (0-60), (сек.)");
-        le = setNumberCell(ui.tPapamsRA, 0, 0, model->timeOnRA->getData(), 0, 60, tt);
+        le = setNumberCell(ui.tPapamsRA, 0, 0, model->timeOnRA->getValue(), 0, 60, tt);
         connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
         tt = tr("Время выключения рентгеноского аррарата (0-60), (сек.)");
-        le = setNumberCell(ui.tPapamsRA, 0, 1, model->timeOffRA->getData(), 0, 60, tt);
+        le = setNumberCell(ui.tPapamsRA, 0, 1, model->timeOffRA->getValue(), 0, 60, tt);
         connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
         tt = tr("Время прогрева рентгеноского аррарата (0-60), (сек.)");
-        le = setNumberCell(ui.tPapamsRA, 0, 2, model->timeHotRA->getData(), 0, 60, tt);
+        le = setNumberCell(ui.tPapamsRA, 0, 2, model->timeHotRA->getValue(), 0, 60, tt);
         connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
         ui.tPapamsRA->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Stretch);
         ui.tPapamsRA->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Stretch);
@@ -63,20 +63,20 @@ ISPRModelData *SPRSettingsRentgenControlWidget::setModel(SPRSettingsRentgenModel
 void SPRSettingsRentgenControlWidget::createDEUCodesTable(){
     ui.tDEUCode->blockSignals(true);
     ui.tDEUCode->clear();
-    ui.tDEUCode->setColumnCount(model->getThreads()->getData());
+    ui.tDEUCode->setColumnCount(model->getThreads()->getValue());
     ui.tDEUCode->setRowCount(2);
     QStringList nameV; nameV << tr("ДЭУ") << tr("ЦП");
     ui.tDEUCode->setVerticalHeaderLabels(nameV);
     QStringList nameH;
-    for(qint8 i=0, k=1; i<model->getThreads()->getData(); i++, k++){
+    for(qint8 i=0, k=1; i<model->getThreads()->getValue(); i++, k++){
         QString tt = QString(tr("Код ДЭУ для ручья %1")).arg(QString::number(k));
 //        ui.tDEUCode->verticalHeader()->setSectionResizeMode(i, QHeaderView::ResizeMode::Stretch);
         nameH.append(QString::number(k));
-        QLineEdit *le = setNumberCell(ui.tDEUCode,0,i,model->deuCodes[i]->getData(),0,1000, tt);
+        QLineEdit *le = setNumberCell(ui.tDEUCode,0,i,model->deuCodes[i]->getValue(),0,1000, tt);
         connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
 
         tt = QString(tr("Код ЦП для ручья %1")).arg(QString::number(k));
-        le = setNumberCell(ui.tDEUCode,1,i,model->cpCodes[i]->getData(),0,1000, tt);
+        le = setNumberCell(ui.tDEUCode,1,i,model->cpCodes[i]->getValue(),0,1000, tt);
         connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
     }
     ui.tDEUCode->setHorizontalHeaderLabels(nameH);
@@ -93,14 +93,14 @@ void SPRSettingsRentgenControlWidget::createDEUCodesTable(){
 void SPRSettingsRentgenControlWidget::viewChange(int value)
 {
     if(sender() == ui.slTimeMoveRGU){
-        model->timeMoveRGU->setData(value);
+        model->timeMoveRGU->setValue(value);
     }
 }
 
 void SPRSettingsRentgenControlWidget::viewChange(bool value)
 {
     if(sender() == ui.cbWOControlPlace){
-        model->woControlPlace->setData(value);
+        model->woControlPlace->setValue(value);
         ui.slTimeMoveRGU->setEnabled(value);
     }
 }
@@ -115,27 +115,27 @@ void SPRSettingsRentgenControlWidget::viewChange()
 
     if(tw == ui.tDiffParams){
         if(col == 0){
-            model->diffParamAllow->setData(le->text().toInt());
+            model->diffParamAllow->setValue(le->text().toInt());
         } else if(col == 1){
-            model->diffParamDisallow->setData(le->text().toInt());
+            model->diffParamDisallow->setValue(le->text().toInt());
         }
         return;
     }
     if(tw == ui.tPapamsRA){
         if(col == 0){
-            model->timeOnRA->setData(le->text().toInt());
+            model->timeOnRA->setValue(le->text().toInt());
         } else if(col == 1){
-            model->timeOffRA->setData(le->text().toInt());
+            model->timeOffRA->setValue(le->text().toInt());
         } else if(col == 2){
-            model->timeHotRA->setData(le->text().toInt());
+            model->timeHotRA->setValue(le->text().toInt());
         }
         return;
     }
     if(tw == ui.tDEUCode){
         if(row == 0){
-            model->deuCodes[col]->setData(le->text().toInt());
+            model->deuCodes[col]->setValue(le->text().toInt());
         } else if(row == 1){
-            model->cpCodes[col]->setData(le->text().toInt());
+            model->cpCodes[col]->setValue(le->text().toInt());
         }
         return;
     }
