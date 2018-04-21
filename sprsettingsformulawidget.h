@@ -25,7 +25,7 @@ public:
     ISPRModelData *setItemModel(ISPRModelData *model);
 public slots:
     void setElements(const DefaultMapElements *elements);
-    void setConditions(SPRVariable<TypeConditions>* cond){this->model->setCondition(cond);}
+    void setConditions(SPREnumVariable<TypeConditions>* cond){this->model->setCondition(cond);}
 
     // ISPRWidget interface
 public slots:

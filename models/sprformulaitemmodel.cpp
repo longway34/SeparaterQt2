@@ -1,16 +1,5 @@
 #include "sprformulaitemmodel.h"
 
-//SPRFormulaItemModel::SPRFormulaItemData *SPRFormulaItemModel::getModelData() const
-//{
-//    return modelData;
-//}
-
-//void SPRFormulaItemModel::setModelData(SPRFormulaItemData *value, int _index)
-//{
-//    modelData = value;
-//    this->index = _index;
-//}
-
 void SPRFormulaItemModel::setMin(SPRVariable<double> *value)
 {
     min = value;
@@ -35,18 +24,18 @@ SPRFormulaItemModel::SPRFormulaItemModel(QDomDocument *_doc, int _index, ISPRMod
 {
     index = _index;
     QString xpath = "SEPARATOR/SEPARATE_SETUP/SH"+QString::number(index+1)+"[s0]";
-    ElementUp1 = new SPRElementVariable(doc, xpath, DEF_SPR_FORMULA_ELEMENT, this);
+    ElementUp1 = new SPREnumVariable<EnumElements>(doc, xpath, DEF_SPR_FORMULA_ELEMENT, this);
     xpath = "SEPARATOR/SEPARATE_SETUP/SH"+QString::number(index+1)+"[s1]";
-    ElementUp2 = new SPRElementVariable(doc, xpath, DEF_SPR_FORMULA_ELEMENT, this);
+    ElementUp2 = new SPREnumVariable<EnumElements>(doc, xpath, DEF_SPR_FORMULA_ELEMENT, this);
 
     xpath = "SEPARATOR/SEPARATE_SETUP/SH"+QString::number(index+1)+"[s2]";
-    ElementDown1 = new SPRElementVariable(doc, xpath, DEF_SPR_FORMULA_ELEMENT, this);
+    ElementDown1 = new SPREnumVariable<EnumElements>(doc, xpath, DEF_SPR_FORMULA_ELEMENT, this);
     xpath = "SEPARATOR/SEPARATE_SETUP/SH"+QString::number(index+1)+"[s3]";
-    ElementDown2 = new SPRElementVariable(doc, xpath, DEF_SPR_FORMULA_ELEMENT, this);
+    ElementDown2 = new SPREnumVariable<EnumElements>(doc, xpath, DEF_SPR_FORMULA_ELEMENT, this);
     xpath = "SEPARATOR/SEPARATE_SETUP/SH"+QString::number(index+1)+"[s4]";
-    ElementDown3 = new SPRElementVariable(doc, xpath, DEF_SPR_FORMULA_ELEMENT, this);
+    ElementDown3 = new SPREnumVariable<EnumElements>(doc, xpath, DEF_SPR_FORMULA_ELEMENT, this);
     xpath = "SEPARATOR/SEPARATE_SETUP/SH"+QString::number(index+1)+"[s5]";
-    ElementDown4 = new SPRElementVariable(doc, xpath, DEF_SPR_FORMULA_ELEMENT, this);
+    ElementDown4 = new SPREnumVariable<EnumElements>(doc, xpath, DEF_SPR_FORMULA_ELEMENT, this);
 
     xpath = "SEPARATOR/SEPARATE_SETUP/KH"+QString::number(index+1)+"[k0]";
     MulUp = new SPRVariable<double>(doc, xpath, DEF_SPR_FORMULA_MUL, this);

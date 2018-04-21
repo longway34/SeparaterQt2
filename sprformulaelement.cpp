@@ -6,7 +6,7 @@
 
 //}
 
-void SPRFormulaElement::setElement(SPRElementVariable *value)
+void SPRFormulaElement::setElement(SPREnumVariable<EnumElements> *value)
 {
     element = value;
 }
@@ -53,7 +53,7 @@ void SPRFormulaElement::setCurrentElement(bool)
 {
     EnumElements el = (EnumElements)((QAction*)sender())->data().toInt();
     if(element){
-        element->setValue(el);
+        element->setData(el);
     }
     setCurrentElement(el);
 }

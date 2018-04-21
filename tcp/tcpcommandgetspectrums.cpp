@@ -67,8 +67,8 @@ void TCPCommandGetSpectrums::go(TCPCommand *_command)
         uint hotTime = DEF_SPR_RENTGEN_TIME_HOT_RA * 1000;
 
         if(model){
-            channels = model->getSettingsMainModel()->getThreads()->getValue();
-            hotTime = model->getSettingsRentgenModel()->timeHotRA->getValue() * 1000;
+            channels = model->getSettingsMainModel()->getThreads()->getData();
+            hotTime = model->getSettingsRentgenModel()->timeHotRA->getData() * 1000;
         }
         char ch0 = '\0';
         findCommands(timeoutcommand).first()->setTimeOut(hotTime);

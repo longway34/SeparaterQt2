@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <tcp/TCPCommandSet.h>
-#include "models/sprvariable.h"
+#include "variables/sprvariable.h"
 
 
 class TCPCommandStartPitatel :public TCPCommandSet

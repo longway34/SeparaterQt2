@@ -3,20 +3,21 @@
 
 #include <QObject>
 #include "models/isprmodeldata.h"
-#include "models/sprvariable.h"
-
+#include "variables/sprvariable.h"
+#include "variables/sprbooleanvariable.h"
+#include "variables/sprenumvariable.h"
 
 class SPRSettingsRMTAutosetModel : public ISPRModelData
 {
 protected:
     SPRVariable<uint> *threads;
 public:
-    SPRVariable<TypeAutoSettingRMT> *typeSetting;
+    SPREnumVariable<TypeAutoSettingRMT> *typeSetting;
     SPRVariable<uint> *codeBegin;
     SPRVariable<uint> *codeStep;
 //    SPRVariable<bool> *enhansed;
-    SPRVariable<bool> *withRGU;
-    SPRVariable<bool> **withChannel;
+    SPRBooleanVariable *withRGU;
+    SPRBooleanVariable **withChannel;
     SPRVariable<uint> *peakPosition;
 
 

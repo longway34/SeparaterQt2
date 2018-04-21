@@ -3,9 +3,10 @@
 
 #include <QObject>
 #include "models/isprmodeldata.h"
-#include "models/isprvariable.h"
 #include "_types.h"
-#include "models/sprvariable.h"
+#include "variables/sprvariable.h"
+#include "variables/sprbooleanvariable.h"
+#include "variables/sprenumvariable.h"
 
 class SPRSettingsRentgenModel : public ISPRModelData
 {
@@ -23,11 +24,11 @@ public:
     SPRVariable<uint> *diffParamAllow;
     SPRVariable<uint> *diffParamDisallow;
     SPRVariable<uint> *timeMoveRGU;
-    SPRVariable<bool> *woControlPlace;
-    SPRVariable<bool> **withChannel;
-    SPRVariable<bool> *withRGU;
+    SPRBooleanVariable *woControlPlace;
+    SPRBooleanVariable **withChannel;
+    SPRBooleanVariable *withRGU;
 
-    SPRVariable<TypeAutoSettingRMT> *typeSetting;
+    SPREnumVariable<TypeAutoSettingRMT> *typeSetting;
     SPRVariable<uint> *codeBegin;
     SPRVariable<uint> *codeStep;
     SPRVariable<uint> *peakPosition;

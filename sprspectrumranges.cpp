@@ -43,7 +43,7 @@ void SPRSpectrumRanges::setModel(SPRSpectrumZonesModel *value)
             nameV.append(DEF_SPR_FORMULA_ELEMENTS_PROPERTY[el].sname);
             QString tt = tr("Минимальное значение канала для елемента'") +
                     QString::number(model->tIndex)+tr(" елемента '") + DEF_SPR_FORMULA_ELEMENTS_PROPERTY[el].sname +"'";
-            QLineEdit *cell = setNumberCell(this, count, colCount, model->elements[el].min->getValue(), 0, MAX_SPR_SPECTOR_CHANNELS,tt);
+            QLineEdit *cell = setNumberCell(this, count, colCount, model->elements[el].min->getData(), 0, MAX_SPR_SPECTOR_CHANNELS,tt);
             cell->setProperty("min_max", QVariant("min"));
             colCount++;
             cell->setProperty("element", QVariant(el));
@@ -53,7 +53,7 @@ void SPRSpectrumRanges::setModel(SPRSpectrumZonesModel *value)
             connect(cell, SIGNAL(editingFinished()), this, SLOT(viewChange()));
             tt = tr("Максимальное значение канала ")+
                     QString::number(model->tIndex)+tr(" елемента '") + DEF_SPR_FORMULA_ELEMENTS_PROPERTY[el].sname +"'";
-            cell = setNumberCell(this, count, colCount, model->elements[el].max->getValue(), 0, MAX_SPR_SPECTOR_CHANNELS,tt);
+            cell = setNumberCell(this, count, colCount, model->elements[el].max->getData(), 0, MAX_SPR_SPECTOR_CHANNELS,tt);
             cell->setProperty("min_max", QVariant("max"));
             cell->setProperty("element", QVariant(el));
             cell->setProperty("thread", model->tIndex);

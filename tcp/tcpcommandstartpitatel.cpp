@@ -15,7 +15,7 @@ TCPCommandStartPitatel::TCPCommandStartPitatel(ServerConnect *_server, TCPTimeOu
 }
 
 void TCPCommandStartPitatel::setPercents(uint16_t _persents){
-    VEMSBeginCode->setValue(_persents * 20);
+    VEMSBeginCode->setData(_persents * 20);
 //    percents = _persents;
 }
 
@@ -32,7 +32,7 @@ void TCPCommandStartPitatel::go(TCPCommand *_command)
             QMessageBox::information(nullptr, tr("Ошибка"), tr("РГУ не вверхнем положении"));
             return;
         }
-        uint16_t fq = VEMSBeginCode->getValue();
+        uint16_t fq = VEMSBeginCode->getData();
         QByteArray ba; ba.append((char*)(&fq), sizeof(fq));
         findCommands(setpuw).last()->setSendData(ba);
         commandSet[1]->send(server);

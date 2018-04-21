@@ -2,8 +2,10 @@
 #define SPRSETTINGSIMSMODEL_H
 
 #include <QObject>
-#include <models/isprmodeldata.h>
-#include <models/sprvariable.h>
+#include "models/isprmodeldata.h"
+#include "variables/sprvariable.h"
+#include "variables/sprbooleanvariable.h"
+#include "_types.h"
 
 class SPRSettingsIMSModel : public ISPRModelData
 {
@@ -26,7 +28,7 @@ public:
     SPRVariable<uint> *tDurationMaxStone;
     SPRVariable<uint> *tDurationMaxMaxStone;
 
-    SPRVariable<bool> *withMaxMaxStone;
+    SPRBooleanVariable *withMaxMaxStone;
 
     SPRVariable<uint> *blockImsParam;
     SPRVariable<uint> *blockImsParam2;

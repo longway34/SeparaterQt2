@@ -30,9 +30,9 @@ SPRSettingsMainModel::SPRSettingsMainModel(QDomDocument *_doc, ISPRModelData *pa
     setProperty("delete_threads", QVariant(true));
     ims = new SPRVariable<uint>(doc, SPR_SETTINGS_MAIN_IMS_XPATH, DEF_SPR_MAIN_IMS,this);
 //    ims_row_count = new SPRVariable<uint>(doc, SPR_SETTINGS_MAIN_IMS_ROW_COUNT_XPATH, DEF_SPR_MAIN_IMS_ROW_COUNT);
-    typePRAM = new SPRVariable<TypePRAM>(doc, SPR_SETTINGS_MAIN_TYPE_PRAM_XPATH, DEF_SPR_MAIN_TYPE_PRAM,this);
-    typeThermo = new SPRVariable<TypeThermo>(doc, SPR_SETTINGS_MAIN_TYPE_THERMO_XPATH, DEF_SPR_MAIN_TYPE_THERMO,this);
-    color = new SPRColorVariable(doc, SPR_SETTINGS_MAIN_COLOR_XPATH, DEF_SPR_MAIN_COLOR,this);
+    typePRAM = new SPREnumVariable<TypePRAM>(doc, SPR_SETTINGS_MAIN_TYPE_PRAM_XPATH, DEF_SPR_MAIN_TYPE_PRAM,this);
+    typeThermo = new SPREnumVariable<TypeThermo>(doc, SPR_SETTINGS_MAIN_TYPE_THERMO_XPATH, DEF_SPR_MAIN_TYPE_THERMO,this);
+    color = new SPRQColorVariable(doc, SPR_SETTINGS_MAIN_COLOR_XPATH, DEF_SPR_MAIN_COLOR,this);
 //    date = new SPRDateVariable(doc, SPR_SETTINGS_MAIN_DATE_XPATH, DEF_SPR_MAIN_DATE);
 //    version = new SPRQStringVariable(doc, SPR_SETTINGS_MAIN_VERSION_XPATH, DEF_SPR_MAIN_VERSION);
     spectrumFileName = new SPRQStringVariable(doc, SPR_SETTINGS_MAIN_SPECTRUM_FNAME_XPATH, DEF_SPR_MAIN_SETTINGS_FNAME+DEF_SPR_MAIN_SPECTRUM_FNAME_SUFFIX, this);

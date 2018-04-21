@@ -79,12 +79,12 @@ void TCPStartStopSeparate::go(TCPCommand *_command)
         tGetGistogramm = DEF_SPR_CONTROL_T_MEASSURE_FOR_HISTOGRAMM;
 
         if(model){
-            threads = model->getSettingsMainModel()->getThreads()->getValue();
-            rentgens = model->getSettingsMainModel()->getRentgens()->getValue();
+            threads = model->getSettingsMainModel()->getThreads()->getData();
+            rentgens = model->getSettingsMainModel()->getRentgens()->getData();
 
-            tGetSeparate = model->getSettingsControlModel()->tMeassureForData->getValue();
-            tGetSpectrum = model->getSettingsControlModel()->tMeassureForSpectrum->getValue();
-            tGetGistogramm = model->getSettingsControlModel()->tMeassureForHistogramm->getValue();
+            tGetSeparate = model->getSettingsControlModel()->tMeassureForData->getData();
+            tGetSpectrum = model->getSettingsControlModel()->tMeassureForSpectrum->getData();
+            tGetGistogramm = model->getSettingsControlModel()->tMeassureForHistogramm->getData();
         }
 
         ((TCPGetSpectrumsGistogramms*)commandSet.at(7))->setThreadTimer(threads);

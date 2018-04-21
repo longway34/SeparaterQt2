@@ -6,7 +6,7 @@
 
 #include "_types.h"
 #include "models/isprmodeldata.h"
-#include "models/sprvariable.h"
+#include "variables/sprvariable.h"
 #include "models/sprspectrumzonesmodel.h"
 #include "models/sprmainmodel.h"
 #include "models/sprporogsmodel.h"

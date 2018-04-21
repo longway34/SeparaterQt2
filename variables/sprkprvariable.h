@@ -3,38 +3,32 @@
 
 #include <QObject>
 #include <variables/sprvariable.h>
+#include "models/isprmodeldata.h"
 
 class SPRKPRVariable : public SPRVariable<double>
 {
 public:
-    SPRKPRVariable(QDomDocument *doc, QString xpath, double defValue, ISPRModelData *modelParent):
+    SPRKPRVariable(QDomDocument *doc, QString xpath, double defValue, IModelVariable *modelParent=nullptr):
         SPRVariable<double>(doc, xpath, defValue, modelParent)
     {
-        fromXML();
-//        SPRVariable<uint>::setData();
     }
 
-    // ISPRVariable interface
 public:
-    virtual void fromXML()
-    {
-        SPRVariable::fromXML();
-        if(data < -1e-6 || data > 1e6)
-            data = 1 / data;
-    }
-    virtual void setData()
-    {
-        if(data < -1e-6 || data > 1e6)
-            IModelVariable::setData(QString::number(1 / data));
-        return;
+    double getData(){
+        double d = SPRVariable<double>::getData();
+        if(d > -1e-6 && d < 1e-6) d = 1e-6;
+        return 1 / d;
     }
 
-
-    // SPRVariable interface
-public:
-    virtual void setData(const double &value)
+    virtual void setData(double &value)
     {
+        if(value > -1e-6 && value < 1e-6) value = 1e-6;
+        value = 1 / value;
         SPRVariable<double>::setData(value);
+    }
+
+    QString toString(){
+        return QString::number(getData());
     }
 };
 

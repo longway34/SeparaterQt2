@@ -12,7 +12,7 @@ void SPRPorogsModel::setThreads(SPRVariable<uint> *value)
     }
 }
 
-void SPRPorogsModel::setConditions(SPRVariable<TypeConditions> *value)
+void SPRPorogsModel::setConditions(SPREnumVariable<TypeConditions> *value)
 {
     if(value){
         if(QVariant(property("delete_condition")).toBool()){
@@ -23,7 +23,7 @@ void SPRPorogsModel::setConditions(SPRVariable<TypeConditions> *value)
     }
 }
 
-SPRVariable<TypeConditions> *SPRPorogsModel::getConditions() const
+SPREnumVariable<TypeConditions> *SPRPorogsModel::getConditions() const
 {
     return conditions;
 }
@@ -43,7 +43,7 @@ SPRPorogsModel::SPRPorogsModel(QObject *parent)
 }
 
 SPRPorogsModel::SPRPorogsModel(QDomDocument *_doc, uint _row, ISPRModelData *parent):
-    row(_row), ISPRModelData(_doc, parent)
+    ISPRModelData(_doc, parent), row(_row)
 {
     porogs = (SPRVariable<double>***)malloc(sizeof(SPRVariable<double>**) * MAX_SPR_MAIN_THREADS);
     QString indexRow = "";
@@ -66,7 +66,7 @@ SPRPorogsModel::SPRPorogsModel(QDomDocument *_doc, uint _row, ISPRModelData *par
             porogs[th][cond] = new SPRVariable<double>(doc, xxpath, defValue, this);
         }
     }
-    conditions = new SPRVariable<TypeConditions>(doc, SPR_POROGS_CONDITION_XPATH, DEF_SPR_FORMULA_CONDITION, this);
+    conditions = new SPREnumVariable<TypeConditions>(doc, SPR_POROGS_CONDITION_XPATH, DEF_SPR_FORMULA_CONDITION, this);
     setProperty("delete_conditions", QVariant(true));
     threads = new SPRVariable<uint>(doc, SPR_SETTINGS_MAIN_THREADS_XPATH, DEF_SPR_MAIN_RENTGENS, this);
     setProperty("delete_threads", QVariant(true));

@@ -1,11 +1,11 @@
 #include "sprsettingsporogsmodel.h"
 
-SPRVariable<TypeSelection> *SPRSettingsPorogsModel::getTypeSelection() const
+SPREnumVariable<TypeSelection> *SPRSettingsPorogsModel::getTypeSelection() const
 {
     return typeSelection;
 }
 
-void SPRSettingsPorogsModel::setSelection(SPRVariable<TypeSelection> *value)
+void SPRSettingsPorogsModel::setSelection(SPREnumVariable<TypeSelection> *value)
 {
     setProperty("delete_selections", QVariant(false));
     typeSelection = value;
@@ -87,23 +87,23 @@ SPRSettingsPorogsModel::SPRSettingsPorogsModel(QObject *parent)
 SPRSettingsPorogsModel::SPRSettingsPorogsModel(QDomDocument *_doc, ISPRModelData *parent):
     ISPRModelData(_doc, parent)
 {
-    typeSelection = new SPRVariable<TypeSelection>(doc,SPR_POROGS_TYPE_SELECTION_XPATH, DEF_SPR_POROGS_TYPE_SELECTION, this);
+    typeSelection = new SPREnumVariable<TypeSelection>(doc,SPR_POROGS_TYPE_SELECTION_XPATH, DEF_SPR_POROGS_TYPE_SELECTION, this);
     setProperty("delete_selection", QVariant(false));
     forMinStone = new SPRKPRVariable(doc, SPR_POROGS_FOR_MIN_STONE_XPATH, DEF_SPR_POROGS_FOR_MIN_STONE, this);
     forMaxStone = new SPRKPRVariable(doc, SPR_POROGS_FOR_MAX_STONE_XPATH, DEF_SPR_POROGS_FOR_MAX_STONE, this);
     xRayCorrection = new SPRVariable<double>(doc, SPR_POROGS_X_RAY_CORRECTION_XPATH, DEF_SPR_POROGS_X_RAY_CORRECTION, this);
-    conditions = new SPRVariable<TypeConditions>(doc, SPR_POROGS_CONDITION_XPATH, DEF_SPR_FORMULA_CONDITION, this);
+    conditions = new SPREnumVariable<TypeConditions>(doc, SPR_POROGS_CONDITION_XPATH, DEF_SPR_FORMULA_CONDITION, this);
     threads = new SPRVariable<uint>(doc, SPR_SETTINGS_MAIN_THREADS_XPATH, DEF_SPR_MAIN_THREADS, this);
     setProperty("delete_threads", QVariant(true));
     porogs = new SPRPorogsModel(_doc, 0, parent);
     porogs->setConditions(conditions);
     porogs->setThreads(threads);
-    invertSelection = new SPRVariable<bool>(doc, SPR_POROGS_INVERT_SELECTION, DEF_SPR_POROGS_INVERT_SELECTION, this);
+    invertSelection = new SPRBooleanVariable(doc, SPR_POROGS_INVERT_SELECTION, DEF_SPR_POROGS_INVERT_SELECTION, this);
 
     porogs2 = new SPRPorogsModel(_doc, 2, parent);
     porogs2->setConditions(conditions);
     porogs2->setThreads(threads);
-    invertSelection2 = new SPRVariable<bool>(doc, SPR_POROGS_INVERT_SELECTION2, DEF_SPR_POROGS_INVERT_SELECTION, this);
+    invertSelection2 = new SPRBooleanVariable(doc, SPR_POROGS_INVERT_SELECTION2, DEF_SPR_POROGS_INVERT_SELECTION, this);
 }
 
 SPRSettingsPorogsModel::~SPRSettingsPorogsModel()
@@ -130,12 +130,12 @@ SPRSettingsPorogsModel::~SPRSettingsPorogsModel()
 
 }
 
-SPRVariable<TypeConditions> *SPRSettingsPorogsModel::getConditions() const
+SPREnumVariable<TypeConditions> *SPRSettingsPorogsModel::getConditions() const
 {
     return conditions;
 }
 
-void SPRSettingsPorogsModel::setConditions(SPRVariable<TypeConditions> *value)
+void SPRSettingsPorogsModel::setConditions(SPREnumVariable<TypeConditions> *value)
 {
     conditions = value;
     setProperty("delete_conditions", QVariant(false));

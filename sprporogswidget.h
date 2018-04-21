@@ -8,21 +8,20 @@
 #include "ui_sprporogswidget.h"
 #include "_types.h"
 #include "models/sprporogsmodel.h"
-#include "models/sprvariable.h"
+#include "variables/sprvariable.h"
 #include "isprwidget.h"
 
 class SPRPorogsWidget : public QWidget, public ISPRWidget
 {
     Q_OBJECT
     SPRPorogsModel *model;
-//    SPRVariable<uint> *threads;
 
 public:
     explicit SPRPorogsWidget(QWidget *parent = 0);
     Ui::SPRPorogsWidget ui;
 
     void setThreads(SPRVariable<uint>* threads);
-    void setConditions(SPRVariable<TypeConditions>* conditions) {this->model->setConditions(conditions);}
+    void setConditions(SPREnumVariable<TypeConditions>* conditions) {this->model->setConditions(conditions);}
     ISPRModelData *setModel(ISPRModelData *model);
 
     // ISPRWidget interface

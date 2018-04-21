@@ -54,7 +54,7 @@ void SPRSettingsFormulaWidget::setElements(const DefaultMapElements *elements)
 
 void SPRSettingsFormulaWidget::widgetsShow()
 {
-    TypeConditions cond = model->getConditions()->getValue();
+    TypeConditions cond = model->getConditions()->getData();
     bgCondition->blockSignals(true);
     switch (cond) {
     case H1:
@@ -82,8 +82,7 @@ void SPRSettingsFormulaWidget::viewChange(int value)
     if(sender() == bgCondition){
        TypeConditions val = static_cast<TypeConditions>(value);
        if(model){
-           SPRVariable<TypeConditions> *condv = model->getConditions();
-            model->getConditions()->setValue(val);
+            model->getConditions()->setData(val);
        }
        widgetsShow();
     }

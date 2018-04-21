@@ -11,7 +11,7 @@ void SPRMainModel::setDoc(QDomDocument *value)
     settingsMainModel = new SPRSettingsMainModel(doc, this);
 
 
-    server = new ServerConnect(settingsMainModel->ipAddress->getValue(), settingsMainModel->ipPort->getValue());
+    server = new ServerConnect(settingsMainModel->ipAddress->getData(), settingsMainModel->ipPort->getData());
 
     if(settingsPorogsModel) {delete settingsPorogsModel; settingsPorogsModel = nullptr;}
     settingsPorogsModel = new SPRSettingsPorogsModel(doc, this);

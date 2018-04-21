@@ -1,0 +1,2 @@
+#include "sprbooleanvariable.h"
+

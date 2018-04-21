@@ -115,7 +115,8 @@ SOURCES += \
     variables/sprqcolorvariable.cpp \
     variables/sprqstringvariable.cpp \
     variables/sprvariable.cpp \
-    variables/sprkprvariable.cpp
+    variables/sprkprvariable.cpp \
+    variables/sprbooleanvariable.cpp
 
 HEADERS += \
     _types.h \
@@ -201,7 +202,8 @@ HEADERS += \
     variables/sprqcolorvariable.h \
     variables/sprqstringvariable.h \
     variables/sprvariable.h \
-    variables/sprkprvariable.h
+    variables/sprkprvariable.h \
+    variables/sprbooleanvariable.h
 
 FORMS += \
     sprsettingsrentgenmainwidget.ui \

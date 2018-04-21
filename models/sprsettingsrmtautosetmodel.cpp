@@ -15,18 +15,18 @@ void SPRSettingsRMTAutosetModel::setThreads(SPRVariable<uint> *value)
 SPRSettingsRMTAutosetModel::SPRSettingsRMTAutosetModel(QDomDocument *_doc, QObject *parent):
     ISPRModelData(_doc)
 {
-    typeSetting = new SPRVariable<TypeAutoSettingRMT>(doc, SPR_AUTOSETTINGS_TYPE_SETTING_XPATH, DEF_SPR_AUTOSETTINGS_TYPE_SETTING, this);
+    typeSetting = new SPREnumVariable<TypeAutoSettingRMT>(doc, SPR_AUTOSETTINGS_TYPE_SETTING_XPATH, DEF_SPR_AUTOSETTINGS_TYPE_SETTING, this);
     codeBegin = new SPRVariable<uint>(doc,SPR_AUTOSETTINGS_CODE_BEGIN_XPATH, DEF_SPR_AUTOSETTINGS_CODE_BEGIN, this);
     codeStep = new SPRVariable<uint>(doc, SPR_AUTOSETTINGS_CODE_STEP_XPATH, DEF_SPR_AUTOSETTINGS_CODE_STEP, this);
-    withRGU = new SPRVariable<bool>(doc, SPR_AUTOSETTINGS_WITH_RGU_XPATH, DEF_SPR_AUTOSETTINGS_WITH_RGU, this);
+    withRGU = new SPRBooleanVariable(doc, SPR_AUTOSETTINGS_WITH_RGU_XPATH, DEF_SPR_AUTOSETTINGS_WITH_RGU, this);
     peakPosition = new SPRVariable<uint>(doc, SPR_AUTOSETTINGS_PEAC_POSITION_XPATH, DEF_SPR_AUTOSETTINGS_PEAC_POSITION, this);
 
     QVector<QString> xpaths = {SPR_AUTUSETTINGS_WITH_CHANNEL_0, SPR_AUTUSETTINGS_WITH_CHANNEL_1, SPR_AUTUSETTINGS_WITH_CHANNEL_2, SPR_AUTUSETTINGS_WITH_CHANNEL_3,
                                SPR_AUTUSETTINGS_WITH_CHANNEL_4, SPR_AUTUSETTINGS_WITH_CHANNEL_5, SPR_AUTUSETTINGS_WITH_CHANNEL_6, SPR_AUTUSETTINGS_WITH_CHANNEL_7};
 
-    withChannel = (SPRVariable<bool>**)malloc(sizeof(SPRVariable<bool>*) * MAX_SPR_MAIN_THREADS);
+    withChannel = (SPRBooleanVariable**)malloc(sizeof(SPRBooleanVariable*) * MAX_SPR_MAIN_THREADS);
     for(int i=0; i<MAX_SPR_MAIN_THREADS; i++){
-        withChannel[i] = new SPRVariable<bool>(doc, xpaths[i], DEF_SPR_AUTUSETTINGS_WITH_CHANNEL, this);
+        withChannel[i] = new SPRBooleanVariable(doc, xpaths[i], DEF_SPR_AUTUSETTINGS_WITH_CHANNEL, this);
     }
     threads = new SPRVariable<uint>(doc, SPR_SETTINGS_MAIN_THREADS_XPATH, DEF_SPR_MAIN_THREADS, this);
     setProperty("delete_threads", QVariant(true));

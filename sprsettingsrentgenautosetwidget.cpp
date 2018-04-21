@@ -9,20 +9,20 @@ ISPRModelData *SPRSettingsRentgenAutosetWidget::setModel(SPRSettingsRentgenModel
                                             ui.cbEnhansedRgime, ui.cbWithRGU};
         QVector<QSpinBox*> byConnectInt = {ui.leCodeBegin, ui.leCodeStep, ui.lePeakPosition};
 
-        ui.cbChannel1->setChecked(model->withChannel[0]->getValue());
-        ui.cbChannel2->setChecked(model->withChannel[1]->getValue());
-        ui.cbChannel3->setChecked(model->withChannel[2]->getValue());
-        ui.cbChannel4->setChecked(model->withChannel[3]->getValue());
+        ui.cbChannel1->setChecked(model->withChannel[0]->getData());
+        ui.cbChannel2->setChecked(model->withChannel[1]->getData());
+        ui.cbChannel3->setChecked(model->withChannel[2]->getData());
+        ui.cbChannel4->setChecked(model->withChannel[3]->getData());
         ui.cbEnhansedRgime->setChecked(false);
         ui.cbAllChannels->setChecked(false);
-        ui.cbWithRGU->setChecked(model->withRGU->getValue());
+        ui.cbWithRGU->setChecked(model->withRGU->getData());
 
         for(int i=0; i<byConnectBool.size(); i++){
             connect(byConnectBool[i], SIGNAL(clicked(bool)), SLOT(viewChange(bool)));
         }
-        ui.leCodeBegin->setValue(model->codeBegin->getValue());
-        ui.leCodeStep->setValue(model->codeStep->getValue());
-        ui.lePeakPosition->setValue(model->peakPosition->getValue());
+        ui.leCodeBegin->setValue(model->codeBegin->getData());
+        ui.leCodeStep->setValue(model->codeStep->getData());
+        ui.lePeakPosition->setValue(model->peakPosition->getData());
         for(int i=0; i<byConnectInt.size(); i++){
             connect(byConnectInt[i], SIGNAL(valueChanged(int)), SLOT(viewChange(int)));
         }
@@ -53,7 +53,7 @@ void SPRSettingsRentgenAutosetWidget::widgetsShow()
 {
     QVector<QCheckBox*> chs = {ui.cbChannel1, ui.cbChannel2, ui.cbChannel3, ui.cbChannel4};
     for(int i=0; i< chs.size(); i++){
-        if(i < model->getThreads()->getValue()){
+        if(i < model->getThreads()->getData()){
             chs[i]->setVisible(true);
         } else {
             chs[i]->setVisible(false);
@@ -84,24 +84,24 @@ void SPRSettingsRentgenAutosetWidget::viewChange(bool value)
         return;
     }
     if(sender() == ui.cbChannel1){
-        model->withChannel[0]->setValue(value);
+        model->withChannel[0]->setData(value);
         return;
     }
     if(sender() == ui.cbChannel2){
-        model->withChannel[1]->setValue(value);
+        model->withChannel[1]->setData(value);
         return;
     }
     if(sender() == ui.cbChannel3){
-        model->withChannel[2]->setValue(value);
+        model->withChannel[2]->setData(value);
         return;
     }
     if(sender() == ui.cbChannel4){
-        model->withChannel[3]->setValue(value);
+        model->withChannel[3]->setData(value);
         return;
     }
 
     if(sender() == ui.cbWithRGU){
-        model->withRGU->setValue(value);
+        model->withRGU->setData(value);
     }
     QVector<QWidget*> enh = {ui.rbSettsOnCP, ui.rbSettsOnDEUCP, ui.leCodeBegin, ui.leCodeStep};
     for(int i=0;i<enh.size(); i++){
@@ -113,21 +113,21 @@ void SPRSettingsRentgenAutosetWidget::viewChange(bool value)
 void SPRSettingsRentgenAutosetWidget::viewChange(int value)
 {
     if(sender() == ui.leCodeBegin){
-        model->codeBegin->setValue(value);
+        model->codeBegin->setData(value);
         return;
     }
     if(sender() == ui.leCodeStep){
-        model->codeStep->setValue(value);
+        model->codeStep->setData(value);
         return;
     }
     if(sender() == ui.lePeakPosition){
-        model->peakPosition->setValue(value);
+        model->peakPosition->setData(value);
         return;
     }
 
     if(sender() == bgTypeSetting){
         TypeAutoSettingRMT as = static_cast<TypeAutoSettingRMT>(value);
-        model->typeSetting->setValue(as);
+        model->typeSetting->setData(as);
         return;
     }
 }

@@ -12,7 +12,7 @@
 #include <QDebug>
 #include <QByteArray>
 
-#include "models/isprmodeldata.h"
+//#include "models/isprmodeldata.h"
 class FindData {
     QString xpath;
     QStringList nextXPath;
@@ -49,31 +49,34 @@ class IModelVariable: public QObject
 {
     Q_OBJECT
 
-    QDomDocument *doc;
     QString value;
     QDomNode xmlNode;
     IModelVariable *mvparent;
 
     void fromXml(){
-        value = xmlNode.nodeValue();
+        if(!xmlNode.isNull())
+            value = xmlNode.nodeValue();
     }
     void toXml(){
-        xmlNode.setNodeValue(value);
+        if(!xmlNode.isNull())
+            xmlNode.setNodeValue(value);
     }
 
     void mconnect(IModelVariable *_mvparent){
         if(_mvparent){
             if(mvparent){
-                disconnect(mvparent, SIGNAL(doStore()), this, SLOT(store()));
+                disconnect(mvparent, SIGNAL(doStore()), this, SLOT(saveAs()));
                 disconnect(mvparent, SIGNAL(doRestore()), this, SLOT(restore()));
             }
             mvparent = _mvparent;
-            connect(mvparent, SIGNAL(doStore()), this, SLOT(store()));
+            connect(mvparent, SIGNAL(doStore()), this, SLOT(saveAs()));
             connect(mvparent, SIGNAL(doRestore()), this, SLOT(restore()));
         }
     }
 protected:
-    IModelVariable(){}
+    QDomDocument *doc;
+
+    IModelVariable(): mvparent(nullptr), doc(nullptr){}
     IModelVariable(QDomDocument *parent, IModelVariable *_mvparent=nullptr): doc(parent), mvparent(nullptr){
         mconnect(_mvparent);
     }
@@ -117,11 +120,11 @@ public:
         return getData();
     }
 public slots:
-    void store(){
+    virtual void store(){
         toXml();
         emit doStore();
     }
-    void restore(){
+    virtual void restore(){
         fromXml();
         emit doRestore();
     }

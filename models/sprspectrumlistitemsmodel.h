@@ -9,7 +9,7 @@
 #include "models/sprspectrumzonestablemodel.h"
 #include "models/sprsettingsformulamodel.h"
 #include "models/sprspectrumitemmodel.h"
-#include "models/sprqstringvariable.h"
+#include "variables/sprqstringvariable.h"
 //#include "models/sprmainmodel.h"
 
 
@@ -123,7 +123,7 @@ signals:
     void modelChanget();
 
 public slots:
-    virtual void store(QString fname="");
+    virtual void saveAs(QString fname="");
 
 };
 

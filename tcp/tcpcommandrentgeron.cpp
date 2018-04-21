@@ -46,13 +46,13 @@ void TCPCommandRentgerOn::go(TCPCommand *_command)
         uint8_t threads = DEF_SPR_MAIN_THREADS;
         rentgenNum = 1 /*DEF_SPR_MAIN_RENTGENS*/;
         if(model){
-            threads = model->getThreads()->getValue();
+            threads = model->getThreads()->getData();
 //            rentgenNum = model->getRentgens()->getData();
         }
         for(uint8_t i=0; i<threads; i++){
             if(model){
-                d = model->deuCodes[i]->getValue();
-                cp = model->cpCodes[i]->getValue();
+                d = model->deuCodes[i]->getData();
+                cp = model->cpCodes[i]->getData();
             }
             deuData.append((char*)&d, sizeof(d));
             cpData.append((char*)&cp, sizeof(cp));
@@ -70,8 +70,8 @@ void TCPCommandRentgerOn::go(TCPCommand *_command)
             uint16_t mka;
             QByteArray data;
             if(model){
-                kv = model->uTubes[rentgenCount]->getValue();
-                mka = model->iTubes[rentgenCount]->getValue();
+                kv = model->uTubes[rentgenCount]->getData();
+                mka = model->iTubes[rentgenCount]->getData();
             } else {
                 kv = DEF_SPR_RENTGEN_U_TUBE;
                 mka = DEF_SPR_RENTGEN_I_TUBE;

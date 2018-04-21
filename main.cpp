@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 
             model = new SPRElementsModel(&doc);
 
-            model->store();
+            model->IModelVariable::store();
             in.close();
 
             QFile out("Separator1.xml");

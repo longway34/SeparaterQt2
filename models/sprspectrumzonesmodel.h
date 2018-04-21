@@ -4,9 +4,9 @@
 #include <QObject>
 #include <QDomDocument>
 #include "models/isprmodeldata.h"
-#include "models/sprvariable.h"
-#include "models/sprqstringvariable.h"
-#include "models/sprqcolorvariable.h"
+#include "variables/sprvariable.h"
+#include "variables/sprqstringvariable.h"
+#include "variables/sprqcolorvariable.h"
 
 #include "_types.h"
 
@@ -23,7 +23,7 @@ public:
 //    uint max;
     SPRQStringVariable *sname;
     SPRQStringVariable *fname;
-    SPRColorVariable *vcolor;
+    SPRQColorVariable *vcolor;
     int elIndex;
 //    uint getMin(){if(vmin) return vmin->getData()
 //                else return min};

@@ -4,12 +4,13 @@
 #include <QObject>
 #include "_types.h"
 #include "models/isprmodeldata.h"
-#include "models/sprvariable.h"
+#include "variables/sprvariable.h"
+#include "variables/sprenumvariable.h"
 
 class SPRPorogsModel : public ISPRModelData
 {
 protected:
-    SPRVariable<TypeConditions> *conditions;
+    SPREnumVariable<TypeConditions> *conditions;
     SPRVariable<uint> *threads;
     uint row;
 public:
@@ -19,8 +20,8 @@ public:
     SPRPorogsModel(QDomDocument *_doc, uint _row, ISPRModelData *parent = nullptr);
     virtual ~SPRPorogsModel();
     void setThreads(SPRVariable<uint> *value);
-    void setConditions(SPRVariable<TypeConditions> *value);
-    SPRVariable<TypeConditions> *getConditions() const;
+    void setConditions(SPREnumVariable<TypeConditions> *value);
+    SPREnumVariable<TypeConditions> *getConditions() const;
     SPRVariable<uint> *getThreads() const;
 };
 

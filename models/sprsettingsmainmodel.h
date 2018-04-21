@@ -4,10 +4,11 @@
 #include <QObject>
 #include "_types.h"
 #include "models/isprmodeldata.h"
-#include "models/sprqcolorvariable.h"
-#include "models/sprdatetimevariable.h"
-#include "models/sprqstringvariable.h"
-#include "models/sprvariable.h"
+#include "variables/sprqcolorvariable.h"
+#include "variables/sprdatetimevariable.h"
+#include "variables/sprqstringvariable.h"
+#include "variables/sprenumvariable.h"
+#include "variables/sprvariable.h"
 
 class SPRSettingsMainModel : public ISPRModelData
 {
@@ -24,9 +25,9 @@ public:
     SPRVariable<uint> *ims;
     SPRVariable<uint> *threads;
 //    SPRVariable<uint> *ims_row_count;
-    SPRVariable<TypePRAM> *typePRAM;
-    SPRVariable<TypeThermo> *typeThermo;
-    SPRColorVariable *color;
+    SPREnumVariable<TypePRAM> *typePRAM;
+    SPREnumVariable<TypeThermo> *typeThermo;
+    SPRQColorVariable *color;
 
 //    SPRDateVariable *date;
 //    SPRQStringVariable *version;

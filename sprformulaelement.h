@@ -7,8 +7,7 @@
 #include <QMenu>
 
 #include "_types.h"
-#include "models/sprelementvariable.h"
-
+#include "variables/sprenumvariable.h"
 
 class SPRFormulaElement : public QLabel
 {
@@ -16,14 +15,14 @@ class SPRFormulaElement : public QLabel
 
 //    quint16 elementsNumber;
     DefaultMapElements *elements;
-    SPRElementVariable *element;
+    SPREnumVariable<EnumElements> *element;
 //    QMenu *contextMenu;
 
 //    QMenu *createContextMenu();
 public:
     SPRFormulaElement(QWidget *parent = nullptr);
     virtual ~SPRFormulaElement();
-    void setElement(SPRElementVariable *value);
+    void setElement(SPREnumVariable<EnumElements> *value);
 
 public slots:
     void setElements(const DefaultMapElements *elements);

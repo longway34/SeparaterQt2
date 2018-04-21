@@ -11,13 +11,14 @@ void ISPRModelData::setDoc(QDomDocument *_doc, IModelVariable *parent)
 {
     doc = _doc;
     if(parent){
-        connect(parent, SIGNAL(goStore()), this, SLOT(store()));
+        connect(parent, SIGNAL(goStore()), this, SLOT(saveAs()));
     }
 }
 
 void ISPRModelData::setDoc(QString fname, IModelVariable *parent)
 {
-    QFile in(fname);
+    if(!fname.isEmpty()) {fileName = fname;}
+    QFile in(fileName);
     if(in.open(QIODevice::ReadOnly)){
         if(!document.setContent(&in)){
             qDebug() << "Error!!! read content from " << fname << "new file created now...";
@@ -30,29 +31,25 @@ void ISPRModelData::setDoc(QString fname, IModelVariable *parent)
 }
 
 
-ISPRModelData::ISPRModelData(QString fname, IModelVariable *parent):doc(nullptr)
+ISPRModelData::ISPRModelData(QString fname, IModelVariable *parent): IModelVariable(nullptr, parent)
 {
     setDoc(fname, parent);
 }
 
-ISPRModelData::ISPRModelData(QDomDocument *_doc, IModelVariable *parent): doc(nullptr)
+ISPRModelData::ISPRModelData(QDomDocument *_doc, IModelVariable *parent): IModelVariable(_doc, parent)
 {
     setDoc(_doc, parent);
 }
 
-void ISPRModelData::store(QString fname)
+void ISPRModelData::saveAs(QString fname)
 {
-    store();
-    if(!fname.isEmpty()){
-        QFile fout(fname);
+    emit doStore();
+    if(!fname.isEmpty()){ fileName = fname; }
+        QFile fout(fileName);
         if(fout.open(QIODevice::WriteOnly)){
             QTextStream out(&fout);
             out << doc->toString();
             fout.close();
         }
-    }
 }
 
-void ISPRModelData::store(){
-    emit doStore();
-}

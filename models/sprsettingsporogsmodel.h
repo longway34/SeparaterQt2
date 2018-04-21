@@ -5,12 +5,14 @@
 #include "_types.h"
 #include "models/sprporogsmodel.h"
 #include "models/isprmodeldata.h"
-#include "models/sprvariable.h"
-#include "models/sprkprvariable.h"
+#include "variables/sprvariable.h"
+#include "variables/sprkprvariable.h"
+#include "variables/sprenumvariable.h"
+#include "variables/sprbooleanvariable.h"
 
 class SPRSettingsPorogsModel : public ISPRModelData
 {
-    SPRVariable<TypeConditions> *conditions;
+    SPREnumVariable<TypeConditions> *conditions;
     SPRVariable<uint> *threads;
     SPRPorogsModel *porogs;
     SPRPorogsModel *porogs2;
@@ -25,15 +27,15 @@ public:
     SPRKPRVariable *forMinStone;
     SPRKPRVariable *forMaxStone;
     SPRVariable<double> *xRayCorrection;
-    SPRVariable<TypeSelection> *typeSelection;
+    SPREnumVariable<TypeSelection> *typeSelection;
 
-    SPRVariable<bool> *invertSelection;
-    SPRVariable<bool> *invertSelection2;
+    SPRBooleanVariable *invertSelection;
+    SPRBooleanVariable *invertSelection2;
 
-    SPRVariable<TypeConditions> *getConditions() const;
-    void setConditions(SPRVariable<TypeConditions> *value);
-    SPRVariable<TypeSelection> *getTypeSelection() const;
-    void setSelection(SPRVariable<TypeSelection> *value);
+    SPREnumVariable<TypeConditions> *getConditions() const;
+    void setConditions(SPREnumVariable<TypeConditions> *value);
+    SPREnumVariable<TypeSelection> *getTypeSelection() const;
+    void setSelection(SPREnumVariable<TypeSelection> *value);
     SPRPorogsModel *getPorogs() const;
     SPRPorogsModel *getPorogs2() const;
     SPRVariable<double> *getPorog(int thr, int condNum) const;

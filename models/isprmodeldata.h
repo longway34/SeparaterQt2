@@ -17,6 +17,7 @@ class ISPRModelData : public IModelVariable
 
 protected:
     QDomDocument document;
+    QString fileName;
 //    QDomDocument *doc;
 //    QDomElement root;
 
@@ -30,7 +31,7 @@ public:
     void setDoc(QString fname, IModelVariable *parent = nullptr);
 
 public slots:
-    virtual void store(QString fname);
+    void saveAs(QString fname = "");
 };
 
 #endif // ISPRMODELDATA_H

@@ -35,7 +35,7 @@ public:
     QwtPlotCurve *curve;
     QwtPlotGrid *grid;
 
-    void setConditions(SPRVariable<TypeConditions> *var){
+    void setConditions(SPREnumVariable<TypeConditions> *var){
         model->setConditions(var);
 //        ui.wPorogs->setConditions(var);
         widgetsShow();
@@ -45,7 +45,7 @@ public:
 
         widgetsShow();
     }
-    void setTypeSelections(SPRVariable<TypeSelection> *var){
+    void setTypeSelections(SPREnumVariable<TypeSelection> *var){
         model->setSelection(var);
     }
 

@@ -5,7 +5,7 @@
 #include <QDomDocument>
 #include "isprmodeldata.h"
 #include "models/sprspectrumzonesmodel.h"
-#include "sprvariable.h"
+#include "variables/sprvariable.h"
 
 class SPRSettingsSpectrumRangesModel : public ISPRModelData
 {

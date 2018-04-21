@@ -4,12 +4,13 @@
 #include <QObject>
 #include <variables/sprvariable.h>
 #include <QColor>
+#include "_types.h"
 
 template <class T>
 class SPREnumVariable : public SPRVariable<int>
 {
 protected:
-    T data;
+//    T data;
 public:
     SPREnumVariable(QDomDocument *parent, QString xpath, T defValue, IModelVariable *_mvparent):
         SPRVariable<int>(parent, xpath, static_cast<int>(defValue), _mvparent)
@@ -18,17 +19,21 @@ public:
     }
     T getData()
     {
-        data = static_cast<T>(SPRVariable::getData());
-        return data;
+        T d = static_cast<T>(SPRVariable::getData());
+        return d;
     }
     void setData(const T &value)
     {
-        data = value;
-        SPRVariable::setData(static_cast<int>(data));
+        T d = value;
+        SPRVariable::setData(static_cast<int>(d));
+    }
+
+    int getIndex(){
+        return SPRVariable::getData();
     }
 
     QString toString(){
-        return DEF_SPR_FORMULA_ELEMENTS_PROPERTY[getData()].name;
+//        return DEF_SPR_FORMULA_ELEMENTS_PROPERTY[getData()].name;
     }
 };
 

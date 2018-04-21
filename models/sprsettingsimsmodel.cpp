@@ -76,7 +76,7 @@ SPRSettingsIMSModel::SPRSettingsIMSModel(QDomDocument *_doc, QObject *parent):
     kSpeedOreB = new SPRVariable<double>(doc, SPR_IMS_SPEAD_ORE_B, DEF_SPR_IMS_SPEAD_ORE_B, this);
     limitAbrasion = new SPRVariable<qulonglong>(doc, SPR_IMS_LIMIT_ABRASION_XPATH, DEF_SPR_IMS_LIMIT_ABRASION, this);
 
-    withMaxMaxStone = new SPRVariable<bool>(doc, SPR_IMS_WITH_MAX_STONE, DEF_SPR_IMS_WITH_MAX_STONE, this);
+    withMaxMaxStone = new SPRBooleanVariable(doc, SPR_IMS_WITH_MAX_STONE, DEF_SPR_IMS_WITH_MAX_STONE, this);
 
 //    struct lineFormula lfDelay = getLineKoeff(timesMettering[0]->getData(), tDelayMinStone->getData(), timesMettering[timesMettering.size() - 1]->getData(), tDelayMaxStone->getData());
 //    struct lineFormula lfDuration = getLineKoeff(timesMettering[0]->getData(), tDurationMinStone->getData(), timesMettering[timesMettering.size() - 1]->getData(), tDurationMaxStone->getData());

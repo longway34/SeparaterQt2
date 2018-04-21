@@ -3,8 +3,10 @@
 
 #include <QObject>
 #include "models/isprmodeldata.h"
-#include "models/sprvariable.h"
-
+#include "variables/sprvariable.h"
+#include "variables/sprenumvariable.h"
+#include "variables/sprbooleanvariable.h"
+#include "_types.h"
 
 class SPRSettingsControlModel : public ISPRModelData
 {
@@ -23,7 +25,7 @@ public:
     SPRVariable<uint> *airLoadingMinCritical;
     SPRVariable<uint> *airLoadingMaxCritical;
 
-    SPRVariable<EnumElements> *controlArea;     // область контроля
+    SPREnumVariable<EnumElements> *controlArea;     // область контроля
 
     SPRVariable<uint> *weightAvgStoneTail;
     SPRVariable<uint> *weightAvgStoneConcentrate;
@@ -34,7 +36,7 @@ public:
 
     SPRVariable<double> *correctOptimalOreStream;
 
-    SPRVariable<bool> *autoOreStreamControl;
+    SPRBooleanVariable *autoOreStreamControl;
 
     SPRVariable<double> *VEMSLevelLess;
     SPRVariable<double> *VEMSMaxCode;
