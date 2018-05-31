@@ -65,12 +65,14 @@ class IModelVariable: public QObject
     void mconnect(IModelVariable *_mvparent){
         if(_mvparent){
             if(mvparent){
-                disconnect(mvparent, SIGNAL(doStore()), this, SLOT(saveAs()));
+                disconnect(mvparent, SIGNAL(doStore()), this, SLOT(store()));
                 disconnect(mvparent, SIGNAL(doRestore()), this, SLOT(restore()));
+                disconnect(this, SIGNAL(modelChanget(IModelVariable*)), mvparent, SLOT(onModelChanget(IModelVariable*)));
             }
             mvparent = _mvparent;
-            connect(mvparent, SIGNAL(doStore()), this, SLOT(saveAs()));
+            connect(mvparent, SIGNAL(doStore()), this, SLOT(store()));
             connect(mvparent, SIGNAL(doRestore()), this, SLOT(restore()));
+            connect(this, SIGNAL(modelChanget(IModelVariable*)), mvparent, SLOT(onModelChanget(IModelVariable*)));
         }
     }
 protected:
@@ -87,12 +89,16 @@ protected:
     void Init(QDomDocument *parent, QString xpath, QString defValue, IModelVariable *mvparent=nullptr);
 
 public:
+    void setMVParent(IModelVariable *_mvparent){
+        mconnect(_mvparent);
+    }
 
     QString getData(){
         return value;
     }
     void setData(QString _value){
         value = _value;
+        emit modelChanget(this);
     }
 
     void toDebug(QDomNode element=QDomNode()){
@@ -128,8 +134,12 @@ public slots:
         fromXml();
         emit doRestore();
     }
+    virtual void onModelChanget(IModelVariable* send){
+        emit modelChanget(send);
+    }
 signals:
     void doStore();
     void doRestore();
+    void modelChanget(IModelVariable *);
 };
 #endif // IMODELVARIABLE_H

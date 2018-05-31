@@ -27,12 +27,12 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QTabWidget" name="tabWidget_3">
+    <widget class="QTabWidget" name="tabWidget">
      <property name="statusTip">
       <string/>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <property name="iconSize">
       <size>
@@ -49,7 +49,7 @@
      <property name="tabBarAutoHide">
       <bool>false</bool>
      </property>
-     <widget class="QWidget" name="tab_11">
+     <widget class="QWidget" name="tabMainParams">
       <attribute name="icon">
        <iconset resource="icons.qrc">
         <normaloff>:/icons/algoritmSettings/rentgen/icons/AlgoripmSerrings_tabs/Rentgens/Rentgen_Settings_Main_1.png</normaloff>:/icons/algoritmSettings/rentgen/icons/AlgoripmSerrings_tabs/Rentgens/Rentgen_Settings_Main_1.png</iconset>
@@ -63,7 +63,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_12">
+     <widget class="QWidget" name="tabControlParams">
       <attribute name="icon">
        <iconset resource="icons.qrc">
         <normaloff>:/icons/algoritmSettings/rentgen/icons/AlgoripmSerrings_tabs/Rentgens/Rentgen_Settings_Controls_1.png</normaloff>:/icons/algoritmSettings/rentgen/icons/AlgoripmSerrings_tabs/Rentgens/Rentgen_Settings_Controls_1.png</iconset>
@@ -77,7 +77,10 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_13">
+     <widget class="QWidget" name="tabAutoSettings">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <attribute name="icon">
        <iconset resource="icons.qrc">
         <normaloff>:/icons/algoritmSettings/rentgen/icons/AlgoripmSerrings_tabs/Rentgens/Rentgen_Settings_Auto_1.png</normaloff>:/icons/algoritmSettings/rentgen/icons/AlgoripmSerrings_tabs/Rentgens/Rentgen_Settings_Auto_1.png</iconset>

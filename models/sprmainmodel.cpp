@@ -10,7 +10,6 @@ void SPRMainModel::setDoc(QDomDocument *value)
     if(settingsMainModel) {delete settingsMainModel; settingsMainModel = nullptr;}
     settingsMainModel = new SPRSettingsMainModel(doc, this);
 
-
     server = new ServerConnect(settingsMainModel->ipAddress->getData(), settingsMainModel->ipPort->getData());
 
     if(settingsPorogsModel) {delete settingsPorogsModel; settingsPorogsModel = nullptr;}
@@ -19,6 +18,7 @@ void SPRMainModel::setDoc(QDomDocument *value)
 
     if(settingsRentgenModel) {delete settingsRentgenModel; settingsRentgenModel = nullptr;}
     settingsRentgenModel = new SPRSettingsRentgenModel(doc, this);
+
     settingsRentgenModel->setThreads(settingsMainModel->getThreads());
     settingsRentgenModel->setRentgens(settingsMainModel->getRentgens());
 
@@ -34,13 +34,16 @@ void SPRMainModel::setDoc(QDomDocument *value)
     settingsFormulaModel->setCondition(settingsPorogsModel->getConditions());
 
     if(spectrumZonesTableModel) {delete spectrumZonesTableModel; spectrumZonesTableModel = nullptr;}
-    spectrumZonesTableModel = new SPRSpectrumZonesTableModel(doc, this);
+    spectrumZonesTableModel = new SPRSpectrumZonesTableModel(doc, elements, this);
     spectrumZonesTableModel->setThreads(settingsMainModel->getThreads());
 
     if(spectrumListItemsModel) {delete spectrumListItemsModel; spectrumListItemsModel = nullptr;}
-    spectrumListItemsModel = new SPRSpectrumListItemsModel(spectrumZonesTableModel, settingsFormulaModel, settingsMainModel->getThreads(), settingsMainModel->getSpectrumFileName(), this);
+    spectrumListItemsModel = new SPRSpectrumListItemsModel(spectrumZonesTableModel, settingsFormulaModel, settingsMainModel->getThreads(), settingsMainModel->getSpectrumFileName(), settingsControlModel->controlArea, this);
 
+    if(separateModel){delete separateModel; separateModel = nullptr;}
+    separateModel = new SPRSeparateModel(doc, this);
 
+    emit modelChanget(this);
 }
 
 SPRQStringVariable *SPRMainModel::getSpectrumFName() const
@@ -65,6 +68,16 @@ void SPRMainModel::setServer(ServerConnect *value)
     server = value;
 }
 
+SPRSeparateModel *SPRMainModel::getSeparateModel() const
+{
+    return separateModel;
+}
+
+void SPRMainModel::setSeparateModel(SPRSeparateModel *value)
+{
+    separateModel = value;
+}
+
 SPRMainModel::SPRMainModel(QDomDocument *_doc, ISPRModelData *parent): ISPRModelData(_doc, parent),
     settingsControlModel(nullptr),
     settingsFormulaModel(nullptr),
@@ -74,7 +87,9 @@ SPRMainModel::SPRMainModel(QDomDocument *_doc, ISPRModelData *parent): ISPRModel
     settingsRentgenModel(nullptr),
     spectrumZonesTableModel(nullptr),
     spectrumListItemsModel(nullptr),
-    server(nullptr)
+    elements(nullptr),
+    server(nullptr),
+    separateModel(nullptr)
 {
     setDoc(_doc);
 }
@@ -88,7 +103,9 @@ SPRMainModel::SPRMainModel(QString docFName, ISPRModelData *parent): ISPRModelDa
     settingsRentgenModel(nullptr),
     spectrumZonesTableModel(nullptr),
     spectrumListItemsModel(nullptr),
-    server(nullptr)
+    elements(nullptr),
+    server(nullptr),
+    separateModel(nullptr)
 {
     fPath = "";
     if(docFName.contains(QDir::separator())){
@@ -119,7 +136,8 @@ SPRMainModel::~SPRMainModel()
     if(spectrumZonesTableModel) delete spectrumZonesTableModel; spectrumZonesTableModel = nullptr;
     if(settingsPorogsModel) delete settingsPorogsModel; settingsPorogsModel = nullptr;
     if(settingsMainModel) delete settingsMainModel; settingsMainModel = nullptr;
-
+    if(elements) delete elements; elements = nullptr;
+    if(separateModel) delete separateModel; separateModel = nullptr;
 }
 
 QDomDocument *SPRMainModel::getDoc() const

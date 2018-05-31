@@ -12,17 +12,24 @@ static SeparatorPorogsData defSeparatorPorogsData = {
 };
 
 SPRPorogsWidget::SPRPorogsWidget(QWidget *parent) :
-    QWidget(parent)
+    QWidget(parent), model(nullptr)
 {
     ui.setupUi(this);
+
 }
 
 void SPRPorogsWidget::setThreads(SPRVariable<uint> *threads) {
     this->model->setThreads(threads);
 }
 
-ISPRModelData *SPRPorogsWidget::setModel(ISPRModelData *model){
-    this->model = (SPRPorogsModel*)model;
+ISPRModelData *SPRPorogsWidget::setModelData(ISPRModelData *model){
+    if(model){
+        if(this->model){
+            disconnect(this->model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
+        }
+        this->model = (SPRPorogsModel*)model;
+        connect(this->model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
+    }
     return model;
 }
 
@@ -77,8 +84,14 @@ void SPRPorogsWidget::viewChange()
     emit tableChange(tw, row, col);
 }
 
-ISPRModelData *SPRPorogsWidget::getModel()
+ISPRModelData *SPRPorogsWidget::getModelData()
 {
     return model;
 }
 
+
+
+void SPRPorogsWidget::onModelChanget(IModelVariable *)
+{
+    widgetsShow();
+}

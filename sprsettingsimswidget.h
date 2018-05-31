@@ -22,7 +22,7 @@ class SPRSettingsIMSWidget : public QWidget, public ISPRWidget
 public:
     explicit SPRSettingsIMSWidget(QWidget *parent = 0);
 
-    ISPRModelData *getModel();
+    ISPRModelData *getModelData();
     void setIms(SPRVariable<uint> *ims){model->setIms(ims);}
 
 private:
@@ -40,7 +40,7 @@ private:
     // ISPRWidget interface
 public:
 
-    ISPRModelData *setModel(SPRSettingsIMSModel *value);
+    ISPRModelData *setModelData(SPRSettingsIMSModel *value);
 
     void repaintGraphicSetts(double);
 public slots:
@@ -48,8 +48,12 @@ public slots:
     virtual void viewChange(bool val);
     virtual void widgetsShow();
     void onMouseMoved(QPointF point);
+    virtual void onModelChanget(IModelVariable *);
 signals:
     void doShow();
+
+    // ISPRWidget interface
+protected:
 };
 
 #endif // SPRSETTINGSIMSWIDGET_H

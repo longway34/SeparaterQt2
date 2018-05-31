@@ -1,21 +1,26 @@
 #include "sprspectrumgraphicswidget.h"
 
-void SPRSpectrumGraphicsWidget::setModel(SPRSpectrumListItemsModel *value, SPRTypeSpectrumSet _typeSpectrumSet, bool _zonesShow)
+void SPRSpectrumGraphicsWidget::setModelData(SPRSpectrumListItemsModel *value, SPRTypeSpectrumSet _typeSpectrumSet, bool _zonesShow)
 {
     if(value){
+        if(model){
+            disconnect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
+        }
         model = value;
+        connect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
 
         this->typeSpectrumSet = _typeSpectrumSet;
-        if(_typeSpectrumSet == spectrumBase){
-            spectrums = model->getSpectrumsModelBase();
-        } else if(_typeSpectrumSet == spectrumsOnly){
-            spectrums = model->getSpectrumsModel();
-        } else {
-            spectrums = model->getSpectrumsModelAll();
-        }
-        this->zonesShow = _zonesShow;
 
-        connect(model, SIGNAL(modelChanget()), this, SLOT(widgetsShow()));
+        spectrums = model->getSpectrumsModel(typeSpectrumSet);
+
+//        if(_typeSpectrumSet == spectrumBase){
+//            spectrums = model->getSpectrumsModelBase();
+//        } else if(_typeSpectrumSet == spectrumsOnly){
+//            spectrums = model->getSpectrumsModel();
+//        } else {
+//            spectrums = model->getSpectrumsModelAll();
+//        }
+        this->zonesShow = _zonesShow;
 
         widgetsShow();
     }
@@ -24,10 +29,22 @@ void SPRSpectrumGraphicsWidget::setModel(SPRSpectrumListItemsModel *value, SPRTy
 
 void SPRSpectrumGraphicsWidget::onChangeSelectedCheckedItems(QList<int> checked, int current)
 {
-    visibleItems = checked;
+    int size = model->getSpectrumsModelAll()->size();
     currentItem = current;
+    if(checked.size() <= 0 && (currentItem >= 0 && currentItem < size)){
+        visibleItems = QList<int>({currentItem});
+    } else {
+        visibleItems = checked;
+    }
 
-    for(int i=0; i<model->getSpectrumsModel()->size(); i++){
+    if(currentItem >=0 && currentItem < size){
+        zoomer->setCurrent(graphItems[currentItem]);
+    } else {
+        zoomer->setCurrent(nullptr);
+    }
+
+
+    for(int i=0; i<size; i++){
         bool visible = false; bool curr = false;
         if(visibleItems.contains(i)){
             visible = true;
@@ -35,7 +52,9 @@ void SPRSpectrumGraphicsWidget::onChangeSelectedCheckedItems(QList<int> checked,
                curr = true;
             }
         }
-        graphItems[i]->setVisible(visible, curr, zonesShow);
+        if(i < graphItems.size() && i>=0){
+            graphItems[i]->setVisible(visible, curr, zonesShow);
+        }
     }
 }
 
@@ -51,7 +70,7 @@ void SPRSpectrumGraphicsWidget::setZonesShow(bool value)
 }
 
 SPRSpectrumGraphicsWidget::SPRSpectrumGraphicsWidget(QWidget *parent) :
-    QWidget(parent)
+    QWidget(parent), model(nullptr)
 {
     ui.setupUi(this);
     currentItem = -1;
@@ -59,18 +78,32 @@ SPRSpectrumGraphicsWidget::SPRSpectrumGraphicsWidget(QWidget *parent) :
     zonesShow = true;
 
     ui.canvas->setAxisScale(QwtPlot::Axis::xBottom, 0, 256, 10);
+
+    zoomer = new MyZoomer(ui.canvas->canvas());
+
+    const QColor c( Qt::darkBlue );
+    zoomer->setRubberBandPen( c );
+    zoomer->setTrackerPen( c );
 }
 
 void SPRSpectrumGraphicsWidget::widgetsShow()
 {
-    ui.canvas->detachItems();
-    graphItems.clear();
-    for(int i=0; i<spectrums->size(); i++){
-//        if(i >= graphItems.size()){ // add new sectrum
-            GraphItem *gi = new GraphItem(spectrums->at(i), ui.canvas);
-            graphItems.push_back(gi);
-//        }
+    if(model){
+        ui.canvas->detachItems();
+        graphItems.clear();
+        spectrums = model->getSpectrumsModel(typeSpectrumSet);
+        for(int i=0; i<spectrums->size(); i++){
+    //        if(i >= graphItems.size()){ // add new sectrum
+                GraphItem *gi = new GraphItem(spectrums->at(i), ui.canvas);
+                graphItems.push_back(gi);
+    //        }
+        }
+        onChangeSelectedCheckedItems(visibleItems, currentItem);
+        ui.canvas->replot();
     }
-    onChangeSelectedCheckedItems(visibleItems, currentItem);
-    ui.canvas->replot();
+}
+
+void SPRSpectrumGraphicsWidget::onModelChanget(IModelVariable *)
+{
+    widgetsShow();
 }

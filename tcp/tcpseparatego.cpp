@@ -116,7 +116,7 @@ void TCPSeparateGo::go(TCPCommand *_command)
             if(logWidget){
                logWidget->onLogsCommand("separate data ready...");
             }
-//            emit commandComplite(_command);
+            emit commandComplite(_command);
 //            commandSet[0]->send(server);
             return;
         }

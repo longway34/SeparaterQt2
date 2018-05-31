@@ -135,13 +135,18 @@ typedef QMap<EnumElements, DefaultElementsProperty> DefaultMapElements;
 Q_DECLARE_METATYPE(DefaultMapElements)
 
 static const DefaultMapElements DEF_SPR_FORMULA_ELEMENTS_PROPERTY = {
-    {Ns, {"Ns", QString("Рассеенка"), QColor(255,0,255,100), 0, 80, 256}},
+    {Ns, {"Ns", QString("Рассеенка"), QColor(255,0,0,100), 0, 80, 256}},
     {Fe, {"Fe", QString("Железо"), QColor(255, 0, 0, 100), 1, 20, 40}},
     {Cu, {"Cu", QString("Медь"), QColor(0,255,0,100), 2, 40, 60}},
     {Mo, {"Mo", QString("Молибден"), QColor(0,0,255,100), 3, 60, 80}},
     {Zn, {"Zn", QString("Цинк"), QColor(255,255,0,100), 4, 80, 100}},
     {Mg, {"Mg", QString("Магний"), QColor(0,255,255,100), 5, 100, 120}},
 };
+
+#define SPR_SETTINGS_SPECTRUM_ZONES_XPATH_PREFIX "SEPARATOR/PROPERTY[@CODE=RANGES_NAMES]/VALUE[@NAME=NAME"
+#define SPR_SETTINGS_SPECTRUM_ZONES_KEY_XPATH_SUFFIX   "[KEY]"
+#define SPR_SETTINGS_SPECTRUM_ZONES_FNAME_XPATH_SUFFIX "[FNAME]"
+#define SPR_SETTINGS_SPECTRUM_ZONES_COLOR_XPATH_SUFFIX "[COLOR]"
 
 typedef enum:int{
     H1  =0,

@@ -20,14 +20,20 @@ SPRSettingsFormulaWidget::SPRSettingsFormulaWidget(QWidget *parent) :
 
 }
 
-ISPRModelData *SPRSettingsFormulaWidget::setModel(ISPRModelData *model)
+ISPRModelData *SPRSettingsFormulaWidget::setModelData(ISPRModelData *model)
 {
-    QVector<SPRFormulaItemWidget*> widgets = {ui.wFormula1, ui.wFormula2, ui.wFormula3};
-    SPRSettingsFormulaModel* sfm = (SPRSettingsFormulaModel*)model;
-    this->model = sfm;
-    for(int i=0; i< sfm->itemsModel.size();i++){
-        int index = sfm->itemsModel[i]->index;
-        widgets[index]->setModel(sfm->itemsModel[i]);
+    if(model){
+        if(this->model){
+            disconnect(this->model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
+        }
+        QVector<SPRFormulaItemWidget*> widgets = {ui.wFormula1, ui.wFormula2, ui.wFormula3};
+        SPRSettingsFormulaModel* sfm = (SPRSettingsFormulaModel*)model;
+        this->model = sfm;
+        connect(this->model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
+        for(int i=0; i< sfm->itemsModel.size();i++){
+            int index = sfm->itemsModel[i]->index;
+            widgets[index]->setModelData(sfm->itemsModel[i]);
+        }
     }
     return model;
 }
@@ -37,7 +43,7 @@ ISPRModelData *SPRSettingsFormulaWidget::setItemModel(ISPRModelData *model)
     QVector<SPRFormulaItemWidget*> widgets = {ui.wFormula1, ui.wFormula2, ui.wFormula3};
     SPRFormulaItemModel *fim = (SPRFormulaItemModel*)model;
     this->model->setModel(model);
-    widgets[fim->index]->setModel(model);
+    widgets[fim->index]->setModelData(model);
 }
 
 void SPRSettingsFormulaWidget::setElements(const DefaultMapElements *elements)
@@ -54,25 +60,27 @@ void SPRSettingsFormulaWidget::setElements(const DefaultMapElements *elements)
 
 void SPRSettingsFormulaWidget::widgetsShow()
 {
-    TypeConditions cond = model->getConditions()->getData();
-    bgCondition->blockSignals(true);
-    switch (cond) {
-    case H1:
-        ui.rbH1Resume->setChecked(true);
-        break;
-    case H2:
-        ui.rbH2Resume->setChecked(true);
-        break;
-    case H3:
-        ui.rbH3Resume->setChecked(true);
-    default:
-        break;
+    if(model){
+        TypeConditions cond = model->getConditions()->getData();
+        bgCondition->blockSignals(true);
+        switch (cond) {
+        case H1:
+            ui.rbH1Resume->setChecked(true);
+            break;
+        case H2:
+            ui.rbH2Resume->setChecked(true);
+            break;
+        case H3:
+            ui.rbH3Resume->setChecked(true);
+        default:
+            break;
+        }
+        bgCondition->blockSignals(false);
     }
-    bgCondition->blockSignals(false);
 }
 
 
-ISPRModelData *SPRSettingsFormulaWidget::getModel()
+ISPRModelData *SPRSettingsFormulaWidget::getModelData()
 {
     return model;
 }
@@ -89,3 +97,9 @@ void SPRSettingsFormulaWidget::viewChange(int value)
     emit doShow();
 }
 
+
+
+void SPRSettingsFormulaWidget::onModelChanget(IModelVariable *)
+{
+    widgetsShow();
+}

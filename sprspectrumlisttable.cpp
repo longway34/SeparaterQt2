@@ -2,32 +2,44 @@
 #include <QLabel>
 #include "_types.h"
 
-void SPRSpectrumListTable::connectFirstTable(FirstColumn *fc){
+void SPRSpectrumListTable::connectFirstTable(FirstCollumn2 *fc){
     connect(fc, SIGNAL(changeColor(QColor)), this, SLOT(viewChange(QColor)));
-    connect(fc, SIGNAL(iAmSelected(int)), this, SLOT(viewChange(int)));
-    connect(fc, SIGNAL(iAmDelete(int)), this, SLOT(onDeleteRow(int)));
+    connect(fc, SIGNAL(selectedRow(bool,int)), this, SLOT(onRowSelect(bool,int)));
+    connect(fc, SIGNAL(deleteRow(int)), this, SLOT(onDeleteRow(int)));
     connect(this, SIGNAL(doShow()), fc, SLOT(widgetsShow()));
 
 }
+
+void SPRSpectrumListTable::onRowSelect(bool select, int row){
+    emit rowSelectedChecked(getSelectedItems(), row);
+}
 void SPRSpectrumListTable::onDeleteRow(int row){
-    model->getSpectrumsModel()->remove(row);
-    removeRow(row);
-    storeCheckedRows = getSelectedItems();
-    storeCurrentRow = currentRow();
-    while(rowCount()>0) removeRow(0);
-    widgetsShow();
-    emit modelChanged();
+//    if(typeData == spectrumsOnly){
+//        int baseVectorSize = model->getSpectrumsModel(spectrumBase)->size();
+//        row += baseVectorSize;
+//    }
+    int vectorSize = model->getSpectrumsModel(typeData)->size();
+    if(row >= 0 && row < vectorSize){
+        model->removeSpectrum(row, typeData);
+        removeRow(row);
+        storeCheckedRows = getSelectedItems();
+        storeCurrentRow = currentRow();
+    }
+//    while(rowCount()>0) removeRow(0);
+//    widgetsShow();
 }
 
 void SPRSpectrumListTable::insertFirstColumn(SpectrumItemData *data, int row){
-    FirstColumn *fc = new FirstColumn(this);
+    FirstCollumn2 *fc = new FirstCollumn2(this);
     int r = *data->red;
     int g = *data->green;
     int b = *data->blue;
-    QColor col(r,g,b);
+
+    QColor col = data->getColor();
     fc->setColor(col);
-    fc->setNumber(rowCount());
+    fc->setText(QString::number(rowCount()));
     fc->setProperty("row", QVariant(row));
+    fc->setRow(row);
     QVariant vtw; vtw.setValue<QTableWidget*>(this);
     fc->setProperty("tw",vtw);
     connectFirstTable(fc);
@@ -110,7 +122,8 @@ QLineEdit *SPRSpectrumListTable::setCellMyWidget(QTableWidget *table, int row, i
 //    cellWidget(row, col)->addAction(actHide); cellWidget(row, col)->addAction(actShow);
 }
 
-SPRSpectrumListTable::SPRSpectrumListTable(QWidget *parent): QTableWidget(parent), model(nullptr)
+SPRSpectrumListTable::SPRSpectrumListTable(QWidget *parent):
+    QTableWidget(parent), model(nullptr)
 {
     QStringList hTitles;
     hTitles << tr("№") << tr("Ручей") << tr("Имя") << tr("I") << tr("H1") << tr("H2") << tr("H3")
@@ -133,7 +146,7 @@ SPRSpectrumListTable::SPRSpectrumListTable(QWidget *parent): QTableWidget(parent
     this->addAction(actHide); this->addAction(actShow);
     setContextMenuPolicy(Qt::ActionsContextMenu);
     setSelectionBehavior(QAbstractItemView::SelectRows);
-    resizeColumnsToContents();
+//    resizeColumnsToContents();
     resizeRowsToContents();
 }
 
@@ -141,91 +154,130 @@ void SPRSpectrumListTable::onCurrentPosChanged(int row, int col){
     emit rowSelectedChecked(getSelectedItems(), row);
 }
 
-ISPRModelData *SPRSpectrumListTable::setModel(SPRSpectrumListItemsModel *_model, SPRTypeSpectrumSet _type)
+ISPRModelData *SPRSpectrumListTable::setModelData(SPRSpectrumListItemsModel *_model, SPRTypeSpectrumSet _type)
 {
     if(model != _model){
-        model = _model;
-        this->typeData = _type;
-        if(typeData == spectrumBase){
-            spectrums = model->getSpectrumsModelBase();
-        } else if(typeData == spectrumsOnly){
-            spectrums = model->getSpectrumsModel();
-        } else {
-            spectrums = model->getSpectrumsModelAll();
+        if(model){
+            disconnect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
         }
+        model = _model;
+        connect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
 
-        connect(model, SIGNAL(modelChanget()), this, SLOT(widgetsShow()));
+        this->typeData = _type;
+        spectrums = model->getSpectrumsModel(typeData);
+//        if(typeData == spectrumBase){
+//            spectrums = model->getSpectrumsModelBase();
+//        } else if(typeData == spectrumsOnly){
+//            spectrums = model->getSpectrumsModel();
+//        } else {
+//            spectrums = model->getSpectrumsModelAll();
+//        }
+
     }
     return model;
 }
 
-//SPRSpectrumItemModel *SPRSpectrumListTable::addSpectrum(uint8_t *_inp, int _bufSize, int _thread)
-//{
-//    if(model){
-//        SPRSpectrumItemModel *item = spectr->addSpectrum(_inp, _bufSize);
+void SPRSpectrumListTable::resizeEvent(QResizeEvent *event)
+{
+    QTableWidget::resizeEvent(event);
+    int newWidth = event->size().width();
 
-//        if(_bufSize == DEF_SPECTRUM_DATA_LENGTH){
-//            if(_thread >= 0 && _thread < MAX_SPR_MAIN_THREADS){
-//                item->getSpectrumData()->setThread(_thread);
-//            }
-//        }
-//        addRowTable(item->getSpectrumData());
-//        widgetsShow();
-//        return item;
-//    }
-//    return nullptr;
-//}
+    int countVisibleCollumns = 0;
+    for(int col=0; col<columnCount(); col++){
+        if(!isColumnHidden(col)) countVisibleCollumns++;
+    }
+
+    for(int col=0; col<columnCount(); col++){
+        if(!isColumnHidden(col)){
+            int widthPart = newWidth / countVisibleCollumns;
+            int colWidth = getMaxColumnWidth(col);
+            if(colWidth > widthPart || col == 0 || widthPart < 0){
+                widthPart = colWidth;
+            }
+            horizontalHeader()->resizeSection(col, widthPart);
+            newWidth -= widthPart;
+            countVisibleCollumns--;
+        }
+    }
+}
+
+int SPRSpectrumListTable::getMaxColumnWidth(int col)
+{
+    int res = 0;
+    if(col < columnCount()){
+        res = fontMetrics().width(horizontalHeaderItem(col)->text()+"99");
+        for(int row=0; row<rowCount();row++){
+            int rowSize = 0;
+            QWidget *wid = cellWidget(row, col);
+            if(wid){
+                if(col == 0){
+                    rowSize = cellWidget(row, col)->size().width();
+                } else if(col == 2){
+                    rowSize = fontMetrics().width(((QLineEdit*)cellWidget(row, col))->text());
+                } else {
+                    rowSize = fontMetrics().width(((QLabel*)cellWidget(row, col))->text());
+                }
+                if(res < rowSize){
+                    res = rowSize;
+                }
+            }
+        }
+    }
+    return res;
+}
 
 void SPRSpectrumListTable::widgetsShow()
 {
 
-    while(rowCount() > 0) this->removeRow(0);
+    if(model){
+        while(rowCount() > 0) this->removeRow(0);
 
-    for(int row=0; row<spectrums->size(); row++){
-        SpectrumItemData *mod = spectrums->at(row)->getSpectrumData();
-        int rc = rowCount();
-        if(row > rc-1){
-            addRowTable(mod);
+        for(int row=0; row<spectrums->size(); row++){
+            SpectrumItemData *mod = spectrums->at(row)->getSpectrumData();
+            int rc = rowCount();
+            if(row > rc-1){
+                addRowTable(mod);
+            }
+    //    for(int row=0; row < rowCount(); row++){
+            FirstCollumn2 *fc = ((FirstCollumn2*)cellWidget(row, 0));
+            QColor col(*mod->red, *mod->green, *mod->blue);
+            fc->setColor(col); fc->setText(QString::number(row));
+            if(storeCheckedRows.contains(row)){
+                fc->setSelect(true);
+            }
+    //        fc->setData(row, col);
+
+            ((QLabel*)cellWidget(row, 1))->setText(QString::number(*mod->thread));
+            ((QLineEdit*)cellWidget(row, 2))->setText(QString(mod->name));
+            ((QLabel*)cellWidget(row, 3))->setText(QString::number(*mod->summ));
+            ((QLabel*)cellWidget(row, 4))->setText(QString::number(*mod->H1, 'f', 4));
+            ((QLabel*)cellWidget(row, 5))->setText(QString::number(*mod->H2, 'f', 4));
+            ((QLabel*)cellWidget(row, 6))->setText(QString::number(*mod->H3, 'f', 4));
+            ((QLabel*)cellWidget(row, 7))->setText(QString::number(*mod->center, 'f', 0));
+            ((QLabel*)cellWidget(row, 8))->setText(QString::number(*mod->peak));
+            ((QLabel*)cellWidget(row, 9))->setText(QString::number(*mod->Rs, 'f', 0));
+            ((QLabel*)cellWidget(row, 10))->setText(QString::number(*mod->time, 'f', 0));
+            QString date; date.sprintf("%02d.%02d.%4d %02d:%02d:%02d",
+                                       *mod->day, *mod->month, *mod->year,
+                                       *mod->hours, *mod->min, *mod->sec);
+            ((QLabel*)cellWidget(row, 11))->setText(date);
+            ((QLabel*)cellWidget(row, 12))->setText(QString::number(*mod->Ns));
+            ((QLabel*)cellWidget(row, 13))->setText(QString::number(*mod->Fe));
+            ((QLabel*)cellWidget(row, 14))->setText(QString::number(*mod->Cu));
+            ((QLabel*)cellWidget(row, 15))->setText(QString::number(*mod->Mo));
+            ((QLabel*)cellWidget(row, 16))->setText(QString::number(*mod->Zn));
+            ((QLabel*)cellWidget(row, 17))->setText(QString::number(*mod->Mg));
+            resizeColumnsToContents();
         }
-//    for(int row=0; row < rowCount(); row++){
-        FirstColumn *fc = ((FirstColumn*)cellWidget(row, 0));
-        QColor col(*mod->red, *mod->green, *mod->blue);
-        fc->setData(row, col);
-
-        ((QLabel*)cellWidget(row, 1))->setText(QString::number(*mod->thread));
-        ((QLineEdit*)cellWidget(row, 2))->setText(QString(mod->name));
-        ((QLabel*)cellWidget(row, 3))->setText(QString::number(*mod->summ));
-        ((QLabel*)cellWidget(row, 4))->setText(QString::number(*mod->H1, 'f', 4));
-        ((QLabel*)cellWidget(row, 5))->setText(QString::number(*mod->H2, 'f', 4));
-        ((QLabel*)cellWidget(row, 6))->setText(QString::number(*mod->H3, 'f', 4));
-        ((QLabel*)cellWidget(row, 7))->setText(QString::number(*mod->center, 'f', 0));
-        ((QLabel*)cellWidget(row, 8))->setText(QString::number(*mod->peak));
-        ((QLabel*)cellWidget(row, 9))->setText(QString::number(*mod->Rs, 'f', 0));
-        ((QLabel*)cellWidget(row, 10))->setText(QString::number(*mod->time, 'f', 0));
-        QString date; date.sprintf("%02d.%02d.%4d %02d:%02d:%02d",
-                                   *mod->day, *mod->month, *mod->year,
-                                   *mod->hours, *mod->min, *mod->sec);
-        ((QLabel*)cellWidget(row, 11))->setText(date);
-        ((QLabel*)cellWidget(row, 12))->setText(QString::number(*mod->Ns));
-        ((QLabel*)cellWidget(row, 13))->setText(QString::number(*mod->Fe));
-        ((QLabel*)cellWidget(row, 14))->setText(QString::number(*mod->Cu));
-        ((QLabel*)cellWidget(row, 15))->setText(QString::number(*mod->Mo));
-        ((QLabel*)cellWidget(row, 16))->setText(QString::number(*mod->Zn));
-        ((QLabel*)cellWidget(row, 17))->setText(QString::number(*mod->Mg));
-        resizeColumnsToContents();
+    //    foreach (int srow, storeCheckedRows) {
+    //        FirstCollumn2 *fc = ((FirstCollumn2*)cellWidget(srow, 0));
+    ////        fc->ui.cbSelect->setChecked(true);
+    //        fc->setSelect(true);
+    //    }
+        if(storeCurrentRow >= 0 && storeCurrentRow < rowCount()){
+            setCurrentCell(storeCurrentRow, 4);
+        }
     }
-    foreach (int srow, storeCheckedRows) {
-        FirstColumn *fc = ((FirstColumn*)cellWidget(srow, 0));
-        fc->ui.cbSelect->setChecked(true);
-    }
-    if(storeCurrentRow >= 0 && storeCurrentRow < rowCount()){
-        setCurrentCell(storeCurrentRow, 4);
-    }
-}
-
-SPRSpectrumListItemsModel *SPRSpectrumListTable::getModel()
-{
-    return model;
 }
 
 void SPRSpectrumListTable::viewChange(QColor color)
@@ -270,3 +322,9 @@ void SPRSpectrumListTable::viewChange(int num)
     emit rowSelectedChecked(getSelectedItems(), this->currentRow());
 }
 
+
+
+void SPRSpectrumListTable::onModelChanget(IModelVariable *)
+{
+    widgetsShow();
+}

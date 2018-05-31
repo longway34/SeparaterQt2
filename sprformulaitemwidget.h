@@ -18,7 +18,7 @@ public:
     Ui::SPRFormulaItemWidget ui;
     void setResultText(){ui.lResult->setText(tr("H")+QString(model->index));}
     void setElements(const DefaultMapElements *elements);
-    ISPRModelData *setModel(ISPRModelData *value);
+    ISPRModelData *setModelData(ISPRModelData *value);
 
 public slots:
     virtual void viewChange();
@@ -29,9 +29,13 @@ public slots:
 
     // ISPRWidget interface
 public slots:
-    virtual ISPRModelData *getModel();
+    virtual ISPRModelData *getModelData();
+    virtual void onModelChanget(IModelVariable *);
 
 
+
+    // ISPRWidget interface
+protected:
 };
 
 #endif // SPRFORMULAITEMWIDGET_H

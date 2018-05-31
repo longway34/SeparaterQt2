@@ -10,6 +10,7 @@ class TCPGetSpectrumsGistogramms : public TCPCommandSet
     Q_OBJECT
     
     uint threadNum;
+    QList<int8_t> workingThreads;
     EnumCommands dataType;
     uint tTimeOut;
 
@@ -69,7 +70,7 @@ public:
         return res;
     }
 
-    void setThreadTimer(const uint &value, uint _time_in_sec = 1);
+    void setThreadTimer(uint _threadsNum, double _time_in_sec = 1, QList<uint8_t> _wtList = {});
 
     virtual EnumCommands getDataType() const;
 

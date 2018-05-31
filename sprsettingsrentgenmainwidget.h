@@ -22,8 +22,8 @@ private:
     void setRentrenCodesTable();
     void setRentrenVATable();
 public:
-    ISPRModelData *setModel(ISPRModelData *data);
-    virtual ISPRModelData *getModel();
+    ISPRModelData *setModelData(ISPRModelData *data);
+    virtual ISPRModelData *getModelData();
 
     void setThreads(SPRVariable<uint> *value);
     void setRentgens(SPRVariable<uint> *value);
@@ -37,6 +37,10 @@ signals:
 protected slots:
     virtual void viewChange();
     virtual void viewChange(QTableWidget *table, int row, int col);
+    virtual void onModelChanget(IModelVariable *);
+
+    // ISPRWidget interface
+protected:
 };
 
 #endif // SPRSETTINGSRENTGENMAINWIDGET_H

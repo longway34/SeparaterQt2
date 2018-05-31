@@ -15,9 +15,9 @@ void SPRQColorVariable::setData(const QColor &value)
 }
 
 SPRQColorVariable::SPRQColorVariable(QDomDocument *parent, QString xpath, QColor defValue, IModelVariable *_mvparent):
-    SPRVariable<uint>(parent, xpath, defValue.value(), _mvparent)
+    SPRVariable<uint>(parent, xpath, defValue.rgb() & 0xFFFFFF, _mvparent)
 {
-    data = getData().value();
+    data = IModelVariable::getData().toInt();
 }
 
 QString SPRQColorVariable::toString(){

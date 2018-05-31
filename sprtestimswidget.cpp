@@ -4,7 +4,7 @@
 #include <QDataStream>
 
 SPRTestIMSWidget::SPRTestIMSWidget(QWidget *parent) :
-    QWidget(parent)
+    QWidget(parent), model(nullptr)
 {
     ui.setupUi(this);
 
@@ -76,7 +76,7 @@ SPRTestIMSWidget::SPRTestIMSWidget(QWidget *parent) :
     connect(rentgenOffCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
     connect(rentgenOffCommand, SIGNAL(commandComplite(TCPCommand*)), ui.logsWidget, SLOT(onLogsCommand(TCPCommand*)));
 
-    separatorOnCommand = new TCPCommandSeparatorOn(nullptr, towidget);
+    separatorOnCommand = new TCPCommandSeparatorOnOff(nullptr, towidget);
     connect(separatorOnCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
     connect(separatorOnCommand, SIGNAL(commandComplite(TCPCommand*)), ui.logsWidget, SLOT(onLogsCommand(TCPCommand*)));
 
@@ -433,10 +433,10 @@ void SPRTestIMSWidget::onCommandComplite(TCPCommand *_comm){
         QByteArray res = getSpectrumsCommand->getReplayData();
         if(res.size() > 0 && res[0] == 0){
             QMessageBox::information(this, tr("Получение спектров"), tr("Спектры получены"));
-            ui.wSpectrumWidget->getModel()->clearGraphicsItemModel();
+            ((SPRSpectrumListItemsModel*)(ui.wSpectrumWidget->getModelData()))->clearGraphicsItemModel();
             for(int ch=0; MAX_SPR_MAIN_THREADS; ch++){
                 QByteArray sp = getSpectrumsCommand->getSpectrumData(ch);
-                ui.wSpectrumWidget->getModel()->addSpectrum(sp);
+                ((SPRSpectrumListItemsModel*)(ui.wSpectrumWidget->getModelData()))->addSpectrum(sp);
 //                QColor col = colors[ch % colors.size()];
 //                ui.wSpectrumWidget->getModel()->getSpectrumItem(ch)->setSpectrumColor(col);
             }
@@ -487,28 +487,33 @@ void SPRTestIMSWidget::onServerConnectChangeState(uint32_t _state){
     }
 }
 
-ISPRModelData *SPRTestIMSWidget::setModel(SPRMainModel *_model)
+ISPRModelData *SPRTestIMSWidget::setModelData(SPRMainModel *_model)
 {
-    model = _model;
+    if(model){
+        if(model){
+            disconnect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
+        }
+        model = _model;
+        connect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
 
-    connect(model->getServer(), SIGNAL(serverConnectTimeOutError(ITCPCommand*)), this, SLOT(onServerConnectError(ITCPCommand*)));
-    connect(model->getServer(), SIGNAL(serverReadWriteTimeOutError(ITCPCommand*)), this, SLOT(onServerReadWriteError(ITCPCommand*)));
-    connect(model->getServer(), SIGNAL(serverStateChange(uint32_t)), this, SLOT(onServerConnectChangeState(uint32_t)));
+        connect(model->getServer(), SIGNAL(serverConnectTimeOutError(ITCPCommand*)), this, SLOT(onServerConnectError(ITCPCommand*)));
+        connect(model->getServer(), SIGNAL(serverReadWriteTimeOutError(ITCPCommand*)), this, SLOT(onServerReadWriteError(ITCPCommand*)));
+        connect(model->getServer(), SIGNAL(serverStateChange(uint32_t)), this, SLOT(onServerConnectChangeState(uint32_t)));
 
-    ui.wSpectrumWidget->setModel(new SPRSpectrumListItemsModel(model->getSpectrumZonesTableModel(), model->getSettingsFormulaModel(),model->getSettingsMainModel()->getThreads(), model->getSettingsMainModel()->getSpectrumFileName()), spectrumsOnly, true);
+        ui.wSpectrumWidget->setModelData(new SPRSpectrumListItemsModel(model->getSpectrumZonesTableModel(), model->getSettingsFormulaModel(),model->getSettingsMainModel()->getThreads(), model->getSettingsMainModel()->getSpectrumFileName(), model->getSettingsControlModel()->controlArea), spectrumsOnly, true);
 
-    getSpectrumsCommand->setThreadTimer(model->getSettingsMainModel()->getThreads()->getData());
-    separatorOnCommand->setModel(model->getSettingsRentgenModel());
-    rentgenOnCommand->setModel(model->getSettingsRentgenModel());
-    commandStartPitatel->setModelVariable(model->getSettingsControlModel()->VEMSBeginCode);
+        getSpectrumsCommand->setThreadTimer(model->getSettingsMainModel()->getThreads()->getData());
+        separatorOnCommand->setModel(model->getSettingsRentgenModel());
+        rentgenOnCommand->setModel(model->getSettingsRentgenModel());
+        commandStartPitatel->setModelVariable(model->getSettingsControlModel()->VEMSBeginCode);
 
-    uint16_t code = model->getSettingsControlModel()->VEMSBeginCode->getData();
-    commandChangePersentPitatel->setSendData(&code, sizeof(code));
+        uint16_t code = model->getSettingsControlModel()->VEMSBeginCode->getData();
+        commandChangePersentPitatel->setSendData(&code, sizeof(code));
 
-//    commandRaskladStart
+    //    commandRaskladStart
 
-    widgetsShow();
-
+        widgetsShow();
+    }
     return model;
 }
 
@@ -530,6 +535,12 @@ void SPRTestIMSWidget::widgetsShow()
 
 }
 
-ISPRModelData *SPRTestIMSWidget::getModel()
+ISPRModelData *SPRTestIMSWidget::getModelData()
 {
+}
+
+
+void SPRTestIMSWidget::onModelChanget(IModelVariable *)
+{
+    widgetsShow();
 }

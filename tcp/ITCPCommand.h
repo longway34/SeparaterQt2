@@ -78,7 +78,8 @@ typedef enum _tcp_commands: unsigned char{
             setStopRudospuk      = 0x8C,
             setGetRentgenParams  = 0x8D,
             setTestStopSeparate  = 0x8E,
-            setSeparateGo        = 0x8F
+            setSeparateGo        = 0x8F,
+            setSeparatorOnFull     = 0x90
 
 } EnumCommands;
 

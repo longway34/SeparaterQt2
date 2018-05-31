@@ -25,19 +25,32 @@ signals:
 
     // ISPRWidget interface
 public:
-    virtual ISPRModelData *getModel(){return model;}
+    virtual ISPRModelData *getModelData(){return model;}
 public slots:
-    virtual ISPRModelData *setModel(SPRMainModel *_model);
+    virtual ISPRModelData *setModelData(SPRMainModel *_model);
     virtual void viewChange(){}
     virtual void viewChange(int){}
     virtual void viewChange(QTableWidget *, int, int){}
     virtual void widgetsShow(){
-        emit doShow();
+//        emit doShow();
+        ui.tabSettings->widgetsShow();
+        ui.tabSpectrum->widgetsShow();
+//        ui.tabSeparate->
+//        ui.tabHistory->wid
+        ui.tabTest->widgetsShow();
     }
 
     void onChangeFileSettings(QString fName);
     void onChangeFileSpectrum(QString fName);
     void onClickSetSeparateButton(bool value);
+    virtual void onModelChanget(IModelVariable *);
+
+    // ISPRWidget interface
+
+    // ISPRWidget interface
+protected:
 };
+
+
 
 #endif // MAINTABWIDGET_H

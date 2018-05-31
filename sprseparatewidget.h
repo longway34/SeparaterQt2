@@ -2,6 +2,8 @@
 #define SPRSEPARATEWIDGET_H
 
 #include "ui_sprseparatewidget.h"
+#include "isprwidget.h"
+
 
 class SPRSeparateWidget : public QWidget
 {

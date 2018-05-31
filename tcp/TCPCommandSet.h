@@ -114,6 +114,7 @@ public:
                 return ret;
             }
         }
+        return ret;
     }
     virtual EnumCommands getCommand(){
         if(commandSet.size() > 0){

@@ -171,7 +171,7 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QTableWidget" name="tDEUCode">
+       <widget class="SPRDEUCodesTable" name="tDEUCode">
         <property name="sizePolicy">
          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
           <horstretch>0</horstretch>
@@ -350,6 +350,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>SPRDEUCodesTable</class>
+   <extends>QTableWidget</extends>
+   <header>sprdeucodestable.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

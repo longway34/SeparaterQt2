@@ -33,7 +33,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     _types.cpp \
     colorbutton.cpp \
-    firstcolumn.cpp \
     ipvalidator.cpp \
     isprcontroller.cpp \
     isprwidget.cpp \
@@ -51,9 +50,7 @@ SOURCES += \
     sprsettingsrentgenmainwidget.cpp \
     sprsettingsrentgenwidget.cpp \
     sprspectrumbasedlisttable.cpp \
-    sprspectrumlisttable.cpp \
     sprspectrumlisttablewidget.cpp \
-    sprspectrumranges.cpp \
     sprspectrumtableadv.cpp \
     models/imodelvariable.cpp \
     models/isprmodeldata.cpp \
@@ -73,9 +70,7 @@ SOURCES += \
     sprsettingswidget.cpp \
     models/sprmainmodel.cpp \
     models/sprspectrumzonestablemodel.cpp \
-    sprspectrumzonestablewidget.cpp \
     models/sprspectrumzonesmodel.cpp \
-    sprspectrumzonestable.cpp \
     models/sprspectrumitemmodel.cpp \
     models/sprspectrumlistitemsmodel.cpp \
     testtablewidget.cpp \
@@ -91,7 +86,6 @@ SOURCES += \
     tcp/tcpcommandrguup.cpp \
     tcp/tcpcommandrguupdown.cpp \
     tcp/tcpcommandrentgeron.cpp \
-    tcp/tcpcommandseparatoron.cpp \
     tcp/tcpcommandgetspectrums.cpp \
     tcp/tcpstartsoptestimscommand.cpp \
     tcp/tcpcommandstartpitatel.cpp \
@@ -109,19 +103,28 @@ SOURCES += \
     tcp/tcpseparatego.cpp \
     sprspectrumbaselisttable2.cpp \
     models/sprelementsmodel.cpp \
-    sprenumvariable.cpp \
     variables/sprdatetimevariable.cpp \
     variables/sprenumvariable.cpp \
     variables/sprqcolorvariable.cpp \
     variables/sprqstringvariable.cpp \
     variables/sprvariable.cpp \
     variables/sprkprvariable.cpp \
-    variables/sprbooleanvariable.cpp
+    variables/sprbooleanvariable.cpp \
+    firstcollumn2.cpp \
+    sprelementpropertydialog.cpp \
+    sprzonesranges.cpp \
+    sprzonesrangestable.cpp \
+    sprzonesrangestablewidget.cpp \
+    sprspectrumlisttable.cpp \
+    sprspectrumchoisetimedialog.cpp \
+    sprdeucodestable.cpp \
+    tcp/tcpcommandrentgenonfull.cpp \
+    tcp/tcpcommandseparatoronoff.cpp \
+    models/imainmodel.cpp
 
 HEADERS += \
     _types.h \
     colorbutton.h \
-    firstcolumn.h \
     ipvalidator.h \
     isprcontroller.h \
     isprwidget.h \
@@ -138,9 +141,6 @@ HEADERS += \
     sprsettingsrentgenmainwidget.h \
     sprsettingsrentgenwidget.h \
     sprspectrumbasedlisttable.h \
-    sprspectrumlisttable.h \
-    sprspectrumlisttablewidget.h \
-    sprspectrumranges.h \
     sprspectrumtableadv.h \
     models/imodelvariable.h \
     models/isprmodeldata.h \
@@ -161,9 +161,7 @@ HEADERS += \
     sprsettingswidget.h \
     models/sprmainmodel.h \
     models/sprspectrumzonestablemodel.h \
-    sprspectrumzonestablewidget.h \
     models/sprspectrumzonesmodel.h \
-    sprspectrumzonestable.h \
     models/sprspectrumitemmodel.h \
     models/sprspectrumlistitemsmodel.h \
     testtablewidget.h \
@@ -178,7 +176,6 @@ HEADERS += \
     tcp/tcpcommandrguup.h \
     tcp/tcpcommandrguupdown.h \
     tcp/tcpcommandrentgeron.h \
-    tcp/tcpcommandseparatoron.h \
     tcp/tcpcommandgetspectrums.h \
     tcp/tcpstartsoptestimscommand.h \
     tcp/tcpcommandstartpitatel.h \
@@ -196,14 +193,25 @@ HEADERS += \
     tcp/tcpseparatego.h \
     sprspectrumbaselisttable2.h \
     models/sprelementsmodel.h \
-    sprenumvariable.h \
     variables/sprdatetimevariable.h \
     variables/sprenumvariable.h \
     variables/sprqcolorvariable.h \
     variables/sprqstringvariable.h \
     variables/sprvariable.h \
     variables/sprkprvariable.h \
-    variables/sprbooleanvariable.h
+    variables/sprbooleanvariable.h \
+    firstcollumn2.h \
+    sprelementpropertydialog.h \
+    sprzonesranges.h \
+    sprzonesrangestable.h \
+    sprzonesrangestablewidget.h \
+    sprspectrumlisttable.h \
+    sprspectrumlisttablewidget.h \
+    sprspectrumchoisetimedialog.h \
+    sprdeucodestable.h \
+    tcp/tcpcommandrentgenonfull.h \
+    tcp/tcpcommandseparatoronoff.h \
+    models/imainmodel.h
 
 FORMS += \
     sprsettingsrentgenmainwidget.ui \
@@ -217,17 +225,19 @@ FORMS += \
     sprsettingsrentgenwidget.ui \
     sprsettingsimswidget.ui \
     sprsettingscontrolwidget.ui \
-    sprspectrumlisttablewidget.ui \
-    firstcolumn.ui \
     maintabwidget.ui \
     sprsettingswidget.ui \
-    sprspectrumzonestablewidget.ui \
     testtablewidget.ui \
     sprspectrumgraphicswidget.ui \
     sprtestimswidget.ui \
     tcp/tcptimeoutwigget.ui \
     tcp/tcplogswigtets.ui \
-    sprseparatewidget.ui
+    sprseparatewidget.ui \
+    firstcollumn2.ui \
+    sprelementpropertydialog.ui \
+    sprzonesrangestablewidget.ui \
+    sprspectrumlisttablewidget.ui \
+    sprspectrumchoisetimedialog.ui
 
 RESOURCES += \
     icons.qrc \

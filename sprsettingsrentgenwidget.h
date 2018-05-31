@@ -12,9 +12,11 @@ class SPRSettingsRentgenWidget : public QWidget, public ISPRWidget
     SPRSettingsRentgenModel *model;
 
 public:
+    Ui::SPRSettingsRentgenWidget ui;
+
     explicit SPRSettingsRentgenWidget(QWidget *parent = 0);
 
-    ISPRModelData *setModel(SPRSettingsRentgenModel *value);
+    ISPRModelData *setModelData(SPRSettingsRentgenModel *value);
 
     void setThreads(SPRVariable<uint> *threads){
         model->setThreads(threads);
@@ -22,16 +24,16 @@ public:
     void setRentgens(SPRVariable<uint> *rentgens){
         model->setRentgens(rentgens);
     }
-    virtual ISPRModelData *getModel()
+    virtual ISPRModelData *getModelData()
     {
         return model;
     }
 private:
-    Ui::SPRSettingsRentgenWidget ui;
 
     // ISPRWidget interface
 public slots:
     virtual void widgetsShow();
+    virtual void onModelChanget(IModelVariable *);
 
 protected:
     virtual void viewChange(QTableWidget *, int, int);
@@ -39,6 +41,9 @@ protected:
 signals:
     void doShow();
     void doStore();
+
+    // ISPRWidget interface
+protected:
 };
 
 #endif // SPRSETTINGSRENTGENWIDGET_H

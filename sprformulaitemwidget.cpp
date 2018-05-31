@@ -1,34 +1,39 @@
 #include "sprformulaitemwidget.h"
 
-ISPRModelData *SPRFormulaItemWidget::setModel(ISPRModelData *value)
+ISPRModelData *SPRFormulaItemWidget::setModelData(ISPRModelData *value)
 {
-    model = (SPRFormulaItemModel*)value;
+    if(value){
+        if(model){
+            disconnect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
+        }
+        model = (SPRFormulaItemModel*)value;
+        connect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
 
-    QVector<SPRFormulaElement*> elems =
-            {
-                                            ui.lElementUp1,
-                                            ui.lElementUp2,
-                                            ui.lElementDown1,
-                                            ui.lElementDown2,
-                                            ui.lElementDown3,
-                                            ui.lElementDown4};
-    QVector<SPREnumVariable<EnumElements>*> vars = {
-        model->ElementUp1, model->ElementUp2,
-        model->ElementDown1, model->ElementDown2,
-        model->ElementDown3, model->ElementDown4
-    };
-    for(int i=0; i<elems.size(); i++){
-        elems[i]->setElement(vars[i]);
+        QVector<SPRFormulaElement*> elems =
+                {
+                                                ui.lElementUp1,
+                                                ui.lElementUp2,
+                                                ui.lElementDown1,
+                                                ui.lElementDown2,
+                                                ui.lElementDown3,
+                                                ui.lElementDown4};
+        QVector<SPREnumVariable<EnumElements>*> vars = {
+            model->ElementUp1, model->ElementUp2,
+            model->ElementDown1, model->ElementDown2,
+            model->ElementDown3, model->ElementDown4
+        };
+        for(int i=0; i<elems.size(); i++){
+            elems[i]->setElement(vars[i]);
+        }
+        ui.leMulUp->setValidator(new QDoubleValidator());
+        ui.leMulDown->setValidator(new QDoubleValidator());
+        ui.leMin->setValidator(new QDoubleValidator());
+        ui.leMax->setValidator(new QDoubleValidator());
+
+
+        ui.lResult->setText(QString("H")+QString::number(model->index+1));
+        widgetsShow();
     }
-    ui.leMulUp->setValidator(new QDoubleValidator());
-    ui.leMulDown->setValidator(new QDoubleValidator());
-    ui.leMin->setValidator(new QDoubleValidator());
-    ui.leMax->setValidator(new QDoubleValidator());
-
-
-    ui.lResult->setText(QString("H")+QString::number(model->index+1));
-    widgetsShow();
-
     return model;
 }
 
@@ -62,7 +67,7 @@ void SPRFormulaItemWidget::viewChange()
 }
 
 SPRFormulaItemWidget::SPRFormulaItemWidget(QWidget *parent) :
-    QWidget(parent)
+    QWidget(parent), model(nullptr)
 {
     ui.setupUi(this);
     setElements(&DEF_SPR_FORMULA_ELEMENTS_PROPERTY);
@@ -93,21 +98,29 @@ void SPRFormulaItemWidget::setElements(const DefaultMapElements *elements)
 
 void SPRFormulaItemWidget::widgetsShow()
 {
-    ui.lElementUp1->setCurrentElement(model->ElementUp1->getData());
-    ui.lElementUp2->setCurrentElement(model->ElementUp2->getData());
-    ui.lElementDown1->setCurrentElement(model->ElementDown1->getData());
-    ui.lElementDown2->setCurrentElement(model->ElementDown2->getData());
-    ui.lElementDown3->setCurrentElement(model->ElementDown3->getData());
-    ui.lElementDown4->setCurrentElement(model->ElementDown4->getData());
+    if(model){
+        ui.lElementUp1->setCurrentElement(model->ElementUp1->getData());
+        ui.lElementUp2->setCurrentElement(model->ElementUp2->getData());
+        ui.lElementDown1->setCurrentElement(model->ElementDown1->getData());
+        ui.lElementDown2->setCurrentElement(model->ElementDown2->getData());
+        ui.lElementDown3->setCurrentElement(model->ElementDown3->getData());
+        ui.lElementDown4->setCurrentElement(model->ElementDown4->getData());
 
-    ui.leMulUp->setText(model->MulUp->toString());
-    ui.leMulDown->setText(model->MulDown->toString());
-    ui.leMin->setText(model->min->toString());
-    ui.leMax->setText(model->max->toString());
+        ui.leMulUp->setText(model->MulUp->toString());
+        ui.leMulDown->setText(model->MulDown->toString());
+        ui.leMin->setText(model->min->toString());
+        ui.leMax->setText(model->max->toString());
+    }
 }
 
 
-ISPRModelData *SPRFormulaItemWidget::getModel()
+ISPRModelData *SPRFormulaItemWidget::getModelData()
 {
     return model;
+}
+
+
+void SPRFormulaItemWidget::onModelChanget(IModelVariable *)
+{
+    widgetsShow();
 }

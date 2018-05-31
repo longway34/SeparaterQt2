@@ -57,6 +57,9 @@ public:
         *green = color.green();
         *blue = color.blue();
     }
+    QColor getColor(){
+        return QColor(*red, *green, *blue);
+    }
 
 } SpectrumItemData;
 
@@ -69,6 +72,8 @@ class SPRSpectrumItemModel : public ISPRModelData
     SpectrumItemData spectrumData;
     QPolygonF spectGraphData;
     QMap<EnumElements, QVector<QwtIntervalSample>> zonesGraphData;
+
+
 
 
 public:
@@ -88,6 +93,9 @@ public:
     }
 
     double getCorrel(SPRSpectrumItemModel *ather, bool elementsOnly = false, EnumElements _elements = Ns);
+    double getCorrel(){
+        return spectrumData.correl;
+    }
 
     ISPRModelData *setModel(SPRSpectrumZonesTableModel *_ranges, SPRSettingsFormulaModel *_formulas){
         setZonesTable(_ranges);
@@ -118,6 +126,11 @@ public:
     void setSpectrumThread(uint th){
         *spectrumData.thread = th;
     }
+
+    uint getSpectrumThread(){
+        return *spectrumData.thread;
+    }
+
     SPRSpectrumZonesModel *getZones(){
         uint th = *spectrumData.thread;
         return zones->items[*spectrumData.thread];

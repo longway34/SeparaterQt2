@@ -7,6 +7,8 @@ SPRSettingsWidget::SPRSettingsWidget(QWidget *parent):
     QWidget(parent), model(nullptr)
 {
     ui.setupUi(this);
+
+    connect(ui.tabSettingsWidget, SIGNAL(currentChanged(int)), this, SLOT(widgetsShow()));
 }
 
 SPRSettingsWidget::SPRSettingsWidget(QDomDocument *_doc, QString fName, QWidget *parent):
@@ -14,6 +16,7 @@ SPRSettingsWidget::SPRSettingsWidget(QDomDocument *_doc, QString fName, QWidget 
 {
     ui.setupUi(this);
     setDoc(_doc);
+    connect(ui.tabSettingsWidget, SIGNAL(currentChanged(int)), this, SLOT(widgetsShow()));
 }
 
 void SPRSettingsWidget::setDoc(QDomDocument *_doc)
@@ -26,7 +29,7 @@ void SPRSettingsWidget::setDoc(QDomDocument *_doc)
     }
     model = new SPRMainModel(doc, nullptr);
 
-    setModel(model);
+    setModelData(model);
 }
 
 void SPRSettingsWidget::onChangeFileSettinds(QString fName){
@@ -37,45 +40,54 @@ void SPRSettingsWidget::onChangeFileSpectrum(QString fName)
     emit changeFileSpectrum(fName);
 }
 
-SPRMainModel *SPRSettingsWidget::setModel(SPRMainModel *_model)
+SPRMainModel *SPRSettingsWidget::setModelData(SPRMainModel *_model)
 {
     ISPRModelData *imodel;
-    model = _model;
+    if(_model){
+        if(model){
+            disconnect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
+        }
+        model = _model;
+        connect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
+
+        imodel = ui.wSettingsMainWidget->setModelData(model->getSettingsMainModel());
+        connect(this,SIGNAL(doShow()), ui.wSettingsMainWidget, SLOT(widgetsShow()));
+        connect(ui.wSettingsMainWidget,SIGNAL(doShow()), this, SLOT(widgetsShow()));
+        connect(ui.wSettingsMainWidget,SIGNAL(changeFileSettinds(QString)), this, SLOT(onChangeFileSettinds(QString)));
+        connect(ui.wSettingsMainWidget,SIGNAL(changeFileSpectrum(QString)), this, SLOT(onChangeFileSpectrum(QString)));
+
+        imodel = ui.wSettingsIMSWidget->setModelData(model->getSettingsIMSModel());
+        connect(this, SIGNAL(doShow()), ui.wSettingsIMSWidget, SLOT(widgetsShow()));
+        connect(ui.wSettingsIMSWidget, SIGNAL(doShow()), this, SLOT(widgetsShow()));
+
+        model->getSettingsPorogsModel()->setTMeteringMinStone(model->getSettingsIMSModel()->getTMeteringMinStone());
+        model->getSettingsPorogsModel()->setTMeteringMaxStone(model->getSettingsIMSModel()->getTMeteringMaxStone());
+        imodel = ui.wSettingsPorogsWidget->setModelData(model->getSettingsPorogsModel());
+        connect(this,SIGNAL(doShow()), ui.wSettingsPorogsWidget, SLOT(widgetsShow()));
+        connect(ui.wSettingsPorogsWidget, SIGNAL(doShow()), this, SLOT(widgetsShow()));
+
+        imodel = ui.wSettingsFormulaWidget->setModelData(model->getSettingsFormulaModel());
+        connect(this,SIGNAL(doShow()), ui.wSettingsFormulaWidget, SLOT(widgetsShow()));
+        connect(ui.wSettingsFormulaWidget,SIGNAL(doShow()), this, SLOT(widgetsShow()));
+
+        imodel = ui.wSettingsRentgen->setModelData(model->getSettingsRentgenModel());
+        connect(this,SIGNAL(doShow()), ui.wSettingsRentgen, SLOT(widgetsShow()));
 
 
+        imodel = ui.wSettingsControl->setModelData(model->getSettingsControlModel());
+        connect(this, SIGNAL(doShow()), ui.wSettingsControl, SLOT(widgetsShow()));
 
-    imodel = ui.wSettingsMainWidget->setModel(model->getSettingsMainModel());
-    connect(this,SIGNAL(doShow()), ui.wSettingsMainWidget, SLOT(widgetsShow()));
-    connect(ui.wSettingsMainWidget,SIGNAL(doShow()), this, SLOT(widgetsShow()));
-    connect(ui.wSettingsMainWidget,SIGNAL(changeFileSettinds(QString)), this, SLOT(onChangeFileSettinds(QString)));
-    connect(ui.wSettingsMainWidget,SIGNAL(changeFileSpectrum(QString)), this, SLOT(onChangeFileSpectrum(QString)));
-
-    imodel = ui.wSettingsIMSWidget->setModel(model->getSettingsIMSModel());
-    connect(this, SIGNAL(doShow()), ui.wSettingsIMSWidget, SLOT(widgetsShow()));
-    connect(ui.wSettingsIMSWidget, SIGNAL(doShow()), this, SLOT(widgetsShow()));
-
-    model->getSettingsPorogsModel()->setTMeteringMinStone(model->getSettingsIMSModel()->getTMeteringMinStone());
-    model->getSettingsPorogsModel()->setTMeteringMaxStone(model->getSettingsIMSModel()->getTMeteringMaxStone());
-    imodel = ui.wSettingsPorogsWidget->setModel(model->getSettingsPorogsModel());
-    connect(this,SIGNAL(doShow()), ui.wSettingsPorogsWidget, SLOT(widgetsShow()));
-    connect(ui.wSettingsPorogsWidget, SIGNAL(doShow()), this, SLOT(widgetsShow()));
-
-    imodel = ui.wSettingsFormulaWidget->setModel(model->getSettingsFormulaModel());
-    connect(this,SIGNAL(doShow()), ui.wSettingsFormulaWidget, SLOT(widgetsShow()));
-    connect(ui.wSettingsFormulaWidget,SIGNAL(doShow()), this, SLOT(widgetsShow()));
-
-    imodel = ui.wSettingsRentgen->setModel(model->getSettingsRentgenModel());
-    connect(this,SIGNAL(doShow()), ui.wSettingsRentgen, SLOT(widgetsShow()));
-
-
-    imodel = ui.wSettingsControl->setModel(model->getSettingsControlModel());
-    connect(this, SIGNAL(doShow()), ui.wSettingsControl, SLOT(widgetsShow()));
-
-    imodel = ui.wSpectrumZonesWidget->setModel(model->getSpectrumZonesTableModel());
-    connect(this, SIGNAL(doShow()), ui.wSpectrumZonesWidget, SLOT(widgetsShow()));
+        imodel = ui.wSpectrumZonesWidget->setModelData(model->getSpectrumZonesTableModel());
+        connect(this, SIGNAL(doShow()), ui.wSpectrumZonesWidget, SLOT(widgetsShow()));
 
 //    emit doShow();
-
+    }
     return model;
 }
 
+
+
+void SPRSettingsWidget::onModelChanget(IModelVariable*)
+{
+    widgetsShow();
+}

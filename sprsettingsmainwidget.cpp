@@ -3,47 +3,17 @@
 
 #include <QFileDialog>
 
-ISPRModelData *SPRSettingsMainWidget::setModel(ISPRModelData *data)
+ISPRModelData *SPRSettingsMainWidget::setModelData(ISPRModelData *data)
 {
-    model = (SPRSettingsMainModel*)data;
-
-    if(model){
-        ui.leName->setText(model->name->getData());
-        ui.leAddress->setText(model->ipAddress->getData());
-        ui.lePort->setText(model->ipPort->toString());
-        ui.leSpectrumsFName->setText(model->spectrumFileName->getData());
-
-        const QString strs[] = {
-            tr("1 ручей"), tr("2 ручья"), tr("3 ручья"), tr("4 ручья"),
-            tr("5 ручьев"), tr("6 ручьев"), tr("7 ручьев"), tr("8 ручьев")
-        };
-
-        ui.cbThreads->blockSignals(true);
-        ui.cbThreads->clear();
-        for(int i=0, r=1; i<MAX_SPR_MAIN_THREADS; i++, r++){
-            ui.cbThreads->addItem(strs[i], r);
+    if(data){
+        if(model){
+            disconnect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
         }
-        int d = model->threads->getData();
-        int cind = ui.cbThreads->findData(QVariant(model->threads->getData()));
-        ui.cbThreads->setCurrentIndex(cind);
-        ui.cbThreads->blockSignals(false);
-
-        ui.cbRentgens->blockSignals(true);
-        ui.cbRentgens->clear();
-        const QString rstr[] = {tr(" рентген"), tr(" рентгена")};
-        int maxRen = model->threads->getData() > 3 ? 2 : 1;
-        for(int i=0, r=1; i<maxRen; i++, r++){
-            ui.cbRentgens->addItem(QString::number(r) + rstr[i], r);
-        }
-        int ind = ui.cbRentgens->findData(QVariant(model->rentgens->getData()));
-        if(ind < 0){
-            ind = 0; model->rentgens->setData(DEF_SPR_MAIN_RENTGENS);
-        }
-        ui.cbRentgens->setCurrentIndex(ind);
-        ui.cbRentgens->blockSignals(false);
-
+        model = (SPRSettingsMainModel*)data;
+        connect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
         widgetsShow();
     }
+
     return model;
 }
 
@@ -84,31 +54,43 @@ SPRSettingsMainWidget::SPRSettingsMainWidget(QWidget *parent) :
 void SPRSettingsMainWidget::widgetsShow()
 {
     if(model){
-//        QString name = model->name->getData();
-//        if(!docFileName.isEmpty()){
-//            name += QString("(")+docFileName+QString(")");
-//        }
-//        ui.leName->blockSignals(true);
-//        ui.leName->setText(model->name->getData());
-//        ui.leName->blockSignals(false);
 
-//        ui.leAddress->blockSignals(true);
-//        ui.leAddress->setText(model->ipAddress->getData());
-//        ui.leAddress->blockSignals(false);
+        ui.leName->setText(model->name->getData());
+        ui.leAddress->setText(model->ipAddress->getData());
+        ui.lePort->setText(model->ipPort->toString());
+        ui.leSpectrumsFName->setText(model->spectrumFileName->getData());
 
-//        ui.lePort->blockSignals(true);
-//        ui.lePort->setText(model->ipPort->toString());
-//        ui.lePort->blockSignals(false);
+        const QString strs[] = {
+            tr("1 ручей"), tr("2 ручья"), tr("3 ручья"), tr("4 ручья"),
+            tr("5 ручьев"), tr("6 ручьев"), tr("7 ручьев"), tr("8 ручьев")
+        };
 
-//        ui.leSpectrumsFName->blockSignals(true);
-//        ui.leSpectrumsFName->setText(model->spectrumFileName->getData());
-//        ui.leSpectrumsFName->blockSignals(false);
-
-//        ui.cbThreads->blockSignals(true);
-//        int index = ui.cbThreads->findData(model->getThreads()->getData());
-//        ui.cbThreads->setCurrentIndex(model->getThreads()->getData());
+        ui.cbThreads->blockSignals(true);
+        ui.cbThreads->clear();
+        for(int i=0, r=1; i<MAX_SPR_MAIN_THREADS; i++, r++){
+            ui.cbThreads->addItem(strs[i], r);
+        }
+        int d = model->threads->getData();
+        int cind = ui.cbThreads->findData(QVariant(model->threads->getData()));
+        ui.cbThreads->setCurrentIndex(cind);
+        ui.cbThreads->blockSignals(false);
 
         ui.cbIMCount->blockSignals(true);
+
+        ui.cbRentgens->blockSignals(true);
+        ui.cbRentgens->clear();
+        const QString rstr[] = {tr(" рентген"), tr(" рентгена")};
+        int maxRen = model->threads->getData() > 3 ? 2 : 1;
+        for(int i=0, r=1; i<maxRen; i++, r++){
+            ui.cbRentgens->addItem(QString::number(r) + rstr[i], r);
+        }
+        int ind = ui.cbRentgens->findData(QVariant(model->rentgens->getData()));
+        if(ind < 0){
+            ind = 0; model->rentgens->setData(DEF_SPR_MAIN_RENTGENS);
+        }
+        ui.cbRentgens->setCurrentIndex(ind);
+        ui.cbRentgens->blockSignals(false);
+
         ui.cbIMCount->clear();
         switch (model->threads->getData()) {
         case 1:
@@ -128,7 +110,7 @@ void SPRSettingsMainWidget::widgetsShow()
             ui.cbIMCount->addItem(tr("8 механизмов"), 8);
             break;
         }
-        int ind = ui.cbIMCount->findData(QVariant(model->ims->getData()));
+        ind = ui.cbIMCount->findData(QVariant(model->ims->getData()));
         if(ind < 0){
             ind = 0;
             ui.cbIMCount->setCurrentIndex(ind);
@@ -136,6 +118,8 @@ void SPRSettingsMainWidget::widgetsShow()
         } else {
             ui.cbIMCount->setCurrentIndex(ind);
         }
+
+
         ui.cbIMCount->blockSignals(false);
 
         ind = ui.cbTypePRAM->findData(QVariant(model->typePRAM->getData()));
@@ -143,10 +127,11 @@ void SPRSettingsMainWidget::widgetsShow()
 
         ind = ui.cbTypeThermo->findData(QVariant(model->typeThermo->getData()));
         ui.cbTypeThermo->setCurrentIndex(ind);
+
     }
 }
 
-ISPRModelData *SPRSettingsMainWidget::getModel()
+ISPRModelData *SPRSettingsMainWidget::getModelData()
 {
     return model;
 }
@@ -239,3 +224,9 @@ void SPRSettingsMainWidget::viewChange(bool)
     }
 }
 
+
+
+void SPRSettingsMainWidget::onModelChanget(IModelVariable *)
+{
+    widgetsShow();
+}

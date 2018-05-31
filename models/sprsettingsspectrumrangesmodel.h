@@ -9,12 +9,13 @@
 
 class SPRSettingsSpectrumRangesModel : public ISPRModelData
 {
+    SPRElementsModel *elementsProperty;
 public:
     SPRVariable<uint> *threads;
     SPRSpectrumZonesModel **items;
 
     SPRSettingsSpectrumRangesModel(){}
-    SPRSettingsSpectrumRangesModel(QDomDocument *doc, ISPRModelData *parent);
+    SPRSettingsSpectrumRangesModel(QDomDocument *doc, SPRElementsModel* _elementsProperty = nullptr, ISPRModelData *parent = nullptr);
     virtual ~SPRSettingsSpectrumRangesModel();
     void setThreads(SPRVariable<uint> *value);
 };

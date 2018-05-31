@@ -16,13 +16,13 @@ class SPRSettingsRentgenAutosetWidget : public QWidget, public ISPRWidget
 public:
     explicit SPRSettingsRentgenAutosetWidget(QWidget *parent = 0);
 
-    ISPRModelData *setModel(SPRSettingsRentgenModel *value);
+    ISPRModelData *setModelData(SPRSettingsRentgenModel *value);
 
 private:
     Ui::SPRSettingsRentgenAutosetWidget ui;
 
 public:
-    virtual ISPRModelData *getModel();
+    virtual ISPRModelData *getModelData();
 
 public slots:
     virtual void widgetsShow();
@@ -32,7 +32,11 @@ protected slots:
 //    virtual void viewChange(QTableWidget *, int, int);
     virtual void viewChange(bool value);
     virtual void viewChange(int value);
+    virtual void onModelChanget(IModelVariable *);
 
+
+    // ISPRWidget interface
+protected:
 };
 
 #endif // SPRSETTINGSRENTGENAUTOSETWIDGET_H

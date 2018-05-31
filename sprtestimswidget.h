@@ -11,7 +11,7 @@
 #include "tcp/tcpstartsoptestimscommand.h"
 #include "tcp/tcpcommandstartpitatel.h"
 #include "tcp/tcpcommandstoppitatel.h"
-#include "tcp/tcpcommandseparatoron.h"
+#include "tcp/tcpcommandseparatoronoff.h"
 #include "tcp/tcpcommandrentgeron.h"
 //#include "tcp/tcpcommandgetspectrums.h"
 #include "tcp/tcpgetspectrumsgistogramms.h"
@@ -30,7 +30,7 @@ public:
 //    TCPCommandGetSpectrums *getSpectrumsCommand;
     TCPGetSpectrumsGistogramms *getSpectrumsCommand;
 
-    TCPCommandSeparatorOn *separatorOnCommand;
+    TCPCommandSeparatorOnOff *separatorOnCommand;
     TCPCommandSet *separatorOffCommand;
 
     TCPCommandRentgerOn *rentgenOnCommand;
@@ -80,10 +80,10 @@ private:
     QVector<QWidget*> vectorSeparatorOnEnabled;
     // ISPRWidget interface
 public:
-    ISPRModelData *setModel(SPRMainModel *_model);
+    ISPRModelData *setModelData(SPRMainModel *_model);
 
     virtual void widgetsShow();
-    virtual ISPRModelData *getModel();
+    virtual ISPRModelData *getModelData();
 public slots:
     void onCommandComplite(TCPCommand* _comm);
     void onCommand(bool);
@@ -93,6 +93,10 @@ public slots:
 
     virtual void onChangeValue(bool _val);
     virtual void onChangeValue(double _val);
+    virtual void onModelChanget(IModelVariable *);
+
+    // ISPRWidget interface
+protected:
 };
 
 #endif // SPRTESTIMSWIDGET_H

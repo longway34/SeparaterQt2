@@ -1,13 +1,21 @@
 #include "sprsettingsporogswidget.h"
 #include <QObjectUserData>
 
-ISPRModelData *SPRSettingsPorogsWidget::setModel(ISPRModelData *value)
+ISPRModelData *SPRSettingsPorogsWidget::setModelData(ISPRModelData *value)
 {
-    model = (SPRSettingsPorogsModel*)value;
-    ui.wPorogs->setModel(model->getPorogs());
-    ui.wPorogs->setConditions(model->getConditions());
-    ui.wPorogs->setThreads(model->getThreads());
-    widgetsShow();
+    if(value){
+        if(model){
+            disconnect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
+            delete model;
+        }
+        model = (SPRSettingsPorogsModel*)value;
+        connect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
+
+        ui.wPorogs->setModelData(model->getPorogs());
+        ui.wPorogs->setConditions(model->getConditions());
+        ui.wPorogs->setThreads(model->getThreads());
+        widgetsShow();
+    }
     return model;
 }
 
@@ -33,7 +41,7 @@ void SPRSettingsPorogsWidget::repaintGraphic(double)
 }
 
 SPRSettingsPorogsWidget::SPRSettingsPorogsWidget(QWidget *parent) :
-    QWidget(parent), ISPRWidget()
+    QWidget(parent), ISPRWidget(), model(nullptr)
 {
     ui.setupUi(this);
     ui.wPorogs->ui.gbPorogs->setTitle("");
@@ -110,7 +118,7 @@ void SPRSettingsPorogsWidget::widgetsShow()
     ui.wPorogs->widgetsShow();
 }
 
-ISPRModelData *SPRSettingsPorogsWidget::getModel()
+ISPRModelData *SPRSettingsPorogsWidget::getModelData()
 {
     return model;
 }
@@ -163,3 +171,8 @@ void SPRSettingsPorogsWidget::viewChange(QAbstractButton *btn)
 //void SPRSettingsPorogsWidget::viewChange(QTableWidget *, int, int)
 //{
 //}
+
+void SPRSettingsPorogsWidget::onModelChanget(IModelVariable *)
+{
+    widgetsShow();
+}

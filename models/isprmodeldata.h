@@ -32,6 +32,7 @@ public:
 
 public slots:
     void saveAs(QString fname = "");
+
 };
 
 #endif // ISPRMODELDATA_H

@@ -9,10 +9,11 @@ QDomDocument *ISPRModelData::getDoc() const
 
 void ISPRModelData::setDoc(QDomDocument *_doc, IModelVariable *parent)
 {
-    doc = _doc;
-    if(parent){
-        connect(parent, SIGNAL(goStore()), this, SLOT(saveAs()));
+    if(_doc){
+        doc = _doc;
+        document = *doc;
     }
+    setMVParent(parent);
 }
 
 void ISPRModelData::setDoc(QString fname, IModelVariable *parent)

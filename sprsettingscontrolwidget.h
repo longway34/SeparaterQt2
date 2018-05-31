@@ -18,8 +18,8 @@ private:
 
     // ISPRWidget interface
 public:
-    virtual ISPRModelData *setModel(SPRSettingsControlModel *data);
-    virtual ISPRModelData *getModel();
+    virtual ISPRModelData *setModelData(SPRSettingsControlModel *data);
+    virtual ISPRModelData *getModelData();
 
     // ISPRWidget interface
 public slots:
@@ -27,8 +27,12 @@ public slots:
     virtual void viewChange(bool value);
     virtual void widgetsShow();
     virtual void viewChange(int index);
+    virtual void onModelChanget(IModelVariable *);
 
 
+
+    // ISPRWidget interface
+protected:
 };
 
 #endif // SPRSETTINGSCONTROLWIDGET_H

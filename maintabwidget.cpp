@@ -13,16 +13,25 @@ MainTabWidget::MainTabWidget(QWidget *parent) :
 
     connect(ui.tabSettings, SIGNAL(doShow()), this, SLOT(widgetsShow()));
 
+    connect(this, SIGNAL(currentChanged(int)), this, SLOT(widgetsShow()));
 }
 
 MainTabWidget::MainTabWidget(QDomDocument *_doc, QWidget *parent): QTabWidget(parent), model(nullptr)
 {
     ui.setupUi(this);
     setDoc(doc);
-    setModel(new SPRMainModel(doc));
+    setModelData(new SPRMainModel(doc));
 
     connect(ui.tabSettings, SIGNAL(changeFileSettinds(QString)), this, SLOT(onChangeFileSettings(QString)));
     connect(ui.tabSettings, SIGNAL(changeFileSpectrum(QString)), this, SLOT(onChangeFileSpectrum(QString)));
+
+//    connect(this, SIGNAL(doShow()), ui.tabSeparate, SLOT(widgetsShow()));
+
+    connect(this, SIGNAL(doShow()), ui.tabSettings, SLOT(widgetsShow()));
+    connect(this, SIGNAL(doShow()), ui.tabSpectrum, SLOT(widgetsShow()));
+    connect(this, SIGNAL(doShow()), ui.tabTest, SLOT(widgetsShow()));
+
+    connect(this, SIGNAL(currentChanged(int)), this, SLOT(widgetsShow()));
 //    connect(ui.bSetSeparate, SIGNAL(clicked(bool)), SLOT(onClickSetSeparateButton(bool)));
 }
 
@@ -36,7 +45,7 @@ MainTabWidget::MainTabWidget(QString _fName, QWidget *parent): QTabWidget(parent
 
     }
     setDoc(_fName);
-    setModel(new SPRMainModel(doc));
+    setModelData(new SPRMainModel(doc));
 
     if(createNewDoc){
 //        QString fName = model->getSettingsMainModel()->name->toString();
@@ -52,6 +61,7 @@ MainTabWidget::MainTabWidget(QString _fName, QWidget *parent): QTabWidget(parent
 
     connect(ui.tabSettings, SIGNAL(changeFileSettinds(QString)), this, SLOT(onChangeFileSettings(QString)));
     connect(ui.tabSettings, SIGNAL(changeFileSpectrum(QString)), this, SLOT(onChangeFileSpectrum(QString)));
+    connect(this, SIGNAL(currentChanged(int)), this, SLOT(widgetsShow()));
 //    connect(ui.bSetSeparate, SIGNAL(clicked(bool)), this, SLOT(onClickSetSeparateButton(bool)));
 }
 
@@ -75,19 +85,22 @@ MainTabWidget::MainTabWidget(QString _fName, QWidget *parent): QTabWidget(parent
 //    ui.tabSettings->setModel(new SPRMainModel(doc));
 //}
 
-ISPRModelData *MainTabWidget::setModel(SPRMainModel *_model)
+ISPRModelData *MainTabWidget::setModelData(SPRMainModel *_model)
 {
-    if(model) delete model; model = nullptr;
+    if(model){
+        disconnect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
+    }
     model = _model;
-    ui.tabSettings->setModel(model);
+    connect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
+    ui.tabSettings->setModelData(model);
 //    QFile f(model->getSettingsMainModel()->spectrumFileName->getData());
 //    if(f.open(QIODevice::ReadOnly)){
 //        f.close();
 //    }
-    ui.tabSpectrum->setModel(model);
-    ui.wTest->setModel(model);
+    ui.tabSpectrum->setModelData(model);
+    ui.wTest->setModelData(model);
 
-    ui.tabTest->setModel(model);
+    ui.tabTest->setModelData(model);
 
     separateModel = new SPRSeparateModel(model->getDoc());
 
@@ -95,7 +108,7 @@ ISPRModelData *MainTabWidget::setModel(SPRMainModel *_model)
 
 void MainTabWidget::onClickSetSeparateButton(bool value){
 //    ui.teResult->clear();
-    QByteArray result = separateModel->toByteArray();
+    QByteArray result = separateModel->toByteArray(model);
     QString str;
     for(int ch=0; ch<result.size(); ch++){
         char buf[20];
@@ -113,7 +126,7 @@ void MainTabWidget::onClickSetSeparateButton(bool value){
 void MainTabWidget::onChangeFileSettings(QString fName)
 {
     setDoc(fName);
-    setModel(new SPRMainModel(doc));
+    setModelData(new SPRMainModel(doc));
     emit doShow();
 }
 
@@ -124,4 +137,10 @@ void MainTabWidget::onChangeFileSpectrum(QString fName){
 //        ui.wTest->addSpectrumsModel(&spc);
         spc.close();
     }
+}
+
+
+void MainTabWidget::onModelChanget(IModelVariable *)
+{
+    widgetsShow();
 }

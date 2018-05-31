@@ -18,8 +18,8 @@ private:
 
     // ISPRWidget interface
 public:
-    virtual ISPRModelData *setModel(SPRSettingsRentgenModel *data);
-    virtual ISPRModelData *getModel()
+    virtual ISPRModelData *setModelData(SPRSettingsRentgenModel *data);
+    virtual ISPRModelData *getModelData()
     {
         return model;
     }
@@ -39,11 +39,15 @@ protected slots:
     virtual void viewChange(bool value);
     virtual void viewChange();
     virtual void widgetsShow();
+    virtual void onModelChanget(IModelVariable *);
 
 
 
     // ISPRWidget interface
 public:
+
+    // ISPRWidget interface
+protected:
 };
 
 

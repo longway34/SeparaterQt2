@@ -1,42 +1,45 @@
 #include "sprsettingsrentgenmainwidget.h"
 
 SPRSettingsRentgenMainWidget::SPRSettingsRentgenMainWidget(QWidget *parent) :
-    QWidget(parent)
+    QWidget(parent), model(nullptr)
 {
     ui.setupUi(this);
 
 }
 
-ISPRModelData *SPRSettingsRentgenMainWidget::setModel(ISPRModelData *data)
+ISPRModelData *SPRSettingsRentgenMainWidget::setModelData(ISPRModelData *data)
 {
-    model = (SPRSettingsRentgenModel*)data;
+    if(data){
+        if(model){
+            disconnect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
+        }
+        model = (SPRSettingsRentgenModel*)data;
+        connect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
 
-    setRentrenCodesTable();
-    setRentrenVATable();
-
+    //    setRentrenCodesTable();
+        ui.tDEUCode->setModelData(model);
+        setRentrenVATable();
+    }
     return data;
 }
 
 
 void SPRSettingsRentgenMainWidget::widgetsShow()
 {
-    for(int i=0; i < MAX_SPR_MAIN_THREADS; i++){
-        if(i<model->getThreads()->getData()){
-            ui.tDEUCode->setColumnHidden(i, false);
-        } else {
-            ui.tDEUCode->setColumnHidden(i, true);
-        }
-    }
-    for(int i=0; i < MAX_SPR_MAIN_RENTGENS; i++){
-        if(i<model->getRentgens()->getData()){
-            ui.tTubeVA->setColumnHidden(i, false);
-        } else {
-            ui.tTubeVA->setColumnHidden(i, true);
+    ui.tDEUCode->widgetsShow();
+    if(model){
+
+        for(int i=0; i < MAX_SPR_MAIN_RENTGENS; i++){
+            if(i<model->getRentgens()->getData()){
+                ui.tTubeVA->setColumnHidden(i, false);
+            } else {
+                ui.tTubeVA->setColumnHidden(i, true);
+            }
         }
     }
 }
 
-ISPRModelData *SPRSettingsRentgenMainWidget::getModel()
+ISPRModelData *SPRSettingsRentgenMainWidget::getModelData()
 {
     return model;
 }
@@ -149,13 +152,19 @@ void SPRSettingsRentgenMainWidget::viewChange()
         }
         return;
     }
-    if(tw == ui.tDEUCode){
-        uint value = le->text().toInt();
-        if(row == 0){ // изиенили код ДЭУ
-           model->deuCodes[col]->setData(value);
-        } else if(row == 1){ // изиенили код ЦП
-           model->cpCodes[col]->setData(value);
-        }
-        return;
-    }
+//    if(tw == ui.tDEUCode){
+//        uint value = le->text().toInt();
+//        if(row == 0){ // изиенили код ДЭУ
+//           model->deuCodes[col]->setData(value);
+//        } else if(row == 1){ // изиенили код ЦП
+//           model->cpCodes[col]->setData(value);
+//        }
+//        return;
+//    }
+}
+
+
+void SPRSettingsRentgenMainWidget::onModelChanget(IModelVariable *)
+{
+    widgetsShow();
 }

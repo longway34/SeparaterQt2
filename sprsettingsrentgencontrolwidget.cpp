@@ -1,7 +1,7 @@
 #include "sprsettingsrentgencontrolwidget.h"
 
 SPRSettingsRentgenControlWidget::SPRSettingsRentgenControlWidget(QWidget *parent) :
-    QWidget(parent)
+    QWidget(parent), model(nullptr)
 {
     ui.setupUi(this);
 }
@@ -9,13 +9,18 @@ SPRSettingsRentgenControlWidget::SPRSettingsRentgenControlWidget(QWidget *parent
 
 void SPRSettingsRentgenControlWidget::widgetsShow()
 {
-    createDEUCodesTable();
+//    createDEUCodesTable();
+    ui.tDEUCode->widgetsShow();
 }
 
-ISPRModelData *SPRSettingsRentgenControlWidget::setModel(SPRSettingsRentgenModel *data)
+ISPRModelData *SPRSettingsRentgenControlWidget::setModelData(SPRSettingsRentgenModel *data)
 {
-    if(model){
+    if(data){
+        if(model){
+            disconnect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
+        }
         model = data;
+        connect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
 
         ui.tDiffParams->clear();
         ui.tDiffParams->setRowCount(1);
@@ -53,7 +58,10 @@ ISPRModelData *SPRSettingsRentgenControlWidget::setModel(SPRSettingsRentgenModel
         ui.tPapamsRA->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Stretch);
         ui.tPapamsRA->blockSignals(false);
 
-        createDEUCodesTable();
+        ui.tDEUCode->setModelData(model);
+//        createDEUCodesTable();
+//        ui.tDEUCode->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Stretch);
+//        ui.tDEUCode->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Stretch);
 
         connect(ui.cbWOControlPlace, SIGNAL(toggled(bool)), SLOT(viewChange(bool)));
         connect(ui.slTimeMoveRGU, SIGNAL(valueChanged(int)), this, SLOT(viewChange(int)));
@@ -131,12 +139,18 @@ void SPRSettingsRentgenControlWidget::viewChange()
         }
         return;
     }
-    if(tw == ui.tDEUCode){
-        if(row == 0){
-            model->deuCodes[col]->setData(le->text().toInt());
-        } else if(row == 1){
-            model->cpCodes[col]->setData(le->text().toInt());
-        }
-        return;
-    }
+//    if(tw == ui.tDEUCode){
+//        if(row == 0){
+//            model->deuCodes[col]->setData(le->text().toInt());
+//        } else if(row == 1){
+//            model->cpCodes[col]->setData(le->text().toInt());
+//        }
+//        return;
+//    }
+}
+
+
+void SPRSettingsRentgenControlWidget::onModelChanget(IModelVariable*)
+{
+    widgetsShow();
 }

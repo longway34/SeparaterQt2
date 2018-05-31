@@ -21,7 +21,7 @@ public:
     explicit SPRSettingsFormulaWidget(QWidget *parent = 0);
     Ui::SPRSettingsFormulaWidget ui;
 
-    ISPRModelData *setModel(ISPRModelData *model);
+    ISPRModelData *setModelData(ISPRModelData *model);
     ISPRModelData *setItemModel(ISPRModelData *model);
 public slots:
     void setElements(const DefaultMapElements *elements);
@@ -30,13 +30,17 @@ public slots:
     // ISPRWidget interface
 public slots:
     virtual void widgetsShow();
-    virtual ISPRModelData *getModel();
+    virtual ISPRModelData *getModelData();
     virtual void viewChange(int value);
+    virtual void onModelChanget(IModelVariable *);
 signals:
     void doShow();
 
     // ISPRWidget interface
 
+
+    // ISPRWidget interface
+protected:
 };
 
 #endif // SPRSETTINGSFORMULAWIDGET_H

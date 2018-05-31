@@ -19,10 +19,11 @@ void SPRSpectrumBasedListTable::widgetsShow()
 {
     for(int row=0; row < rowCount(); row++){
         SpectrumItemData *mod = spectrums->at(row)->getSpectrumData();
-        FirstColumn *fc = ((FirstColumn*)cellWidget(row, 0));
+        FirstCollumn2 *fc = ((FirstCollumn2*)cellWidget(row, 0));
         QColor col(*mod->red, *mod->green, *mod->blue);
-        fc->setData(row, col);
-        fc->ui.cbSelect->setText("");
+        fc->setColor(col); fc->setText(QString::number(row));
+//        fc->setData(row, col);
+//        fc->ui.cbSelect->setText("");
 
         ((QLabel*)cellWidget(row, 1))->setText(QString::number(*mod->thread));
         ((QLabel*)cellWidget(row, 2))->setText(QString::number(*mod->summ));
@@ -35,14 +36,17 @@ void SPRSpectrumBasedListTable::widgetsShow()
 void SPRSpectrumBasedListTable::insertFirstColumn(SpectrumItemData *data, int row)
 {
     SPRSpectrumListTable::insertFirstColumn(data, row);
-    FirstColumn *fc = (FirstColumn*)cellWidget(row, 0);
+    FirstCollumn2 *fc = (FirstCollumn2*)cellWidget(row, 0);
 
-    fc->ui.bDelete->setVisible(false);
-    fc->ui.bColor->setEnabled(false);
-    fc->ui.cbSelect->setText("");
+    fc->setDeleteVisible(false);
+    fc->setSelectVisible(false);
+
+//    fc->ui.bDelete->setVisible(false);
+//    fc->ui.bColor->setEnabled(false);
+//    fc->ui.cbSelect->setText("");
 }
 
-void SPRSpectrumBasedListTable::connectFirstTable(FirstColumn *fc)
+void SPRSpectrumBasedListTable::connectFirstTable(FirstCollumn2 *fc)
 {
     connect(fc, SIGNAL(iAmSelected(int)), this, SLOT(viewChange(int)));
 }

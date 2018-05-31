@@ -24,8 +24,8 @@ public:
     virtual void widgetsShow()=0;
 
 //    virtual void doShow(){}
-    virtual ISPRModelData *setModel(ISPRModelData* data=nullptr);
-    virtual ISPRModelData *getModel()=0;
+    virtual ISPRModelData *setModelData(ISPRModelData* data=nullptr);
+    virtual ISPRModelData *getModelData()=0;
 //    virtual void cellLeChanget(QTableWidgt *table, QLineEdit *le, int x, int y)=0;
 protected:
     QLineEdit* setNumberCell(QTableWidget *table, int row, int col, int value, int min, int max, const QString toolType);
@@ -36,6 +36,7 @@ protected:
     virtual void viewChange(bool){}
     virtual void viewChange(int, int){}
     virtual void viewChange(QTableWidget*, int, int){}
+    virtual void onModelChanget(IModelVariable*)=0;
 };
 
 #endif // ISPRWIDGET_H

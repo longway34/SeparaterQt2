@@ -28,7 +28,7 @@ public:
 private:
 
 public:
-    ISPRModelData *setModel(ISPRModelData *value);
+    ISPRModelData *setModelData(ISPRModelData *value);
 
     QButtonGroup *bgTypeSelection;
     QButtonGroup *bgTypeConditions;
@@ -54,7 +54,7 @@ public slots:
 
     // ISPRWidget interface
 public slots:
-    virtual ISPRModelData *getModel();
+    virtual ISPRModelData *getModelData();
     virtual void widgetsShow();
     virtual void viewChange(int data);
     virtual void viewChange(bool data);
@@ -67,6 +67,12 @@ signals:
     // ISPRWidget interface
 //protected:
 //    virtual void viewChange(QTableWidget*, int, int);
+
+    // ISPRWidget interface
+protected slots:
+    virtual void onModelChanget(IModelVariable*);
 };
+
+
 
 #endif // SPRSETTINGSPOROGSWIDGET_H

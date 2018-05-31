@@ -1,10 +1,15 @@
 #include "sprsettingsrentgenautosetwidget.h"
 
-ISPRModelData *SPRSettingsRentgenAutosetWidget::setModel(SPRSettingsRentgenModel *value)
+ISPRModelData *SPRSettingsRentgenAutosetWidget::setModelData(SPRSettingsRentgenModel *value)
 {
-    model = value;
 
-    if(model){
+    if(value){
+        if(model){
+            disconnect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
+        }
+        model = value;
+        connect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
+
         QVector<QCheckBox*> byConnectBool = {ui.cbChannel1, ui.cbChannel2, ui.cbChannel3, ui.cbChannel4, ui.cbAllChannels,
                                             ui.cbEnhansedRgime, ui.cbWithRGU};
         QVector<QSpinBox*> byConnectInt = {ui.leCodeBegin, ui.leCodeStep, ui.lePeakPosition};
@@ -43,7 +48,7 @@ ISPRModelData *SPRSettingsRentgenAutosetWidget::setModel(SPRSettingsRentgenModel
 }
 
 SPRSettingsRentgenAutosetWidget::SPRSettingsRentgenAutosetWidget(QWidget *parent) :
-    QWidget(parent)
+    QWidget(parent), model(nullptr)
 {
     ui.setupUi(this);
 }
@@ -51,17 +56,21 @@ SPRSettingsRentgenAutosetWidget::SPRSettingsRentgenAutosetWidget(QWidget *parent
 
 void SPRSettingsRentgenAutosetWidget::widgetsShow()
 {
-    QVector<QCheckBox*> chs = {ui.cbChannel1, ui.cbChannel2, ui.cbChannel3, ui.cbChannel4};
-    for(int i=0; i< chs.size(); i++){
-        if(i < model->getThreads()->getData()){
-            chs[i]->setVisible(true);
-        } else {
-            chs[i]->setVisible(false);
+    if(model){
+        blockSignals(true);
+        QVector<QCheckBox*> chs = {ui.cbChannel1, ui.cbChannel2, ui.cbChannel3, ui.cbChannel4};
+        for(int i=0; i< chs.size(); i++){
+            if(i < model->getThreads()->getData()){
+                chs[i]->setVisible(true);
+            } else {
+                chs[i]->setVisible(false);
+            }
         }
+        blockSignals(false);
     }
 }
 
-ISPRModelData *SPRSettingsRentgenAutosetWidget::getModel()
+ISPRModelData *SPRSettingsRentgenAutosetWidget::getModelData()
 {
     return model;
 }
@@ -130,4 +139,10 @@ void SPRSettingsRentgenAutosetWidget::viewChange(int value)
         model->typeSetting->setData(as);
         return;
     }
+}
+
+
+void SPRSettingsRentgenAutosetWidget::onModelChanget(IModelVariable *)
+{
+    widgetsShow();
 }

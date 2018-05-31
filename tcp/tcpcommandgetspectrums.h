@@ -9,6 +9,8 @@
 
 class TCPCommandGetSpectrums: public TCPCommandSet
 {
+    Q_OBJECT
+
     SPRMainModel *model;
     int timeOfSpectrum; // in seconds
     uint8_t channels;
@@ -43,12 +45,17 @@ public:
         return findCommands(getren).last()->getReplayData();
     }
 
+    bool isRentgenReady();
 
     void setModel(SPRMainModel *value);
 
+    QByteArray getSpectrumData(int thread);
 public slots:
     virtual void go(TCPCommand *_command);
 
+
+signals:
+    void rentgenNotReady(TCPCommand*);
 };
 
 

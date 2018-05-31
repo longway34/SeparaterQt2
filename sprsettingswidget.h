@@ -23,7 +23,7 @@ public:
     Ui::SPRSettingsWidget ui;
 
     void setDoc(QDomDocument *_doc);
-    SPRMainModel *setModel(SPRMainModel *_model);
+    SPRMainModel *setModelData(SPRMainModel *_model);
 
 signals:
     void doStore();
@@ -33,16 +33,27 @@ signals:
 
     // ISPRWidget interface
 public:
-    virtual ISPRModelData *getModel(){return nullptr;}
+    virtual ISPRModelData *getModelData(){return nullptr;}
 public slots:
     virtual void viewChange(){}
     virtual void viewChange(int){}
     virtual void viewChange(QTableWidget *, int, int){}
+    virtual void onModelChanget(IModelVariable *);
     virtual void widgetsShow(){
-        emit doShow();
+//        emit doShow();
+        ui.wSettingsControl->widgetsShow();
+        ui.wSettingsFormulaWidget->widgetsShow();
+        ui.wSettingsIMSWidget->widgetsShow();
+        ui.wSettingsMainWidget->widgetsShow();
+        ui.wSettingsPorogsWidget->widgetsShow();
+        ui.wSettingsRentgen->widgetsShow();
+        ui.wSpectrumZonesWidget->widgetsShow();
     }
     void onChangeFileSpectrum(QString fName);
     void onChangeFileSettinds(QString fName);
+
+    // ISPRWidget interface
+protected:
 };
 
 #endif // SPRSETTINGSWIDGET_H

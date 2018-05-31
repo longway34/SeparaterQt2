@@ -18,7 +18,7 @@ public:
     // SPRSpectrumListTable interface
 protected:
     virtual void insertFirstColumn(SpectrumItemData *data, int row);
-    virtual void connectFirstTable(FirstColumn *fc);
+    virtual void connectFirstTable(FirstCollumn2 *fc);
     virtual void insertContentColumns(SpectrumItemData *data, int row);
 
 };

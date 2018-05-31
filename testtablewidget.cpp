@@ -13,12 +13,14 @@ testTableWidget::testTableWidget(QWidget *parent) :
     connect(ui.baseTable, SIGNAL(rowSelectedChecked(QList<int>,int)), ui.baseGrapthics, SLOT(onChangeSelectedCheckedItems(QList<int>,int)));
     connect(ui.baseTable, SIGNAL(modelChanged()), this, SLOT(onModelChanged()));
 
+//    connect(ui.kspectTable, SIGNAL(rowSelectedChecked(QList<int>,int)), ui.kSpertGraphic, SLOT(onChangeSelectedCheckedItems(QList<int>,int)));
+
     setSeparate = new TCPCommand(setsepar);
     getSeparate = new TCPCommand(getsepar);
 
-    connect(ui.bGetGist, SIGNAL(clicked(bool)), this, SLOT(onGetButtomsClick(bool)));
-    connect(ui.bGetKSPK, SIGNAL(clicked(bool)), this, SLOT(onGetButtomsClick(bool)));
-    connect(ui.bGETSepar, SIGNAL(clicked(bool)), this, SLOT(onGetButtomsClick(bool)));
+    connect(ui.bSeparatorOn, SIGNAL(clicked(bool)), this, SLOT(onGetButtomsClick(bool)));
+    connect(ui.bGetBaseSpectrum, SIGNAL(clicked(bool)), this, SLOT(onGetButtomsClick(bool)));
+    connect(ui.bSeparatorOff, SIGNAL(clicked(bool)), this, SLOT(onGetButtomsClick(bool)));
     connect(ui.bSetSepar,  SIGNAL(clicked(bool)), this, SLOT(onGetButtomsClick(bool)));
 
     connect(ui.bStartSepar, SIGNAL(clicked(bool)), this, SLOT(onGetButtomsClick(bool)));
@@ -32,39 +34,55 @@ testTableWidget::testTableWidget(QWidget *parent) :
     ui.baseGrapthics->getCanvas()->setAxisScale(QwtPlot::Axis::xBottom, 0, 256, 25);
     ui.kSpertGraphic->getCanvas()->setAxisScale(QwtPlot::Axis::xBottom, 0, 256, 25);
 
-    startSeparate = new TCPTestStartSeparate(nullptr, ui.towidget, ui.logWidget);
-    TCPCommand *getRen = startSeparate->findCommands(getren).last();
-    connect(getRen, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
-    connect(startSeparate, SIGNAL(errorCommand(TCPCommand*)), this, SLOT(onCommandError(TCPCommand*)));
+//    startSeparate = new TCPTestStartSeparate(nullptr, ui.towidget, ui.logWidget);
+//    TCPCommand *getRen = startSeparate->findCommands(getren).last();
+//    connect(getRen, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
+//    connect(startSeparate, SIGNAL(errorCommand(TCPCommand*)), this, SLOT(onCommandError(TCPCommand*)));
 
 
     stopSeparate = new TCPTestStopSeparate(ui.towidget);
     connect(stopSeparate, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
 }
 
-ISPRModelData *testTableWidget::setModel(SPRMainModel *_model){
+ISPRModelData *testTableWidget::setModelData(SPRMainModel *_model){
     if(_model){
         mainModel = _model;
 //        spectrumsBaseModel = new SPRSpectrumListItemsModel(_model->getSpectrumZonesTableModel(), _model->getSettingsFormulaModel(),_model->getSettingsMainModel()->getThreads(), _model->getSettingsMainModel()->getSpectrumFileName());
-        kSpectrumsModel = new SPRSpectrumListItemsModel(_model->getSpectrumZonesTableModel(), _model->getSettingsFormulaModel(),_model->getSettingsMainModel()->getThreads(), _model->getSettingsMainModel()->getSpectrumFileName());
-        separateModel = new SPRSeparateModel(mainModel->getDoc());
-        separateModel->setMainModel(_model);
+        kSpectrumsModel = new SPRSpectrumListItemsModel(_model->getSpectrumZonesTableModel(), _model->getSettingsFormulaModel(),_model->getSettingsMainModel()->getThreads(), _model->getSettingsMainModel()->getSpectrumFileName(), _model->getSettingsControlModel()->controlArea);
+//        separateModel = new SPRSeparateModel(mainModel->getDoc());
+//        separateModel->setModelData(_model);
+        separateModel = mainModel->getSeparateModel();
 
-        ui.kspectTable->setModel(kSpectrumsModel, spectrumsOnly);
-        ui.kSpertGraphic->setModel(kSpectrumsModel, spectrumsOnly, true);
+        startSeparate = new TCPTestStartSeparate(nullptr, mainModel, ui.towidget, ui.logWidget);
+        getRen = startSeparate->findCommands(getren).last();
+        connect(getRen, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
+        connect(startSeparate, SIGNAL(errorCommand(TCPCommand*)), this, SLOT(onCommandError(TCPCommand*)));
 
-        ui.baseTable->setModel(kSpectrumsModel, spectrumBase);
-        ui.baseGrapthics->setModel(kSpectrumsModel, spectrumBase, true);
+        ui.kspectTable->setModelData(kSpectrumsModel, spectrumsOnly);
+        ui.kSpertGraphic->setModelData(kSpectrumsModel, spectrumsOnly, true);
+
+        ui.baseTable->setModelData(kSpectrumsModel, spectrumBase);
+        ui.baseGrapthics->setModelData(kSpectrumsModel, spectrumBase, true);
+
+        rentgenOnFull = new TCPCommandSeparatorOnFull(mainModel->getServer(), mainModel, ui.towidget);
+        rentgenOnFull->setModelData(mainModel);
+        connect(rentgenOnFull, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
+
+        getSpectrumsSetCommand = new TCPCommandGetSpectrums(mainModel->getServer(), ui.towidget, mainModel, 5);
+        connect(getSpectrumsSetCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
+        connect(getSpectrumsSetCommand, SIGNAL(rentgenNotReady(TCPCommand*)), this, SLOT(onCommandError(TCPCommand*)));
+
 
         getGistogramm = new TCPGetSpectrumsGistogramms(mainModel->getServer(), getgist);
         getKSpectrums = new TCPGetSpectrumsGistogramms(mainModel->getServer(), getkspk);
 
+
         connect(getGistogramm, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
         connect(getKSpectrums, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
 
-        startSeparate->setSeparateModel(separateModel);
-        connect(startSeparate, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
-        connect(startSeparate, SIGNAL(errorCommand(TCPCommand*)), this, SLOT(onCommandError(TCPCommand*)));
+//        startSeparate->setModeDatal(separateModel);
+//        connect(startSeparate, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
+//        connect(startSeparate, SIGNAL(errorCommand(TCPCommand*)), this, SLOT(onCommandError(TCPCommand*)));
 
         getBaseSpectrumCommand = startSeparate->getGetBaseSpectrumCommand();
         connect(getBaseSpectrumCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
@@ -139,8 +157,8 @@ void testTableWidget::widgetsShow(){
 }
 
 void testTableWidget::onModelChanged(){
-    ui.baseGrapthics->setModel(mainModel->getSpectrumListItemsModel(), spectrumBase, true);
-    ui.baseTable->setModel(mainModel->getSpectrumListItemsModel(), spectrumBase);
+    ui.baseGrapthics->setModelData(mainModel->getSpectrumListItemsModel(), spectrumBase, true);
+    ui.baseTable->setModelData(mainModel->getSpectrumListItemsModel(), spectrumBase);
     ui.baseGrapthics->widgetsShow();
     ui.baseTable->widgetsShow();
     
@@ -149,20 +167,22 @@ void testTableWidget::onModelChanged(){
 void testTableWidget::onGetButtomsClick(bool)
 {
     if(mainModel){
-        if(sender() == ui.bGetGist){
-            getGistogramm->send(mainModel->getServer());
+        if(sender() == ui.bSeparatorOn){
+//            getGistogramm->send(mainModel->getServer());
+
+            rentgenOnFull->send(mainModel->getServer());
             return;
         }
-        if(sender() == ui.bGetKSPK){
-            getKSpectrums->send(mainModel->getServer());
+        if(sender() == ui.bGetBaseSpectrum){
+            getSpectrumsSetCommand->send(mainModel->getServer());
             return;
         }
-        if(sender() == ui.bGETSepar){
-            getSeparate->send(mainModel->getServer());
-            return;
-        }
+//        if(sender() == ui.bSeparatorOff){
+//            getSeparate->send(mainModel->getServer());
+//            return;
+//        }
         if(sender() == ui.bSetSepar){
-            setSeparate->setSendData(separateModel->toByteArray());
+            setSeparate->setSendData(separateModel->toByteArray(mainModel));
             setSeparate->send(mainModel->getServer());
         }
         if(sender() == ui.bStartSepar){
@@ -208,7 +228,7 @@ void testTableWidget::onCommandComplite(TCPCommand *_command)
         return;
     }
     if(sender() == getseparCommand){
-        QByteArray res = getSeparate->getReplayData();
+        QByteArray res = getseparCommand->getReplayData();
         separateModel->addWorkSeparateData(res);
         widgetsShow();
         return;
@@ -274,14 +294,35 @@ void testTableWidget::onCommandComplite(TCPCommand *_command)
         ui.logWidget->onLogsCommand(startSeparate, "Сепаратор остановлен...");
         return;
     }
+    if(sender() == rentgenOnFull){
+        QMessageBox::information(nullptr, QString(tr("Рентген включен...")), QString(tr("Рентген включен...")), QMessageBox::Button::Ok);
+    }
+    if(sender() == getSpectrumsSetCommand){
+        TCPCommand *ren = _command->findCommands(getren).last();
+        QByteArray res = ren->getReplayData();
+        uint16_t mka, v;
+        memcpy(&v, res.constData()+1, sizeof(v));
+        memcpy(&mka, res.constData()+3, sizeof(mka));
+
+        ui.logWidget->onLogsCommand(_command, "return: v="+QString::number(v, 16)+" mka="+QString::number(mka, 16));
+
+        QVector<TCPCommand*> vspk = getSpectrumsSetCommand->findCommands(getspk);
+        for(int i=0; i<vspk.size();i++){
+            QByteArray spk = vspk[i]->getReplayData().right(DEF_SPECTRUM_DATA_LENGTH_BYTE);
+            SPRSpectrumItemModel *item = kSpectrumsModel->setSpectrumData(i, spk);
+            item->setTimeScope(5);
+            widgetsShow();
+        }
+    }
     if(_command){
         if(_command->getCommand() == getren){
+            uint16_t kV, mka;
             QByteArray res = _command->getReplayData();
-            uint16_t mka, v;
-            memcpy(&v, res.constData()+1, sizeof(v));
+            memcpy(&kV, res.constData()+1, sizeof(kV));
             memcpy(&mka, res.constData()+3, sizeof(mka));
-
-            ui.logWidget->onLogsCommand(_command, "return: v="+QString::number(v, 16)+" mka="+QString::number(mka, 16));
+            QString msg = QString(tr("Рентген вышел на рабочий режим kV=0x%1, mka=0x%2 > 0х600")).
+                    arg(QString::number(kV, 16)).arg(QString::number(mka, 16));
+            ui.logWidget->onLogsCommand(msg);
             return;
         }
     }
@@ -289,7 +330,7 @@ void testTableWidget::onCommandComplite(TCPCommand *_command)
 
 void testTableWidget::onCommandError(TCPCommand *_command)
 {
-    if(sender() == startSeparate){
+    if(sender() == startSeparate || sender() == getSpectrumsSetCommand){
         uint16_t kV, mka;
         QByteArray res = _command->getReplayData();
         memcpy(&kV, res.constData()+1, sizeof(kV));

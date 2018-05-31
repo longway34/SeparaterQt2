@@ -4,7 +4,8 @@ SPRSettingsControlWidget::SPRSettingsControlWidget(QWidget *parent) :
     QWidget(parent)
 {
     ui.setupUi(this);
-    
+    model = nullptr;
+
     QVector<QAbstractSpinBox*> les = {
         ui.leWeightAvgConcentrate, ui.leWeightAvgTail,
         ui.leTimeMeassureData, ui.leTimeMeassureHistorramm, ui.leTimeMeassureSpector,
@@ -28,86 +29,94 @@ SPRSettingsControlWidget::SPRSettingsControlWidget(QWidget *parent) :
 
 void SPRSettingsControlWidget::widgetsShow()
 {
+    if(model){
+        ui.tControl->clear();
+        QStringList hTitle = {tr("Допустимо"), tr("Критично")};
+        QStringList vTitle = {
+          tr("Корреляция спектра"),
+          tr("Скорость потока камней по ручью (шт./сек.)"),
+          tr("Отклонение центра тяжести"),
+          tr("Загрузка по воздуху минимум"),
+          tr("Загрузка по воздуху максимум")
+        };
+
+        ui.tControl->setRowCount(5); ui.tControl->setColumnCount(2);
+        ui.tControl->setHorizontalHeaderLabels(hTitle);
+        ui.tControl->setVerticalHeaderLabels(vTitle);
+
+        QLineEdit *le = setNumberCell(ui.tControl, 0, 0, model->correlSpectrumPermiss->getData(), 0, 100, tr("Допустимое значение корреляции спектра (-1..1)"));
+        le->setValidator(new QDoubleValidator(-1, 1, 2, le));
+        le->setText(model->correlSpectrumPermiss->toString());
+        connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
+
+        le = setNumberCell(ui.tControl, 0, 1, model->correlSpectrumCritical->getData(), 0, 100, tr("Критичное значение корреляции спектра (-1..1)"));
+        le->setValidator(new QDoubleValidator(-1, 1, 2, le));
+        le->setText(model->correlSpectrumCritical->toString());
+        connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
+
+        le = setNumberCell(ui.tControl, 1, 0, model->speedStreamPermiss->getData(), 0, 25, tr("Допустимое значение скорости потока камней"));
+        connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
+
+        le = setNumberCell(ui.tControl, 1, 1, model->speedStreamCritical->getData(), 0, 25, tr("Критичное значение скорости потока камней"));
+        connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
+
+        le = setNumberCell(ui.tControl, 2, 0, model->diffCenterGravityPermiss->getData(), 0, 100, tr("Допустимое значение отклонения центра тяжести"));
+        connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
+
+        le = setNumberCell(ui.tControl, 2, 1, model->diffCenterGravityCritical->getData(), 0, 100, tr("Критичное значение отклонения центра тяжести"));
+        connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
+
+        le = setNumberCell(ui.tControl, 3, 0, model->airLoadingMaxPermiss->getData(), 0, 10000, tr("Допустимое максимальное значение загрузки по воздуху"));
+        connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
+
+        le = setNumberCell(ui.tControl, 3, 1, model->airLoadingMaxCritical->getData(), 0, 10000, tr("Критичное максимальное значение загрузки по воздуху"));
+        connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
+
+        le = setNumberCell(ui.tControl, 4, 0, model->airLoadingMinPermiss->getData(), 0, 10000, tr("Допустимое минимальное значение загрузки по воздуху"));
+        connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
+
+        le = setNumberCell(ui.tControl, 4, 1, model->airLoadingMinCritical->getData(), 0, 10000, tr("Критичное минимальное значение загрузки по воздуху"));
+        connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
+
+        ui.tControl->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
+        ui.tControl->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+    //    ui.tControl->resizeColumnsToContents();
+        ui.tControl->setAlternatingRowColors(true);
+
+        ui.leWeightAvgConcentrate->setValue(model->weightAvgStoneConcentrate->getData());
+        ui.leWeightAvgTail->setValue(model->weightAvgStoneTail->getData());
+
+        ui.leTimeMeassureData->setValue(model->tMeassureForData->getData());
+        ui.leTimeMeassureSpector->setValue(model->tMeassureForSpectrum->getData());
+        ui.leTimeMeassureHistorramm->setValue(model->tMeassureForHistogramm->getData());
+
+        ui.leCorrectStream->setValue(model->correctOptimalOreStream->getData());
+        ui.cbAutoControlStream->setChecked(model->autoOreStreamControl->getData());
+
+        ui.leVEMSLess->setValue(model->VEMSLevelLess->getData());
+        ui.leVEMSMaxCode->setValue(model->VEMSMaxCode->getData());
+        ui.leVEMSBegin->setValue(model->VEMSBeginCode->getData());
+
+        QVariant cur; cur.setValue<EnumElements>(model->controlArea->getData());
+        int curIndex = ui.cbControlArea->findData(cur);
+        ui.cbControlArea->setCurrentIndex(curIndex);
+
+    }
 }
 
-ISPRModelData *SPRSettingsControlWidget::setModel(SPRSettingsControlModel *data)
+ISPRModelData *SPRSettingsControlWidget::setModelData(SPRSettingsControlModel *data)
 {
-    model = data;
-
-    ui.tControl->clear();
-    QStringList hTitle = {tr("Допустимо"), tr("Критично")};
-    QStringList vTitle = {
-      tr("Корреляция спектра"),
-      tr("Скорость потока камней по ручью (шт./сек.)"),
-      tr("Отклонение центра тяжести"),
-      tr("Загрузка по воздуху минимум"),
-      tr("Загрузка по воздуху максимум")
-    };
-
-    ui.tControl->setRowCount(5); ui.tControl->setColumnCount(2);
-    ui.tControl->setHorizontalHeaderLabels(hTitle);
-    ui.tControl->setVerticalHeaderLabels(vTitle);
-
-    QLineEdit *le = setNumberCell(ui.tControl, 0, 0, model->correlSpectrumPermiss->getData(), 0, 100, tr("Допустимое значение корреляции спектра (-1..1)"));
-    le->setValidator(new QDoubleValidator(-1, 1, 2, le));
-    le->setText(model->correlSpectrumPermiss->toString());
-    connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
-
-    le = setNumberCell(ui.tControl, 0, 1, model->correlSpectrumCritical->getData(), 0, 100, tr("Критичное значение корреляции спектра (-1..1)"));
-    le->setValidator(new QDoubleValidator(-1, 1, 2, le));
-    le->setText(model->correlSpectrumCritical->toString());
-    connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
-
-    le = setNumberCell(ui.tControl, 1, 0, model->speedStreamPermiss->getData(), 0, 25, tr("Допустимое значение скорости потока камней"));
-    connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
-
-    le = setNumberCell(ui.tControl, 1, 1, model->speedStreamCritical->getData(), 0, 25, tr("Критичное значение скорости потока камней"));
-    connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
-
-    le = setNumberCell(ui.tControl, 2, 0, model->diffCenterGravityPermiss->getData(), 0, 100, tr("Допустимое значение отклонения центра тяжести"));
-    connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
-
-    le = setNumberCell(ui.tControl, 2, 1, model->diffCenterGravityCritical->getData(), 0, 100, tr("Критичное значение отклонения центра тяжести"));
-    connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
-
-    le = setNumberCell(ui.tControl, 3, 0, model->airLoadingMaxPermiss->getData(), 0, 10000, tr("Допустимое максимальное значение загрузки по воздуху"));
-    connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
-
-    le = setNumberCell(ui.tControl, 3, 1, model->airLoadingMaxCritical->getData(), 0, 10000, tr("Критичное максимальное значение загрузки по воздуху"));
-    connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
-
-    le = setNumberCell(ui.tControl, 4, 0, model->airLoadingMinPermiss->getData(), 0, 10000, tr("Допустимое минимальное значение загрузки по воздуху"));
-    connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
-
-    le = setNumberCell(ui.tControl, 4, 1, model->airLoadingMinCritical->getData(), 0, 10000, tr("Критичное минимальное значение загрузки по воздуху"));
-    connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
-
-    ui.tControl->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
-    ui.tControl->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
-//    ui.tControl->resizeColumnsToContents();
-    ui.tControl->setAlternatingRowColors(true);
-
-    ui.leWeightAvgConcentrate->setValue(model->weightAvgStoneConcentrate->getData());
-    ui.leWeightAvgTail->setValue(model->weightAvgStoneTail->getData());
-
-    ui.leTimeMeassureData->setValue(model->tMeassureForData->getData());
-    ui.leTimeMeassureSpector->setValue(model->tMeassureForSpectrum->getData());
-    ui.leTimeMeassureHistorramm->setValue(model->tMeassureForHistogramm->getData());
-
-    ui.leCorrectStream->setValue(model->correctOptimalOreStream->getData());
-    ui.cbAutoControlStream->setChecked(model->autoOreStreamControl->getData());
-
-    ui.leVEMSLess->setValue(model->VEMSLevelLess->getData());
-    ui.leVEMSMaxCode->setValue(model->VEMSMaxCode->getData());
-    ui.leVEMSBegin->setValue(model->VEMSBeginCode->getData());
-
-    QVariant cur; cur.setValue<EnumElements>(model->controlArea->getData());
-    int curIndex = ui.cbControlArea->findData(cur);
-    ui.cbControlArea->setCurrentIndex(curIndex);
+    if(data){
+        if(model){
+            disconnect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
+        }
+        model = data;
+        connect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
+    }
     return model;
 }
 
-ISPRModelData *SPRSettingsControlWidget::getModel()
+ISPRModelData *SPRSettingsControlWidget::getModelData()
 {
     return model;
 }
@@ -237,3 +246,9 @@ void SPRSettingsControlWidget::viewChange(int index)
     }
 }
 
+
+
+void SPRSettingsControlWidget::onModelChanget(IModelVariable *)
+{
+    widgetsShow();
+}

@@ -176,7 +176,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QPushButton" name="bGetGist">
+  <widget class="QPushButton" name="bSeparatorOff">
    <property name="geometry">
     <rect>
      <x>940</x>
@@ -186,10 +186,10 @@
     </rect>
    </property>
    <property name="text">
-    <string>GET GIST</string>
+    <string>Separator Off</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="bGETSepar">
+  <widget class="QPushButton" name="bSeparatorOn">
    <property name="geometry">
     <rect>
      <x>940</x>
@@ -199,10 +199,10 @@
     </rect>
    </property>
    <property name="text">
-    <string>GET SEPAR</string>
+    <string>Separator On</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="bGetKSPK">
+  <widget class="QPushButton" name="bGetBaseSpectrum">
    <property name="geometry">
     <rect>
      <x>940</x>
@@ -212,7 +212,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Get KSPK</string>
+    <string>Get Base Spectrum</string>
    </property>
   </widget>
   <widget class="QPushButton" name="bSetSepar">
@@ -329,15 +329,15 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>SPRSpectrumListTable</class>
+   <extends>QTableWidget</extends>
+   <header>sprspectrumlisttable.h</header>
+  </customwidget>
+  <customwidget>
    <class>SPRSpectrumGraphicsWidget</class>
    <extends>QWidget</extends>
    <header>sprspectrumgraphicswidget.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>SPRSpectrumListTable</class>
-   <extends>QTableWidget</extends>
-   <header>sprspectrumlisttable.h</header>
   </customwidget>
   <customwidget>
    <class>SPRSpectrumSmallTable</class>

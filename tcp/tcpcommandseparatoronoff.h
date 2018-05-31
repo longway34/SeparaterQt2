@@ -5,16 +5,17 @@
 #include "tcp/TCPCommandSet.h"
 #include "models/sprsettingsrentgenmodel.h"
 
-class TCPCommandSeparatorOn : public TCPCommandSet
+class TCPCommandSeparatorOnOff : public TCPCommandSet
 {
     SPRSettingsRentgenModel *model;
 
     uint8_t rentgenNum;
     uint8_t rentgenCount;
+    bool on_off;
 
 public:
-    TCPCommandSeparatorOn();
-    TCPCommandSeparatorOn(ServerConnect *_server, TCPTimeOutWigget *_widget, SPRSettingsRentgenModel *_model = nullptr);
+    TCPCommandSeparatorOnOff();
+    TCPCommandSeparatorOnOff(ServerConnect *_server, TCPTimeOutWigget *_widget, SPRSettingsRentgenModel *_model = nullptr, bool _on_off = true);
 
     // TCPCommand interface
     void setModel(SPRSettingsRentgenModel *value);

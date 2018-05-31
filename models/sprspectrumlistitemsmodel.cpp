@@ -4,9 +4,14 @@ static const QVector<QColor> mainColors = {Qt::red, Qt::green, Qt::blue, Qt::cya
                                     Qt::darkRed, Qt::darkBlue, Qt::darkGreen, Qt::darkCyan, Qt::darkMagenta, Qt::darkYellow,
                                     Qt::gray, Qt::lightGray, Qt::white, Qt::darkGray};
 
-QVector<SPRSpectrumItemModel *> *SPRSpectrumListItemsModel::getSpectrumsModel()
+QVector<SPRSpectrumItemModel *> *SPRSpectrumListItemsModel::getSpectrumsModel(SPRTypeSpectrumSet type)
 {
-    return &spectrumsModel;
+    if(type == spectrumsOnly)
+        return &spectrumsModel;
+    else if(type == spectrumBase)
+        return &spectrumsModelBase;
+    else
+        return unionModels();
 }
 
 SPRSpectrumZonesTableModel *SPRSpectrumListItemsModel::getZonesTableModel()
@@ -15,7 +20,34 @@ SPRSpectrumZonesTableModel *SPRSpectrumListItemsModel::getZonesTableModel()
 }
 
 QVector<SPRSpectrumItemModel *> *SPRSpectrumListItemsModel::getSpectrumsModelAll(){
-    return &spectrumsModelAll;
+    return unionModels();
+}
+
+void SPRSpectrumListItemsModel::setElementsProperty(SPRElementsModel *value)
+{
+    if(value){
+        if(elementsProperty && property("delete_elementsProperty").value<bool>()){
+            delete elementsProperty;
+        }
+        elementsProperty = value;
+        setProperty("delete_elementsProperty", QVariant(false));
+    }
+}
+
+void SPRSpectrumListItemsModel::setCorelControlArea(SPREnumVariable<EnumElements> *value)
+{
+    if(value){
+        if(corelControlArea && property("delete_controlArea").value<bool>()){
+            delete corelControlArea;
+        }
+        corelControlArea = value;
+        setProperty("delete_controlArea", QVariant(false));
+    }
+}
+
+SPREnumVariable<EnumElements> *SPRSpectrumListItemsModel::getCorelControlArea() const
+{
+    return corelControlArea;
 }
 
 void  SPRSpectrumListItemsModel::clearSpectrums(QVector<SPRSpectrumItemModel*> *model){
@@ -24,6 +56,7 @@ void  SPRSpectrumListItemsModel::clearSpectrums(QVector<SPRSpectrumItemModel*> *
     }
     model->clear();
     unionModels();
+    emit modelChanget(this);
 }
 
 void  SPRSpectrumListItemsModel::clearSpectrums(){
@@ -59,24 +92,36 @@ void SPRSpectrumListItemsModel::saveAs(QString fname)
     }
 }
 
-SPRSpectrumItemModel *SPRSpectrumListItemsModel::addSpect(uint8_t *buf, int bufLentgh, QVector<SPRSpectrumItemModel*> *model){
+SPRSpectrumItemModel *SPRSpectrumListItemsModel::addSpect(uint8_t *buf, int bufLentgh, SPRTypeSpectrumSet typeData, int numTh, QString pref){
     SPRSpectrumItemModel *item = new SPRSpectrumItemModel(zonesTableModel, formulas, this);
     item->setSpectrumData(buf, bufLentgh);
+
+    QVector<SPRSpectrumItemModel*> *model = getSpectrumsModel(typeData);
+
     if(bufLentgh == DEF_SPECTRUM_DATA_LENGTH_BYTE){
         item->setSpectrumThread(model->size());
-        QString name;
-        if(model == &spectrumsModelBase){
-            name = "bspec_";
-        } else {
-            name = "spec_";
+        if(pref.isEmpty()){
+            if(model == &spectrumsModelBase){
+                pref = "bspec_";
+            } else {
+                pref = "spec_";
+            }
         }
-        item->setSpectrumName(name+QString::number(model->size()));
+        item->setSpectrumName(pref+QString::number(model->size()));
         item->setSpectrumColor(mainColors[model->size() % mainColors.size()]);
         item->setSpectrumDateTime(QDateTime::currentDateTime());
+        if(numTh > 0){
+            item->setSpectrumThread(numTh);
+        }
     }
     model->push_back(item);
-//    emit modelChanget();
     unionModels();
+
+    if(typeData == spectrumsOnly){
+        recomplite(item, spectrumsOnly);
+    }
+
+    emit modelChanget(this);
     return item;
 
 }
@@ -94,17 +139,17 @@ void SPRSpectrumListItemsModel::addSpectrums(QString fName){
        QByteArray b2 = in.read(sizeof(b2));
        while(in.read((char*)buf, DEF_SPECTRUM_DATA_BUF_LENGTH) == DEF_SPECTRUM_DATA_BUF_LENGTH){
            if(specCount < threads->getData()){
-               addSpect(buf, DEF_SPECTRUM_DATA_BUF_LENGTH, &spectrumsModelBase);
+               addSpect(buf, DEF_SPECTRUM_DATA_BUF_LENGTH, spectrumBase);
            } else {
-               addSpect(buf, DEF_SPECTRUM_DATA_BUF_LENGTH, &spectrumsModel);
+               addSpect(buf, DEF_SPECTRUM_DATA_BUF_LENGTH, spectrumsOnly);
            }
            specCount++;
        }
        in.close();
-    }
+   }
    memset(buf, 0, DEF_SPECTRUM_DATA_LENGTH_BYTE);
    while (specCount < threads->getData()) {
-       addSpect(buf, DEF_SPECTRUM_DATA_LENGTH_BYTE, &spectrumsModelBase);
+       addSpect(buf, DEF_SPECTRUM_DATA_LENGTH_BYTE, spectrumBase);
 //       SPRSpectrumItemModel *item = new SPRSpectrumItemModel(zonesTableModel, formulas, this);
 //       item->setSpectrumName(QString("bspect_%1").arg(specCount));
 //       item->setSpectrumThread(specCount);
@@ -112,6 +157,8 @@ void SPRSpectrumListItemsModel::addSpectrums(QString fName){
 //       spectrumsModelBase.push_back(item);
        specCount++;
    }
+
+   emit modelChanget(this);
    //   store(spectrumsfName->getData());
 }
 
@@ -159,7 +206,7 @@ void SPRSpectrumListItemsModel::setThreads(SPRVariable<uint> *value)
     }
 }
 
-SPRSpectrumListItemsModel::SPRSpectrumListItemsModel(QDomDocument *_doc, ISPRModelData *parent): ISPRModelData(_doc, parent), threads(0), spectrumsfName(nullptr), zonesTableModel(nullptr), formulas(nullptr), spectrumsModel()
+SPRSpectrumListItemsModel::SPRSpectrumListItemsModel(QDomDocument *_doc, SPRElementsModel *_elements, SPREnumVariable<EnumElements> *_controlArea, ISPRModelData *parent): ISPRModelData(_doc, parent), threads(0), spectrumsfName(nullptr), corelControlArea(nullptr), zonesTableModel(nullptr), formulas(nullptr), spectrumsModel()
 {
     threads = new SPRVariable<uint>(doc, SPR_SETTINGS_MAIN_THREADS_XPATH, DEF_SPR_MAIN_THREADS, parent);
     setProperty("delete_threads", QVariant(true));
@@ -167,7 +214,21 @@ SPRSpectrumListItemsModel::SPRSpectrumListItemsModel(QDomDocument *_doc, ISPRMod
     spectrumsfName = new SPRQStringVariable(doc, SPR_SETTINGS_MAIN_SPECTRUM_FNAME_XPATH, QString(DEF_SPR_MAIN_SETTINGS_FNAME)+QString(DEF_SPR_MAIN_SPECTRUM_FNAME_SUFFIX), parent);
     setProperty("delete_spectrumFName", QVariant(true));
 
-    setZonesModel(new SPRSpectrumZonesTableModel(doc, parent));
+    if(_controlArea){
+        setCorelControlArea(_controlArea);
+    } else {
+        corelControlArea = new SPREnumVariable<EnumElements>(doc, SPR_CONTROL_CONTROL_AREA_XPATH, DEF_SPR_CONTROL_CONTROL_AREA, this);
+        setProperty("delete_controlArea", QVariant(true));
+    }
+
+    if(_elements){
+        setElementsProperty(_elements);
+    } else {
+        elementsProperty = new SPRElementsModel(doc, this);
+        setProperty("delete_elementsProperty", QVariant(true));
+    }
+
+    setZonesModel(new SPRSpectrumZonesTableModel(doc, elementsProperty, parent));
     setProperty("delete_zones", QVariant(true));
 
     setFormulasModel(new SPRSettingsFormulaModel(doc, parent));
@@ -177,12 +238,20 @@ SPRSpectrumListItemsModel::SPRSpectrumListItemsModel(QDomDocument *_doc, ISPRMod
 }
 
 
-SPRSpectrumListItemsModel::SPRSpectrumListItemsModel(SPRSpectrumZonesTableModel *_model, SPRSettingsFormulaModel *_formulas, SPRVariable<uint> *_threads, SPRQStringVariable *sfName, ISPRModelData *parent): threads(0), spectrumsfName(nullptr), zonesTableModel(nullptr), formulas(nullptr), spectrumsModel()
+SPRSpectrumListItemsModel::SPRSpectrumListItemsModel(SPRSpectrumZonesTableModel *_model, SPRSettingsFormulaModel *_formulas, SPRVariable<uint> *_threads, SPRQStringVariable *sfName, SPREnumVariable<EnumElements> *_controlArea, ISPRModelData *parent): threads(0), spectrumsfName(nullptr), corelControlArea(nullptr), zonesTableModel(nullptr), formulas(nullptr), spectrumsModel()
 {
     setThreads(_threads);
     setSpectrumsfName(sfName);
+
+    if(_controlArea){
+        setCorelControlArea(_controlArea);
+    } else {
+        corelControlArea = new SPREnumVariable<EnumElements>(doc, SPR_CONTROL_CONTROL_AREA_XPATH, DEF_SPR_CONTROL_CONTROL_AREA, this);
+        setProperty("delete_controlArea", QVariant(true));
+    }
     setZonesModel(_model);
     setFormulasModel(_formulas);
+    setElementsProperty(_model->elementsProperty);
 
     setSpectrums();
 }
@@ -201,6 +270,9 @@ SPRSpectrumListItemsModel::~SPRSpectrumListItemsModel()
     if(threads && property("delete_threads").value<bool>()){
         delete threads;
     }
+    if(corelControlArea && property("delete_controlArea").value<bool>()){
+        delete corelControlArea;
+    }
 }
 
 
@@ -213,13 +285,12 @@ ISPRModelData *SPRSpectrumListItemsModel::setZonesModel(SPRSpectrumZonesTableMod
             delete zonesTableModel;
         }
         zonesTableModel = _model;
+        setElementsProperty(_model->getElementsProperty());
 
         for(int i=0; i<spectrumsModel.size(); i++){
-//            uint32_t thr = *spectrumsModel[i]->getSpectrumData()->thread;
             spectrumsModel[i]->setZonesTable(_model);
         }
         for(int i=0; i<spectrumsModelBase.size(); i++){
-//            uint32_t thr = *spectrumsModelBase[i]->getSpectrumData()->thread;
             spectrumsModelBase[i]->setZonesTable(_model);
         }
     }
@@ -246,15 +317,49 @@ ISPRModelData *SPRSpectrumListItemsModel::setFormulasModel(SPRSettingsFormulaMod
     return this;
 }
 
-ISPRModelData *SPRSpectrumListItemsModel::setModel(SPRSpectrumZonesTableModel *_zones, SPRSettingsFormulaModel *_formulas, SPRVariable<uint> *_threads, SPRQStringVariable *_sfName)
+ISPRModelData *SPRSpectrumListItemsModel::setModel(SPRSpectrumZonesTableModel *_zones, SPRSettingsFormulaModel *_formulas, SPRVariable<uint> *_threads, SPRQStringVariable *_sfName, SPREnumVariable<EnumElements> *_controlArea)
 {
     setZonesModel(_zones);
     setFormulasModel(_formulas);
     setSpectrumsfName(_sfName);
     setThreads(_threads);
+    setElementsProperty(_zones->elementsProperty);
+
+    setCorelControlArea(_controlArea);
 
     clearSpectrums();
     return this;
+}
+
+
+
+void SPRSpectrumListItemsModel::recomplite(SPRSpectrumItemModel *item, typeSpectrumsData type)
+{
+    if(item){
+
+        uint thr = item->getSpectrumThread();
+//        SPRSpectrumItemModel* spect = getSpectrumItem(row % spectrumsModel.size());
+        SPRSpectrumItemModel* base = getBaseItemForChannel(thr);
+
+
+        item->recomplite();
+        if(base){
+            base->recomplite();
+
+            if(corelControlArea){
+                item->getCorrel(base, true, corelControlArea->getData());
+            } else {
+                item->getCorrel(base);
+            }
+        }
+    }
+}
+
+void SPRSpectrumListItemsModel::recomplite(){
+    QVector<SPRSpectrumItemModel*> *model = getSpectrumsModel();
+    for(int i=0; i<model->size(); i++){
+        recomplite(model->at(i));
+    }
 }
 
 SPRSpectrumItemModel *SPRSpectrumListItemsModel::setSpectrumData(int num, uint8_t *buf, int bufLen, SPRTypeSpectrumSet _type)
@@ -263,7 +368,15 @@ SPRSpectrumItemModel *SPRSpectrumListItemsModel::setSpectrumData(int num, uint8_
     if(_type == spectrumBase){
         spec = getSpectrumBaseItem(num);
         if(spec){
+            QColor col;
+            if(bufLen == DEF_SPECTRUM_DATA_LENGTH_BYTE){
+                col = spec->getSpectrumColor();
+            }
             spec->setSpectrumData(buf, bufLen);
+            if(bufLen == DEF_SPECTRUM_DATA_LENGTH_BYTE){
+                spec->setSpectrumColor(col);
+            }
+            emit modelChanget(this);
         }
     }
     return spec;

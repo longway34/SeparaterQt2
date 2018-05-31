@@ -22,7 +22,7 @@ public:
 
     void setThreads(SPRVariable<uint>* threads);
     void setConditions(SPREnumVariable<TypeConditions>* conditions) {this->model->setConditions(conditions);}
-    ISPRModelData *setModel(ISPRModelData *model);
+    ISPRModelData *setModelData(ISPRModelData *model);
 
     // ISPRWidget interface
 signals:
@@ -32,13 +32,17 @@ protected:
 
     // ISPRWidget interface
 public slots:
-    virtual ISPRModelData *getModel();
+    virtual ISPRModelData *getModelData();
     virtual void widgetsShow();
+    virtual void onModelChanget(IModelVariable *);
 
 
     // ISPRWidget interface
     void viewChange();
 
+
+    // ISPRWidget interface
+protected:
 };
 
 #endif // SPRPOROGSWIDGET_H

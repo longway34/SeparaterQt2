@@ -18,8 +18,8 @@ private:
 
     // ISPRWidget interface
 public:
-    virtual ISPRModelData *setModel(ISPRModelData *data);
-    virtual ISPRModelData *getModel();
+    virtual ISPRModelData *setModelData(ISPRModelData *data);
+    virtual ISPRModelData *getModelData();
 
     // ISPRWidget interface
 public slots:
@@ -28,10 +28,14 @@ protected slots:
     virtual void viewChange(int);
     virtual void viewChange();
     virtual void viewChange(bool);
+    virtual void onModelChanget(IModelVariable *);
 signals:
     void doShow();
     void changeFileSettinds(QString);
     void changeFileSpectrum(QString);
+
+    // ISPRWidget interface
+protected:
 };
 
 #endif // SPRSETTINGSMAINWIDGET_H

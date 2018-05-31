@@ -34,6 +34,13 @@ public:
     }
     virtual ~TCPCommand();
     
+    virtual void clear(){
+        for(int i=0; i<commandSet.size(); i++){
+            commandSet[i]->clear();
+        }
+        commandSet.clear();
+    }
+
     virtual void setReplayData(QByteArray replayData){
         this->replayData = replayData;
         emit commandComplite(this);

@@ -50,7 +50,7 @@ void ISPRWidget::setDoc(QDomDocument *_doc)
     doc = _doc;
 }
 
-ISPRModelData *ISPRWidget::setModel(ISPRModelData *data)
+ISPRModelData *ISPRWidget::setModelData(ISPRModelData *data)
 {
     return data;
 }
@@ -67,7 +67,7 @@ QLineEdit *ISPRWidget::setNumberCell(QTableWidget *table, int row, int col, int 
    qv_tw.setValue<QTableWidget*>(table);
    leNum->setProperty("tw", qv_tw);
 
-   leNum->setObjectName("leTable");
+   leNum->setObjectName(QString("leTable_%1_%2").arg(QString::number(row)).arg(QString::number(col)));
    leNum->setToolTip(toolType);
    return leNum;
 }

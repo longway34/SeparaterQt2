@@ -5,30 +5,50 @@
 #include <QDomDocument>
 
 #include "models/isprmodeldata.h"
+#include "models/sprelementsmodel.h"
 #include "variables/sprvariable.h"
 #include "models/sprspectrumzonesmodel.h"
+
 
 class SPRSpectrumZonesTableModel : public ISPRModelData
 {
     SPRVariable<uint> *threads;
+
+    SPRSpectrumZonesModel *getItem(int _tIndex){
+        if(_tIndex < 0 || _tIndex >= items.size()-1){
+            _tIndex = 0;
+        }
+        return items[_tIndex];
+    }
 public:
     QVector<SPRSpectrumZonesModel*> items;
+    SPRElementsModel *elementsProperty;
 
     SPRSpectrumZonesTableModel();
-    SPRSpectrumZonesTableModel(QDomDocument *_doc, ISPRModelData *parent = nullptr);
+    SPRSpectrumZonesTableModel(QDomDocument *_doc, SPRElementsModel *elements = nullptr, ISPRModelData *parent = nullptr);
     ~SPRSpectrumZonesTableModel();
 
     SPRVariable<uint> *getThreads() const;
     void setThreads(SPRVariable<uint> *value);
 
-    ElementsProperty *getElements(int _tIndex=0){
-        if(items.size() > 0){
-            if(_tIndex < 0 || _tIndex >= items.size()-1){
-                _tIndex = 0;
+    QMapElementsRanges getElementsRanges(uint _tIndex=-1){
+        return getItem(_tIndex)->getZones();
+    }
+    SPRElementsModel *getElementsProperty(){
+        return elementsProperty;
+    }
+    void setElementsProperty(SPRElementsModel *value);
+
+    void setMinMaxValues(EnumElements el, uint _min, uint _max, int tIndex=-1){
+        if(tIndex < 0){
+            for(int th=0; th<items.size(); th++){
+                items[th]->setMinMax(el, _min, _max);
             }
-            return &items[_tIndex]->elements;
         } else {
-            return nullptr;
+            if(tIndex >= items.size()-1){
+                tIndex = items.size()-1;
+            }
+            items[tIndex]->setMinMax(el, _min, _max);
         }
     }
 };

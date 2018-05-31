@@ -64,7 +64,7 @@ void SPRSpectrumItemModel::recomplite()
     *spectrumData.peak_value = 0;
     *spectrumData.summ = 0;
     // ***********for correlation
-    foreach (EnumElements el, zones->items[*spectrumData.thread]->elements.keys()) {
+    foreach (EnumElements el, zones->items[*spectrumData.thread]->getZones().keys()) {
         /*spectrumData.elementsDiff[el] = 0;*/ spectrumData.elementsAverage[el] = 0;
         spectrumData.elementsSigma[el] = 0;
         spectrumData.elementsCount[el] = 0;
@@ -76,9 +76,9 @@ void SPRSpectrumItemModel::recomplite()
     for(int i=0; i<(DEF_SPECTRUM_DATA_LENGTH); i++){
         uint32_t val = spectrumData.spect[i];
         *spectrumData.summ += val;
-        foreach (EnumElements el, zones->items[*spectrumData.thread]->elements.keys()) {
-            int min = zones->items[*spectrumData.thread]->elements[el].min->getData();
-            int max = zones->items[*spectrumData.thread]->elements[el].max->getData();
+        foreach (EnumElements el, zones->items[*spectrumData.thread]->getZones().keys()) {
+            int min = zones->items[*spectrumData.thread]->getZones()[el]->min->getData();
+            int max = zones->items[*spectrumData.thread]->getZones()[el]->max->getData();
             if(i >= min && i < max){
                 (*(spectrumData.elementsSumm[el])) += val;
                 spectrumData.elementsCount[el]++;
@@ -106,7 +106,7 @@ void SPRSpectrumItemModel::recomplite()
     *spectrumData.Rs = RS;
 
 // for correlation
-    foreach (EnumElements el, zones->items[*spectrumData.thread]->elements.keys()) {
+    foreach (EnumElements el, zones->items[*spectrumData.thread]->getZones().keys()) {
         if(spectrumData.elementsCount[el] > 0){
             spectrumData.elementsAverage[el] = ((double)*spectrumData.elementsSumm[el]) /
                 (spectrumData.elementsCount[el]);
@@ -115,7 +115,7 @@ void SPRSpectrumItemModel::recomplite()
         }
     }
     spectrumData.diff.clear();
-    foreach (EnumElements el, zones->items[*spectrumData.thread]->elements.keys()) {
+    foreach (EnumElements el, zones->items[*spectrumData.thread]->getZones().keys()) {
         spectrumData.elementsDiff[el].clear();
     }
 
@@ -126,9 +126,9 @@ void SPRSpectrumItemModel::recomplite()
         spectrumData.diff.push_back(d);
         spectrumData.dispersion += d*d;
 
-        foreach (EnumElements el, zones->items[*spectrumData.thread]->elements.keys()) {
-            int min = zones->items[*spectrumData.thread]->elements[el].min->getData();
-            int max = zones->items[*spectrumData.thread]->elements[el].max->getData();
+        foreach (EnumElements el, zones->items[*spectrumData.thread]->getZones().keys()) {
+            int min = zones->items[*spectrumData.thread]->getZones()[el]->min->getData();
+            int max = zones->items[*spectrumData.thread]->getZones()[el]->max->getData();
             if(i >= min && i < max){
                 double ed = (val - spectrumData.elementsAverage[el]);
                 spectrumData.elementsDiff[el].push_back(ed);
@@ -180,6 +180,7 @@ double SPRSpectrumItemModel::getCorrel(SPRSpectrumItemModel *ather, bool element
     if(ather){
         double covr=0;
         double sqrSummDisp = 0;
+        spectrumData.correl = 0;
         double correl = 0;
         if(!elementsOnly){
             for(int i=0; i<this->spectrumData.diff.size() && i<ather->spectrumData.diff.size();i++){
@@ -214,16 +215,16 @@ void SPRSpectrumItemModel::setZonesTable(SPRSpectrumZonesTableModel *value)
 QMap<EnumElements, QVector<QwtIntervalSample> > SPRSpectrumItemModel::getZonesGaphics(){
     zonesGraphData.clear();
     SPRSpectrumZonesModel *zone = zones->items[*spectrumData.thread];
-    foreach (EnumElements el, zone->elements.keys()) {
+    foreach (EnumElements el, zone->getZones().keys()) {
 
         double value = 0.5;
-        for(int i=zone->elements[el].min->getData(); i<zone->elements[el].max->getData(); i++){
+        for(int i=zone->getZones()[el]->min->getData(); i<zone->getZones()[el]->max->getData(); i++){
             if(value < spectrumData.spect[i]){
                 value = (double(spectrumData.spect[i]));
             }
         }
-        double xmin = qreal(zone->elements[el].min->getData());
-        double xmax = qreal(zone->elements[el].max->getData());
+        double xmin = qreal(zone->getZones()[el]->min->getData());
+        double xmax = qreal(zone->getZones()[el]->max->getData());
         QVector<QwtIntervalSample> inter;
         inter.push_back(QwtIntervalSample(value, xmin, xmax));
         zonesGraphData[el] = inter;

@@ -12,10 +12,13 @@
 #include "models/sprspectrumzonestablemodel.h"
 #include "models/sprspectrumlistitemsmodel.h"
 #include "models/sprelementsmodel.h"
+#include "models/sprseparatemodel.h"
 
 #include "tcp/ServerConnect.h"
 
-class SPRMainModel : public ISPRModelData
+#include "models/imainmodel.h"
+
+class SPRMainModel : public ISPRModelData, public IMainModel
 {
     QDomDocument *doc;
     
@@ -37,6 +40,8 @@ class SPRMainModel : public ISPRModelData
     SPRSettingsRentgenModel     *settingsRentgenModel;
     SPRSpectrumZonesTableModel  *spectrumZonesTableModel;
     SPRSpectrumListItemsModel   *spectrumListItemsModel;
+    SPRElementsModel            *elementsModel;
+    SPRSeparateModel            *separateModel;
 
 //    SPRSettingsRMTAutosetModel  *settingsAutoModel;
 //    SPRSettingsSpectrumRangesModel *settingsSpectrumRangersModel;
@@ -55,6 +60,7 @@ public:
     SPRSettingsRentgenModel *getSettingsRentgenModel(){ return settingsRentgenModel;}
     SPRSpectrumZonesTableModel *getSpectrumZonesTableModel(){ return spectrumZonesTableModel;}
     SPRSpectrumListItemsModel *getSpectrumListItemsModel(){ return spectrumListItemsModel; }
+    SPRSeparateModel *getSeparateModel(){ return separateModel;}
     //    SPRSettingsRMTAutosetModel *getSettingsAutoModel() const;
 //    SPRSettingsSpectrumRangesModel *getSettingsSpectrumRangesModel() const;
     
@@ -66,6 +72,8 @@ public:
     void setSpectrumFName(SPRQStringVariable *value);
     ServerConnect *getServer() const;
     void setServer(ServerConnect *value);
+    SPRSeparateModel *getSeparateModel() const;
+    void setSeparateModel(SPRSeparateModel *value);
 };
 
 

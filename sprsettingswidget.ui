@@ -130,7 +130,7 @@
       </attribute>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
-        <widget class="SPRSpectrumZonesTableWidget" name="wSpectrumZonesWidget" native="true"/>
+        <widget class="SPRZonesRangesTableWidget" name="wSpectrumZonesWidget" native="true"/>
        </item>
       </layout>
      </widget>
@@ -334,9 +334,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>SPRSpectrumZonesTableWidget</class>
+   <class>SPRZonesRangesTableWidget</class>
    <extends>QWidget</extends>
-   <header>sprspectrumzonestablewidget.h</header>
+   <header>sprzonesrangestablewidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

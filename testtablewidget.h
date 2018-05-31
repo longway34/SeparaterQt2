@@ -14,6 +14,9 @@
 #include "tcp/tcplogswigtets.h"
 #include "tcp/tcpseparatego.h"
 
+#include "tcp/tcpcommandrentgenonfull.h"
+#include "tcp/tcpcommandgetspectrums.h"
+
 class testTableWidget : public QWidget
 {
     Q_OBJECT
@@ -31,11 +34,17 @@ public:
     TCPCommand *getSeparate;
     TCPCommand *setSeparate;
 
+    TCPCommandSeparatorOnFull *rentgenOnFull;
+    TCPCommandGetSpectrums *getSpectrumsSetCommand;
+
+
     TCPTestStartSeparate *startSeparate;
 
     TCPTestStopSeparate *stopSeparate;
 
     TCPSeparateGo *separateGo;
+
+    TCPCommand *getRen;
 
     TCPGetSpectrumsGistogramms *getBaseSpectrumCommand;
     TCPGetSpectrumsGistogramms *kspecCommand;
@@ -52,7 +61,7 @@ public:
 //        }
 //        return model;
 //    }
-    ISPRModelData *setModel(SPRMainModel* _model);
+    ISPRModelData *setModelData(SPRMainModel* _model);
 
     void widgetsShow();
 
