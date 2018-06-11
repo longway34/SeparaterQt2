@@ -80,13 +80,24 @@ SPRMainModel *SPRSettingsWidget::setModelData(SPRMainModel *_model)
         imodel = ui.wSpectrumZonesWidget->setModelData(model->getSpectrumZonesTableModel());
         connect(this, SIGNAL(doShow()), ui.wSpectrumZonesWidget, SLOT(widgetsShow()));
 
+        connect(ui.bComplite, SIGNAL(clicked(bool)), this, SLOT(onCompliteButtomClick(bool)));
+        connect(ui.bCancel, SIGNAL(clicked(bool)), this, SLOT(onCancelButtomClick(bool)));
 //    emit doShow();
     }
     return model;
 }
 
+void SPRSettingsWidget::onCompliteButtomClick(bool){
+    model->store();
+    model->saveAs();
+}
 
-
+void SPRSettingsWidget::onCancelButtomClick(bool){
+    blockSignals(true);
+    model->restore();
+    widgetsShow();
+    blockSignals(false);
+}
 void SPRSettingsWidget::onModelChanget(IModelVariable*)
 {
     widgetsShow();

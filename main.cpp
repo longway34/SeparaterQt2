@@ -18,32 +18,32 @@ int main(int argc, char *argv[])
     bool y = QDir::setCurrent("/home/longway/");
 #endif
 
-    SPRElementsModel *model;
+//    SPRElementsModel *model;
 
-    QDomDocument doc;
-    QFile in("Separator.xml");
-    if(in.open(QIODevice::ReadOnly)){
-        if(doc.setContent(&in)){
-
-
-            model = new SPRElementsModel(&doc);
-
-            model->IModelVariable::store();
-            in.close();
-
-            QFile out("Separator1.xml");
-            if(out.open(QIODevice::WriteOnly)){
-            QTextStream stream( &out );
-              stream << doc.toString();
-
-              out.close();
-            }
+//    QDomDocument doc;
+//    QFile in("Separator.xml");
+//    if(in.open(QIODevice::ReadOnly)){
+//        if(doc.setContent(&in)){
 
 
+//            model = new SPRElementsModel(&doc);
 
-        }
+//            model->IModelVariable::store();
+//            in.close();
 
-    }
+//            QFile out("Separator1.xml");
+//            if(out.open(QIODevice::WriteOnly)){
+//            QTextStream stream( &out );
+//              stream << doc.toString();
+
+//              out.close();
+//            }
+
+
+
+//        }
+
+//    }
 
 
 
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 //    MainWindow w(&doc);
 //    w.show();
 
-    MainTabWidget tw("Separator.xml", nullptr);
+    MainTabWidget tw("Separator1.xml", nullptr);
     tw.show();
 
     return a.exec();

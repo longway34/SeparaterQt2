@@ -5,7 +5,7 @@ void SPRMainModel::setDoc(QDomDocument *value)
 {
     doc = value;
 
-    elements = new SPRElementsModel(doc, this);
+    elementsModel = new SPRElementsModel(doc, this);
 
     if(settingsMainModel) {delete settingsMainModel; settingsMainModel = nullptr;}
     settingsMainModel = new SPRSettingsMainModel(doc, this);
@@ -30,11 +30,11 @@ void SPRMainModel::setDoc(QDomDocument *value)
     settingsControlModel = new SPRSettingsControlModel(doc, this);
 
     if(settingsFormulaModel) {delete settingsFormulaModel; settingsFormulaModel = nullptr;}
-    settingsFormulaModel = new SPRSettingsFormulaModel(doc, this);
-    settingsFormulaModel->setCondition(settingsPorogsModel->getConditions());
+    settingsFormulaModel = new SPRSettingsFormulaModel(doc, elementsModel, settingsPorogsModel->getConditions(), this);
+//    settingsFormulaModel->setCondition(settingsPorogsModel->getConditions());
 
     if(spectrumZonesTableModel) {delete spectrumZonesTableModel; spectrumZonesTableModel = nullptr;}
-    spectrumZonesTableModel = new SPRSpectrumZonesTableModel(doc, elements, this);
+    spectrumZonesTableModel = new SPRSpectrumZonesTableModel(doc, elementsModel, this);
     spectrumZonesTableModel->setThreads(settingsMainModel->getThreads());
 
     if(spectrumListItemsModel) {delete spectrumListItemsModel; spectrumListItemsModel = nullptr;}
@@ -78,6 +78,17 @@ void SPRMainModel::setSeparateModel(SPRSeparateModel *value)
     separateModel = value;
 }
 
+void SPRMainModel::setFName(const QString &value)
+{
+
+    fileName = value;
+}
+
+SPRElementsModel *SPRMainModel::getElementsModel() const
+{
+    return elementsModel;
+}
+
 SPRMainModel::SPRMainModel(QDomDocument *_doc, ISPRModelData *parent): ISPRModelData(_doc, parent),
     settingsControlModel(nullptr),
     settingsFormulaModel(nullptr),
@@ -87,7 +98,7 @@ SPRMainModel::SPRMainModel(QDomDocument *_doc, ISPRModelData *parent): ISPRModel
     settingsRentgenModel(nullptr),
     spectrumZonesTableModel(nullptr),
     spectrumListItemsModel(nullptr),
-    elements(nullptr),
+    elementsModel(nullptr),
     server(nullptr),
     separateModel(nullptr)
 {
@@ -103,19 +114,19 @@ SPRMainModel::SPRMainModel(QString docFName, ISPRModelData *parent): ISPRModelDa
     settingsRentgenModel(nullptr),
     spectrumZonesTableModel(nullptr),
     spectrumListItemsModel(nullptr),
-    elements(nullptr),
+    elementsModel(nullptr),
     server(nullptr),
     separateModel(nullptr)
 {
-    fPath = "";
+    filePath = "";
     if(docFName.contains(QDir::separator())){
         QStringList fPathl = docFName.split(QDir::separator());
         while(fPathl.size()>0){
-            fPath += fPathl.front(); fPathl.pop_front();
+            filePath += fPathl.front(); fPathl.pop_front();
         }
     }
     bool y = QDir::setCurrent("F:\\Projects\\Separator\\");
-    QDomDocument *doc;
+//    QDomDocument *doc;
 
     QFile in(docFName);
     if(in.open(QIODevice::ReadOnly)){
@@ -124,7 +135,10 @@ SPRMainModel::SPRMainModel(QString docFName, ISPRModelData *parent): ISPRModelDa
             in.close();
         }
     }
-    setDoc(doc);
+    if(doc){
+        setDoc(doc);
+        setFName(docFName);
+    }
 }
 
 SPRMainModel::~SPRMainModel()
@@ -136,7 +150,7 @@ SPRMainModel::~SPRMainModel()
     if(spectrumZonesTableModel) delete spectrumZonesTableModel; spectrumZonesTableModel = nullptr;
     if(settingsPorogsModel) delete settingsPorogsModel; settingsPorogsModel = nullptr;
     if(settingsMainModel) delete settingsMainModel; settingsMainModel = nullptr;
-    if(elements) delete elements; elements = nullptr;
+    if(elementsModel) delete elementsModel; elementsModel = nullptr;
     if(separateModel) delete separateModel; separateModel = nullptr;
 }
 

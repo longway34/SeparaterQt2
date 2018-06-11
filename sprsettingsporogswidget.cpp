@@ -88,6 +88,7 @@ SPRSettingsPorogsWidget::SPRSettingsPorogsWidget(QWidget *parent) :
 
 void SPRSettingsPorogsWidget::widgetsShow()
 {
+    blockSignals(true);
     ui.leMinStone->setValue(model->forMinStone->getData());
     ui.leMaxStone->setValue(model->forMaxStone->getData());
     ui.leXRayCorrection->setValue(model->xRayCorrection->getData());
@@ -116,6 +117,7 @@ void SPRSettingsPorogsWidget::widgetsShow()
 
     repaintGraphic(0);
     ui.wPorogs->widgetsShow();
+    blockSignals(false);
 }
 
 ISPRModelData *SPRSettingsPorogsWidget::getModelData()

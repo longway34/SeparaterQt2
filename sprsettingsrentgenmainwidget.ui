@@ -33,7 +33,7 @@
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
-       <widget class="QTableWidget" name="tTubeVA">
+       <widget class="SPRRentgenVATable" name="tTubeVA">
         <property name="sizePolicy">
          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
           <horstretch>0</horstretch>
@@ -355,6 +355,11 @@
    <class>SPRDEUCodesTable</class>
    <extends>QTableWidget</extends>
    <header>sprdeucodestable.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SPRRentgenVATable</class>
+   <extends>QTableWidget</extends>
+   <header>sprrentgenvatable.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

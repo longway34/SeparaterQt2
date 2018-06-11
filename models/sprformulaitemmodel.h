@@ -6,10 +6,12 @@
 #include "models/isprmodeldata.h"
 #include "variables/sprvariable.h"
 #include "variables/sprenumvariable.h"
+#include "models/sprelementsmodel.h"
 
 class SPRFormulaItemModel :public ISPRModelData
 
 {
+    SPRElementsModel *elements;
 public:
 // H(index) = (ElementUp1 + ElementUp2 * MulUp)/(ElementDown1 + MupDown * ElementDown2 * ElementDown3 / ElementDown4)
     SPREnumVariable<EnumElements> *ElementUp1;
@@ -25,10 +27,12 @@ public:
     int index;
 
     SPRFormulaItemModel(QObject *parent=nullptr);
-    SPRFormulaItemModel(QDomDocument *_doc, int _index = 0, ISPRModelData *parent = nullptr);
+    SPRFormulaItemModel(QDomDocument *_doc, SPRElementsModel *_elements, int _index = 0, ISPRModelData *parent = nullptr);
     virtual ~SPRFormulaItemModel();
     void setMin(SPRVariable<double> *value);
     void setMax(SPRVariable<double> *value);
+    SPRElementsModel *getElements() const;
+    void setElements(SPRElementsModel *value);
 };
 
 #endif // SPRFORMULAITEMMODEL_H

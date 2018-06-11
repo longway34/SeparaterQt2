@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QWidget>
 #include <QList>
-#include <QDomDocument>
+//#include <QDomDocument>
 #include <QFile>
 #include <iostream>
 #include "models/imodelvariable.h"
@@ -18,6 +18,7 @@ class ISPRModelData : public IModelVariable
 protected:
     QDomDocument document;
     QString fileName;
+    QString filePath;
 //    QDomDocument *doc;
 //    QDomElement root;
 
@@ -29,6 +30,8 @@ public:
     QDomDocument *getDoc() const;
     void setDoc(QDomDocument *_doc, IModelVariable *parent = nullptr);
     void setDoc(QString fname, IModelVariable *parent = nullptr);
+
+    QString getFileName() const;
 
 public slots:
     void saveAs(QString fname = "");

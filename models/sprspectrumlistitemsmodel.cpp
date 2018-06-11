@@ -231,7 +231,7 @@ SPRSpectrumListItemsModel::SPRSpectrumListItemsModel(QDomDocument *_doc, SPRElem
     setZonesModel(new SPRSpectrumZonesTableModel(doc, elementsProperty, parent));
     setProperty("delete_zones", QVariant(true));
 
-    setFormulasModel(new SPRSettingsFormulaModel(doc, parent));
+    setFormulasModel(new SPRSettingsFormulaModel(doc, elementsProperty, nullptr, parent));
     setProperty("delete_formulas", QVariant(true));
 
     setSpectrums();

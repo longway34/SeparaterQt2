@@ -54,8 +54,11 @@ SPRSettingsMainWidget::SPRSettingsMainWidget(QWidget *parent) :
 void SPRSettingsMainWidget::widgetsShow()
 {
     if(model){
-
-        ui.leName->setText(model->name->getData());
+        QTextCodec *codec = QTextCodec::codecForName("UTF-8");
+        QString v = model->name->getData();
+        QString v1 = codec->toUnicode(model->name->getData().toStdString().c_str());
+        QString v2 = tr(model->name->getData().toStdString().c_str());
+        ui.leName->setText(QString::fromUtf8(model->name->getData().toStdString().c_str()));
         ui.leAddress->setText(model->ipAddress->getData());
         ui.lePort->setText(model->ipPort->toString());
         ui.leSpectrumsFName->setText(model->spectrumFileName->getData());

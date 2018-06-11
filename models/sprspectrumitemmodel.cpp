@@ -288,7 +288,7 @@ SPRSpectrumItemModel::SPRSpectrumItemModel()
 SPRSpectrumItemModel::SPRSpectrumItemModel(QDomDocument *_doc, int _index, ISPRModelData *parent) : ISPRModelData(_doc, parent)
 {
     setZonesTable(new SPRSpectrumZonesTableModel(doc));
-    setFormulas(new SPRSettingsFormulaModel(doc));
+    setFormulas(new SPRSettingsFormulaModel(doc, new SPRElementsModel(doc, this), nullptr));
     *spectrumData.thread = _index;
     setProperty("delete_ranges", QVariant(true));
     setProperty("delete_formulas", QVariant(true));

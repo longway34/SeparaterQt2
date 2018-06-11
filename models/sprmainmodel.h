@@ -22,15 +22,15 @@ class SPRMainModel : public ISPRModelData, public IMainModel
 {
     QDomDocument *doc;
     
-    QString fName;
-    QString fPath;
+//    QString fName;
+//    QString fPath;
 
     ServerConnect *server;
 
     SPRQStringVariable *spectrumFName;
 
 
-    SPRElementsModel *elements;
+//    SPRElementsModel *elements;
 
     SPRSettingsMainModel        *settingsMainModel;
     SPRSettingsControlModel     *settingsControlModel;
@@ -74,6 +74,8 @@ public:
     void setServer(ServerConnect *value);
     SPRSeparateModel *getSeparateModel() const;
     void setSeparateModel(SPRSeparateModel *value);
+    void setFName(const QString &value);
+    SPRElementsModel *getElementsModel() const;
 };
 
 

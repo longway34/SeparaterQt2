@@ -6,6 +6,7 @@
 #include <QLineEdit>
 #include <QValidator>
 #include "models/isprmodeldata.h"
+#include "_types.h"
 
 class ISPRWidget
 {

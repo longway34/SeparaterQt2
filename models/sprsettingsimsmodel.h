@@ -47,7 +47,7 @@ public:
 
 
     SPRSettingsIMSModel();
-    SPRSettingsIMSModel(QDomDocument *_doc, QObject *parent = nullptr);
+    SPRSettingsIMSModel(QDomDocument *_doc, ISPRModelData *parent = nullptr);
     virtual ~SPRSettingsIMSModel();
 
     SPRVariable<uint> *getIms() const;

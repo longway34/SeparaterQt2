@@ -12,16 +12,36 @@ void SPRFormulaItemModel::setMax(SPRVariable<double> *value)
     setProperty("delete_max", QVariant(false));
 }
 
+SPRElementsModel *SPRFormulaItemModel::getElements() const
+{
+    return elements;
+}
+
+void SPRFormulaItemModel::setElements(SPRElementsModel *value)
+{
+    if(value != elements){
+        elements = value;
+        setProperty("delete_elements", QVariant(false));
+    }
+}
+
 SPRFormulaItemModel::SPRFormulaItemModel(QObject *parent):
     ISPRModelData()
 {
 }
 
-SPRFormulaItemModel::SPRFormulaItemModel(QDomDocument *_doc, int _index, ISPRModelData *parent):
-    ISPRModelData(_doc, parent), ElementUp1(nullptr), ElementUp2(nullptr),
+SPRFormulaItemModel::SPRFormulaItemModel(QDomDocument *_doc, SPRElementsModel *_elements, int _index, ISPRModelData *parent):
+    ISPRModelData(_doc, parent), elements(nullptr), ElementUp1(nullptr), ElementUp2(nullptr),
         ElementDown1(nullptr), ElementDown2(nullptr), ElementDown3(nullptr), ElementDown4(nullptr),
         MulUp(nullptr), MulDown(nullptr), min(nullptr), max(nullptr)
 {
+    if(_elements){
+        setElements(_elements);
+    } else {
+        elements = new SPRElementsModel(doc, this);
+        setProperty("delete_elements", QVariant(true));
+    }
+
     index = _index;
     QString xpath = "SEPARATOR/SEPARATE_SETUP/SH"+QString::number(index+1)+"[s0]";
     ElementUp1 = new SPREnumVariable<EnumElements>(doc, xpath, DEF_SPR_FORMULA_ELEMENT, this);
@@ -50,6 +70,9 @@ SPRFormulaItemModel::SPRFormulaItemModel(QDomDocument *_doc, int _index, ISPRMod
 
 SPRFormulaItemModel::~SPRFormulaItemModel()
 {
+    if(elements && property("delete_elements").value<bool>()){
+        delete elements; elements = nullptr;
+    }
     if(ElementUp1) delete ElementUp1; ElementUp1 = nullptr;
     if(ElementUp2) delete ElementUp2; ElementUp2 = nullptr;
     if(ElementDown1) delete ElementDown1; ElementDown1 = nullptr;

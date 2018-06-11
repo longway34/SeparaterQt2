@@ -41,7 +41,7 @@ typedef QMap<EnumElements, SpectorRange*> QMapElementsRanges;
 #define SPR_SETTINGS_SPECTRUM_RANGES_XPATH_MAX_ARGUMENT "[Rs]"
 
 typedef enum typeZones{
-    used, unised, all
+    typeUsedZones, typeUnisedZones, typeAllZones
 } TypeUsedZones;
 
 class SPRSpectrumZonesModel : public ISPRModelData
@@ -52,17 +52,17 @@ public:
     int tIndex;
 
 
-    QMapElementsRanges getZones(TypeUsedZones typeZones=used){
+    QMapElementsRanges getZones(TypeUsedZones typeZones=typeUsedZones){
         QMapElementsRanges res;
         QMapElementsProperty input;
         switch (typeZones) {
-        case used:
+        case typeUsedZones:
             input = elementsProperty->getElements();
             break;
-        case unised:
+        case typeUnisedZones:
             input = elementsProperty->getUnisedElements();
             break;
-        case all:
+        case typeAllZones:
             input = elementsProperty->getAllElements();
         default:
             break;
@@ -86,7 +86,7 @@ public:
             setProperty("delete_elProperty", QVariant(false));
         }
 
-        foreach (EnumElements element, getZones(all).keys()) {
+        foreach (EnumElements element, getZones(typeAllZones).keys()) {
             SpectorRange *range = new SpectorRange(elementsProperty->getElementProperty(element));
             QString xpath = SPR_SETTINGS_SPECTRUM_RANGES_XPATH_PREFIX +
                     QString("[@INDEX=")+QString::number(tIndex)+"]"+

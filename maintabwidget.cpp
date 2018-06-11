@@ -49,14 +49,18 @@ MainTabWidget::MainTabWidget(QString _fName, QWidget *parent): QTabWidget(parent
 
     if(createNewDoc){
 //        QString fName = model->getSettingsMainModel()->name->toString();
-        QString fName = DEF_SPR_MAIN_SETTINGS_FNAME+DEF_SPR_MAIN_SETTINGS_FNAME_SUFFIX;
-        QFile out(fName);
+//        QString fName = DEF_SPR_MAIN_SETTINGS_FNAME+DEF_SPR_MAIN_SETTINGS_FNAME_SUFFIX;
+        model->setFName(docFileName);
+        QFile out(docFileName);
         if(out.open(QIODevice::WriteOnly)){
         QTextStream stream( &out );
           stream << doc->toString();
 
           out.close();
         }
+    } else {
+        if(model)
+            model->setFName(docFileName);
     }
 
     connect(ui.tabSettings, SIGNAL(changeFileSettinds(QString)), this, SLOT(onChangeFileSettings(QString)));

@@ -19,8 +19,8 @@ private:
     Ui::SPRSettingsRentgenMainWidget ui;
 
     // ISPRWidget interface
-    void setRentrenCodesTable();
-    void setRentrenVATable();
+//    void setRentrenCodesTable();
+//    void setRentrenVATable();
 public:
     ISPRModelData *setModelData(ISPRModelData *data);
     virtual ISPRModelData *getModelData();
@@ -35,8 +35,8 @@ signals:
 
     // ISPRWidget interface
 protected slots:
-    virtual void viewChange();
-    virtual void viewChange(QTableWidget *table, int row, int col);
+//    virtual void viewChange();
+//    virtual void viewChange(QTableWidget *table, int row, int col);
     virtual void onModelChanget(IModelVariable *);
 
     // ISPRWidget interface

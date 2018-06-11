@@ -7,7 +7,12 @@
 #include "variables/sprqcolorvariable.h"
 #include "variables/sprvariable.h"
 #include "variables/sprenumvariable.h"
+
 #include "_types.h"
+
+typedef enum _typeElements{
+    typeAllElements, typeUsedElements, typeUnisedElements
+} TypeSetElements;
 
 class SPRElementsProperty :public QObject{
 public:
@@ -37,9 +42,22 @@ class SPRElementsModel: public ISPRModelData
 public:
 
 
-    SPRElementsProperty *getElementProperty(EnumElements el){
-        if(allElements.contains(el)){
-            return allElements[el];
+    SPRElementsProperty *getElementProperty(EnumElements el, TypeSetElements typeSet= typeUsedElements){
+        QMapElementsProperty *source;
+        switch(typeSet){
+        case typeAllElements:
+            source = &allElements;
+            break;
+        case typeUsedElements:
+            source = &elements;
+            break;
+        case typeUnisedElements:
+            source = &unisedElements;
+            break;
+        }
+
+        if(source->contains(el)){
+            return (*source)[el];
         } else {
             return nullptr;
         }
@@ -83,16 +101,20 @@ public:
     }
 
     void deleteElement(EnumElements element){
-        SPRElementsProperty *el = changeElementPropery(element, QString::number(static_cast<int>(element)), "", QColor(Qt::black));
+        SPRElementsProperty *el = changeElementPropery(element, QString::number(static_cast<int>(element)));
         if(el){
             if(elements.contains(element)){
                 elements.remove(element);
+                emit modelChanget(elements[element]->key);
+            }
+            if(unisedElements.contains(element)){
+                unisedElements.remove(element);
             }
             unisedElements[element] = el;
         }
     }
 
-    SPRElementsProperty *changeElementPropery(EnumElements el, QString _sName, QString _fName, QColor _color = QColor()){
+    SPRElementsProperty *changeElementPropery(EnumElements el, QString _sName, QString _fName="", QColor _color = QColor()){
         SPRElementsProperty *nel = nullptr;
         if(allElements.contains(el)){
             nel = allElements[el];
@@ -106,7 +128,9 @@ public:
     void addElement(EnumElements elKey, QString _sName, QString _fName, QColor _color = QColor()){
         SPRElementsProperty *el = changeElementPropery(elKey, _sName, _fName, _color);
         if(el){
-            elements[elKey] = el;
+            if(!elements.contains(elKey)){
+                elements[elKey] = el;
+            }
             if(unisedElements.contains(elKey)){
                 unisedElements.remove(elKey);
             }

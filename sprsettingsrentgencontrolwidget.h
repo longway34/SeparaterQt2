@@ -38,13 +38,13 @@ protected slots:
     virtual void viewChange(int value);
     virtual void viewChange(bool value);
     virtual void viewChange();
-    virtual void widgetsShow();
     virtual void onModelChanget(IModelVariable *);
 
 
 
     // ISPRWidget interface
-public:
+public slots:
+    virtual void widgetsShow();
 
     // ISPRWidget interface
 protected:

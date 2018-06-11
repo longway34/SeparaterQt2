@@ -120,7 +120,8 @@ SOURCES += \
     sprdeucodestable.cpp \
     tcp/tcpcommandrentgenonfull.cpp \
     tcp/tcpcommandseparatoronoff.cpp \
-    models/imainmodel.cpp
+    models/imainmodel.cpp \
+    sprrentgenvatable.cpp
 
 HEADERS += \
     _types.h \
@@ -211,7 +212,8 @@ HEADERS += \
     sprdeucodestable.h \
     tcp/tcpcommandrentgenonfull.h \
     tcp/tcpcommandseparatoronoff.h \
-    models/imainmodel.h
+    models/imainmodel.h \
+    sprrentgenvatable.h
 
 FORMS += \
     sprsettingsrentgenmainwidget.ui \

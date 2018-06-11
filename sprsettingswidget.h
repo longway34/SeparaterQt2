@@ -53,6 +53,8 @@ public slots:
     void onChangeFileSettinds(QString fName);
 
     // ISPRWidget interface
+    void onCompliteButtomClick(bool);
+    void onCancelButtomClick(bool);
 protected:
 };
 

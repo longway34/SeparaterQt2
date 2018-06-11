@@ -42,27 +42,27 @@ ISPRModelData *SPRSettingsFormulaWidget::setItemModel(ISPRModelData *model)
 {
     QVector<SPRFormulaItemWidget*> widgets = {ui.wFormula1, ui.wFormula2, ui.wFormula3};
     SPRFormulaItemModel *fim = (SPRFormulaItemModel*)model;
-    this->model->setModel(model);
+    this->model->setModelData(model);
     widgets[fim->index]->setModelData(model);
 }
 
-void SPRSettingsFormulaWidget::setElements(const DefaultMapElements *elements)
-{
-    QList<SPRFormulaItemWidget*> list = QList<SPRFormulaItemWidget*>({
-                                   ui.wFormula1, ui.wFormula2, ui.wFormula3
-                                                            });
-    QListIterator<SPRFormulaItemWidget*> it(list);
-    while(it.hasNext()){
-        it.next()->setElements(elements);
-    }
-}
+//void SPRSettingsFormulaWidget::setElements(const DefaultMapElements *elements)
+//{
+//    QList<SPRFormulaItemWidget*> list = QList<SPRFormulaItemWidget*>({
+//                                   ui.wFormula1, ui.wFormula2, ui.wFormula3
+//                                                            });
+//    QListIterator<SPRFormulaItemWidget*> it(list);
+//    while(it.hasNext()){
+//        it.next()->setElements(elements);
+//    }
+//}
 
 
 void SPRSettingsFormulaWidget::widgetsShow()
 {
     if(model){
         TypeConditions cond = model->getConditions()->getData();
-        bgCondition->blockSignals(true);
+//        bgCondition->blockSignals(true);
         switch (cond) {
         case H1:
             ui.rbH1Resume->setChecked(true);
@@ -75,7 +75,7 @@ void SPRSettingsFormulaWidget::widgetsShow()
         default:
             break;
         }
-        bgCondition->blockSignals(false);
+//        bgCondition->blockSignals(false);
     }
 }
 

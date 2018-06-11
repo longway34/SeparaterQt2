@@ -14,6 +14,75 @@ ISPRModelData *SPRSettingsIMSWidget::setModelData(SPRSettingsIMSModel *value)
         model = value;
         connect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
 
+//        ui.tMinMaxParams->clear();
+//        ui.tMinMaxParams->setRowCount(3);
+//        QStringList vHeaderTitle = {
+//            tr("Время измерения куска (мс)"),
+//            tr("Время задержки на срабатывания ИМ (мс)"),
+//            tr("Длительность импульса ИМ (мс)")
+//        };
+//        QStringList hHeaderTitle = {
+//            tr("Мин. кусок"), tr("Макс. кусок"), tr("Макс. камень")
+//        };
+//        ui.tMinMaxParams->setVerticalHeaderLabels(vHeaderTitle);
+//        ui.tMinMaxParams->verticalHeader()->sectionResizeMode(QHeaderView::ResizeMode::Stretch);
+//        ui.tMinMaxParams->setColumnCount(3);
+
+
+//        QLineEdit *le = setNumberCell(ui.tMinMaxParams, 0, 0, model->tMeteringMinStone->getData(), 0, 1000, tr("Время змерения для минимального куска в милисекундах"));
+//        connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
+//        le = setNumberCell(ui.tMinMaxParams, 0, 1, model->tMeteringMaxStone->getData(), 0, 1000, tr("Время змерения для максимального куска в милисекундах"));
+//        connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
+//        le = setNumberCell(ui.tMinMaxParams, 0, 2, model->tMeteringMaxMaxStone->getData(), 0, 1000, tr("Время змерения для максимального камня (бута) в милисекундах"));
+//        connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
+
+//        le = setNumberCell(ui.tMinMaxParams, 1, 0, model->tDelayMinStone->getData(), 0, 1000, tr("Время задержки на срабатывания ИМ для минимального куска в милисекундах"));
+//        connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
+//        le = setNumberCell(ui.tMinMaxParams, 1, 1, model->tDelayMaxStone->getData(), 0, 1000, tr("Время задержки на срабатывания ИМ для максимального куска в милисекундах"));
+//        connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
+//        le = setNumberCell(ui.tMinMaxParams, 1, 2, model->tDelayMaxMaxStone->getData(), 0, 1000, tr("Время задержки на срабатывания ИМ для максимального камня (бута) в милисекундах"));
+//        connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
+
+//        le = setNumberCell(ui.tMinMaxParams, 2, 0, model->tDurationMinStone->getData(), 0, 1000, tr("Длительность импульса ИМ для минимального куска в милисекундах"));
+//        connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
+//        le = setNumberCell(ui.tMinMaxParams, 2, 1, model->tDurationMaxStone->getData(), 0, 1000, tr("Длительность импульса ИМ для максимального куска в милисекундах"));
+//        connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
+//        le = setNumberCell(ui.tMinMaxParams, 2, 2, model->tDurationMaxMaxStone->getData(), 0, 1000, tr("Длительность импульса ИМ для максимального камня (бута) в милисекундах"));
+//        connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
+//        if(model->withMaxMaxStone->getData()){
+//            ui.tMinMaxParams->showColumn(2);
+//        } else {
+//            ui.tMinMaxParams->hideColumn(2);
+//        }
+//    //    ui.tMinMaxParams->resizeColumnsToContents();
+//    //    ui.tMinMaxParams->resizeRowsToContents();
+//        ui.tMinMaxParams->setHorizontalHeaderLabels(hHeaderTitle);
+//        ui.tMinMaxParams->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Stretch);
+
+    //    ui.cbWithMaxMaxStone->setChecked(model->withMaxMaxStone->getData());
+        connect(ui.cbWithMaxMaxStone, SIGNAL(clicked(bool)), this, SLOT(viewChange(bool)));
+
+    //    ui.leBlockParam->setValue(model->blockImsParam->getData());
+        connect(ui.leBlockParam, SIGNAL(editingFinished()), this, SLOT(viewChange()));
+    //    ui.leKoefA->setValue(model->kSpeedOreA->getData());
+        connect(ui.leKoefA, SIGNAL(editingFinished()), this, SLOT(viewChange()));
+    //    ui.leKoefB->setValue(model->kSpeedOreB->getData());
+        connect(ui.leKoefB, SIGNAL(editingFinished()), this, SLOT(viewChange()));
+    //    ui.leLimitAbrasion->setValue(model->limitAbrasion->getData());
+        connect(ui.leLimitAbrasion, SIGNAL(editingFinished()), this, SLOT(viewChange()));
+        widgetsShow();
+    }
+    return model;
+
+}
+
+void SPRSettingsIMSWidget::widgetsShow()
+{
+    if(model){
+        blockSignals(true);
+
+        repaintGraphicSetts(0);
+
         ui.tMinMaxParams->clear();
         ui.tMinMaxParams->setRowCount(3);
         QStringList vHeaderTitle = {
@@ -59,41 +128,17 @@ ISPRModelData *SPRSettingsIMSWidget::setModelData(SPRSettingsIMSModel *value)
         ui.tMinMaxParams->setHorizontalHeaderLabels(hHeaderTitle);
         ui.tMinMaxParams->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Stretch);
 
-    //    ui.cbWithMaxMaxStone->setChecked(model->withMaxMaxStone->getData());
-        connect(ui.cbWithMaxMaxStone, SIGNAL(clicked(bool)), this, SLOT(viewChange(bool)));
+//        QVector<QVector<uint>> values = {
+//            {model->tMeteringMinStone->getData(), model->tMeteringMaxStone->getData(), model->tMeteringMaxMaxStone->getData()},
+//            {model->tDelayMinStone->getData(), model->tDelayMaxStone->getData(), model->tDelayMaxMaxStone->getData()},
+//            {model->tDurationMinStone->getData(), model->tDurationMaxStone->getData(), model->tDurationMaxMaxStone->getData()}
+//        };
 
-    //    ui.leBlockParam->setValue(model->blockImsParam->getData());
-        connect(ui.leBlockParam, SIGNAL(editingFinished()), this, SLOT(viewChange()));
-    //    ui.leKoefA->setValue(model->kSpeedOreA->getData());
-        connect(ui.leKoefA, SIGNAL(editingFinished()), this, SLOT(viewChange()));
-    //    ui.leKoefB->setValue(model->kSpeedOreB->getData());
-        connect(ui.leKoefB, SIGNAL(editingFinished()), this, SLOT(viewChange()));
-    //    ui.leLimitAbrasion->setValue(model->limitAbrasion->getData());
-        connect(ui.leLimitAbrasion, SIGNAL(editingFinished()), this, SLOT(viewChange()));
-        widgetsShow();
-    }
-    return model;
-
-}
-
-void SPRSettingsIMSWidget::widgetsShow()
-{
-    if(model){
-        blockSignals(true);
-
-        repaintGraphicSetts(0);
-
-        QVector<QVector<uint>> values = {
-            {model->tMeteringMinStone->getData(), model->tMeteringMaxStone->getData(), model->tMeteringMaxMaxStone->getData()},
-            {model->tDelayMinStone->getData(), model->tDelayMaxStone->getData(), model->tDelayMaxMaxStone->getData()},
-            {model->tDurationMinStone->getData(), model->tDurationMaxStone->getData(), model->tDurationMaxMaxStone->getData()}
-        };
-
-        for(int row=0; row<ui.tMinMaxParams->rowCount();row++){
-            for(int col=0; col<ui.tMinMaxParams->columnCount(); col++){
-                ((QLineEdit*)ui.tMinMaxParams->cellWidget(row, col))->setText(QString::number(values[row][col]));
-            }
-        }
+//        for(int row=0; row<ui.tMinMaxParams->rowCount();row++){
+//            for(int col=0; col<ui.tMinMaxParams->columnCount(); col++){
+//                ((QLineEdit*)ui.tMinMaxParams->cellWidget(row, col))->setText(QString::number(values[row][col]));
+//            }
+//        }
         ui.tMinMaxParams->resizeColumnsToContents();
         ui.tMinMaxParams->resizeRowsToContents();
 

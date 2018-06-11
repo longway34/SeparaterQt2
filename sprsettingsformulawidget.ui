@@ -10,6 +10,12 @@
     <height>353</height>
    </rect>
   </property>
+  <property name="maximumSize">
+   <size>
+    <width>445</width>
+    <height>16777215</height>
+   </size>
+  </property>
   <property name="palette">
    <palette>
     <active>
@@ -466,7 +472,7 @@
             <string>H1</string>
            </property>
            <property name="checked">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
           </widget>
          </item>
@@ -481,6 +487,9 @@
           <widget class="QRadioButton" name="rbH3Resume">
            <property name="text">
             <string>H3</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
            </property>
           </widget>
          </item>

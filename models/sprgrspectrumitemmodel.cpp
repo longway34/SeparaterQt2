@@ -31,10 +31,10 @@ SPRGrSpectrumItemModel *SPRGrSpectrumItemModel::complite()
 {
     if(rangesModel){
         zonesGraphData.clear();
-        foreach (EnumElements el, rangesModel->getZones(used).keys()) {
+        foreach (EnumElements el, rangesModel->getZones(typeUsedZones).keys()) {
             double value = 0.5;
-            double xmin = qreal(rangesModel->getZones(used)[el]->min->getData());
-            double xmax = qreal(rangesModel->getZones(used)[el]->max->getData());
+            double xmin = qreal(rangesModel->getZones(typeUsedZones)[el]->min->getData());
+            double xmax = qreal(rangesModel->getZones(typeUsedZones)[el]->max->getData());
             QVector<QwtIntervalSample> inter;
             inter.push_back(QwtIntervalSample(value, xmin, xmax));
             zonesGraphData[el] = inter;
@@ -47,8 +47,8 @@ SPRGrSpectrumItemModel *SPRGrSpectrumItemModel::complite()
                 uint16_t *rawSpect = spectModel->getSpectrumData()->spect;
                 if(rawSpect){
                     uint16_t value = rawSpect[i];
-                    foreach(EnumElements z, rangesModel->getZones(used).keys()){
-                        SpectorRange *elData = rangesModel->getZones(used)[z];
+                    foreach(EnumElements z, rangesModel->getZones(typeUsedZones).keys()){
+                        SpectorRange *elData = rangesModel->getZones(typeUsedZones)[z];
                         int min = elData->min->getData(); int max = elData->max->getData();
                         if(i >= min && i < max){
                             if(zonesGraphData[z][0].value < value){

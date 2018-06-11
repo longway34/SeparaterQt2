@@ -12,7 +12,7 @@ class SPRDateTimeVariable : public IModelVariable
 public:
     SPRDateTimeVariable(QDomDocument *parent, QString xpath, QDateTime defValue, IModelVariable *_mvparent=nullptr, QString _format = "dd.MM.yyyy hh:mm:ss");
 
-    QDateTime getData();
+    virtual QDateTime getData();
     void setData(const QDateTime &value, QString _format="");
     QString getFormat() const;
     void setFormat(const QString &value);

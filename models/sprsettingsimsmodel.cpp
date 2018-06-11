@@ -45,8 +45,8 @@ SPRSettingsIMSModel::SPRSettingsIMSModel(){
     withMaxMaxStone = nullptr;
 }
 
-SPRSettingsIMSModel::SPRSettingsIMSModel(QDomDocument *_doc, QObject *parent):
-    ISPRModelData(_doc)
+SPRSettingsIMSModel::SPRSettingsIMSModel(QDomDocument *_doc, ISPRModelData *parent):
+    ISPRModelData(_doc, parent)
 {
     ims = new SPRVariable<uint>(doc, SPR_SETTINGS_MAIN_IMS_XPATH, DEF_SPR_MAIN_IMS, this);
     setProperty("delete_ims", QVariant(true));

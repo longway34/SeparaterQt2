@@ -12,6 +12,11 @@ public:
     {
 
     }
+
+    // IModelVariable interface
+public:
+    virtual QString getData();
+    virtual void setData(QString _value);
 };
 
 #endif // SPRQSTRINGVARIABLE_H

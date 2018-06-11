@@ -3,12 +3,14 @@
 
 #include <QObject>
 #include <QStringList>
-#include <QDomDocument>
-#include <QDomElement>
-#include <QDomAttr>
-#include <QDomCharacterData>
-#include <QDomText>
-#include <QDomNode>
+#include <QtXml>
+//#include <QDomDocument>
+//#include <QDomElement>
+//#include <QDomNode>
+//#include <QDomAttr>
+//#include <QDomCharacterData>
+//#include <QDomText>
+//#include <QDomNode>
 #include <QDebug>
 #include <QByteArray>
 
@@ -54,8 +56,14 @@ class IModelVariable: public QObject
     IModelVariable *mvparent;
 
     void fromXml(){
-        if(!xmlNode.isNull())
-            value = xmlNode.nodeValue();
+        if(!xmlNode.isNull()){
+            if(xmlNode.nodeValue() != value){
+//                QString v = xmlNode.nodeValue();
+//                QString v1 = QString::fromUtf8(xmlNode.nodeValue().toStdString().c_str());
+                value = xmlNode.nodeValue();
+                emit modelChanget(this);
+            }
+        }
     }
     void toXml(){
         if(!xmlNode.isNull())
@@ -97,8 +105,10 @@ public:
         return value;
     }
     void setData(QString _value){
-        value = _value;
-        emit modelChanget(this);
+        if(value != _value){
+            value = _value;
+            emit modelChanget(this);
+        }
     }
 
     void toDebug(QDomNode element=QDomNode()){

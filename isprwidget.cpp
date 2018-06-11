@@ -7,7 +7,9 @@
 #include <QResource>
 #include <QIODevice>
 #include <QDir>
+#include <QByteArray>
 #include <QtXml/QDomDocument>
+#include <QTextCodec>
 
 #include "isprwidget.h"
 
@@ -18,16 +20,38 @@ ISPRWidget::ISPRWidget()
 
 void ISPRWidget::setDoc(QString _fName)
 {
+    doc = nullptr;
     QFile in(_fName);
-    if(in.open(QIODevice::ReadOnly)){
-        QTextStream ins(&in);
-        QString mText = ins.readAll().trimmed();
-        ins.seek(0);
+    if(in.open(QIODevice::ReadOnly | QIODevice::Text)){
 
-        qDebug() << mText;
+//        qint64 fSize = in.size();
+
+        QTextStream ins(&in);
+        QByteArray ba = in.readAll();
+        in.seek(0);
+//        QString mText = ins.readAll().trimmed();
+        QList<QByteArray> listCodecs = {QByteArray("UTF-8"), QByteArray("Windows-1251"), QByteArray("KOI8-R"), QByteArray("UTF-8")};
+        int index = 0; bool find = false;
+        QString mtUtf8;
+        while(index < listCodecs.size() && !find){
+            QTextCodec *codec = QTextCodec::codecForName(listCodecs[index].constData());
+            struct QTextCodec::ConverterState state;
+            mtUtf8 = codec->toUnicode(ba, ba.length(), &state);
+            if(state.invalidChars == 0){
+                find = true;
+                break;
+            }
+            index++;
+        }
+
+        if(!find){
+            qDebug() << "Warnind! Invalid converted file to unucode: " << _fName;
+        }
+//        qDebug() << mText;
         QString err = "no errors"; int ln, col;
-        bool res = document.setContent(mText.toLatin1(), &err, &ln, &col);
-        QDomElement root = document.documentElement();
+//        bool res = document.setContent(mtUtf8.toLocal8Bit(), &err, &ln, &col);
+        bool res = document.setContent(mtUtf8);
+//        QDomElement root = document.documentElement();
         if(res){
             doc = &document;
             setDoc(doc);
@@ -37,7 +61,7 @@ void ISPRWidget::setDoc(QString _fName)
                 docFilePath = fi.absolutePath();
             } else {
                 docFilePath = QDir::currentPath();
-                docFileName = docFilePath + QDir::separator()+"Separator.xml";
+                docFileName = docFilePath + QDir::separator()+(DEF_SPR_MAIN_SETTINGS_FNAME)+(DEF_SPR_MAIN_SETTINGS_FNAME);
             }
 
         }

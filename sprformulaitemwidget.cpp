@@ -23,6 +23,7 @@ ISPRModelData *SPRFormulaItemWidget::setModelData(ISPRModelData *value)
             model->ElementDown3, model->ElementDown4
         };
         for(int i=0; i<elems.size(); i++){
+            elems[i]->setModelData(model->getElements());
             elems[i]->setElement(vars[i]);
         }
         ui.leMulUp->setValidator(new QDoubleValidator());
@@ -70,7 +71,7 @@ SPRFormulaItemWidget::SPRFormulaItemWidget(QWidget *parent) :
     QWidget(parent), model(nullptr)
 {
     ui.setupUi(this);
-    setElements(&DEF_SPR_FORMULA_ELEMENTS_PROPERTY);
+//    setElements(&DEF_SPR_FORMULA_ELEMENTS_PROPERTY);
 
     connect(ui.leMulUp, SIGNAL(editingFinished()),SLOT(viewChange()));
     connect(ui.leMulDown, SIGNAL(editingFinished()),SLOT(viewChange()));
@@ -78,22 +79,22 @@ SPRFormulaItemWidget::SPRFormulaItemWidget(QWidget *parent) :
     connect(ui.leMax, SIGNAL(editingFinished()),SLOT(viewChange()));
 }
 
-void SPRFormulaItemWidget::setElements(const DefaultMapElements *elements)
-{
-    QList<SPRFormulaElement*> list =
-            QList<SPRFormulaElement*>({
-                                            ui.lElementUp1,
-                                            ui.lElementUp2,
-                                            ui.lElementDown1,
-                                            ui.lElementDown2,
-                                            ui.lElementDown3,
-                                            ui.lElementDown4});
-//    QVector<SPRElementVariable *
-    QListIterator<SPRFormulaElement*> it(list);
-    while(it.hasNext()){
-        it.next()->setElements(elements);
-    };
-}
+//void SPRFormulaItemWidget::setElements(const DefaultMapElements *elements)
+//{
+//    QList<SPRFormulaElement*> list =
+//            QList<SPRFormulaElement*>({
+//                                            ui.lElementUp1,
+//                                            ui.lElementUp2,
+//                                            ui.lElementDown1,
+//                                            ui.lElementDown2,
+//                                            ui.lElementDown3,
+//                                            ui.lElementDown4});
+////    QVector<SPRElementVariable *
+//    QListIterator<SPRFormulaElement*> it(list);
+//    while(it.hasNext()){
+//        it.next()->setElements(elements);
+//    };
+//}
 
 
 void SPRFormulaItemWidget::widgetsShow()

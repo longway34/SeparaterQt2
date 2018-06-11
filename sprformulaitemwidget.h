@@ -17,7 +17,7 @@ public:
     explicit SPRFormulaItemWidget(QWidget *parent = 0);
     Ui::SPRFormulaItemWidget ui;
     void setResultText(){ui.lResult->setText(tr("H")+QString(model->index));}
-    void setElements(const DefaultMapElements *elements);
+//    void setElements(const DefaultMapElements *elements);
     ISPRModelData *setModelData(ISPRModelData *value);
 
 public slots:

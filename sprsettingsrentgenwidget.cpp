@@ -11,7 +11,9 @@ SPRSettingsRentgenWidget::SPRSettingsRentgenWidget(QWidget *parent) :
 
 void SPRSettingsRentgenWidget::widgetsShow()
 {
-    emit doShow();
+    ui.wSettingsRentgenAutoWidget->widgetsShow();
+    ui.wSettingsRentgenControlWidget->widgetsShow();
+    ui.wSettingsRentgenMainWidget->widgetsShow();
 }
 
 ISPRModelData *SPRSettingsRentgenWidget::setModelData(SPRSettingsRentgenModel *value){
