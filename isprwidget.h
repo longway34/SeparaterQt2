@@ -7,6 +7,7 @@
 #include <QValidator>
 #include "models/isprmodeldata.h"
 #include "_types.h"
+#include "tcp/tcplogswigtets.h"
 
 class ISPRWidget
 {
@@ -16,6 +17,7 @@ protected:
 
     QDomDocument document;
     QDomDocument *doc;
+    TCPLogsWigtets *logWidget;
 
 public:
     ISPRWidget();
@@ -28,6 +30,9 @@ public:
     virtual ISPRModelData *setModelData(ISPRModelData* data=nullptr);
     virtual ISPRModelData *getModelData()=0;
 //    virtual void cellLeChanget(QTableWidgt *table, QLineEdit *le, int x, int y)=0;
+    virtual TCPLogsWigtets *getLogWidget() const;
+    virtual void setLogWidget(TCPLogsWigtets *value);
+
 protected:
     QLineEdit* setNumberCell(QTableWidget *table, int row, int col, int value, int min, int max, const QString toolType);
     virtual void viewChange(){}

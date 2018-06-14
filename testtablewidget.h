@@ -13,11 +13,12 @@
 #include "tcp/tcptimeoutwigget.h"
 #include "tcp/tcplogswigtets.h"
 #include "tcp/tcpseparatego.h"
+#include "isprwidget.h"
 
 #include "tcp/tcpcommandrentgenonfull.h"
 #include "tcp/tcpcommandgetspectrums.h"
 
-class testTableWidget : public QWidget
+class testTableWidget : public QWidget, public ISPRWidget
 {
     Q_OBJECT
 
@@ -75,6 +76,14 @@ public slots:
     void onCommandError(TCPCommand *_command);
 private:
     Ui::testTableWidget ui;
+
+    // ISPRWidget interface
+public:
+    virtual ISPRModelData *getModelData();
+    virtual void setLogWidget(TCPLogsWigtets *value);
+
+protected:
+    virtual void onModelChanget(IModelVariable *);
 };
 
 #endif // TESTTABLEWIDGET_H

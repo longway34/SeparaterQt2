@@ -67,7 +67,7 @@
      <x>10</x>
      <y>380</y>
      <width>1091</width>
-     <height>192</height>
+     <height>291</height>
     </rect>
    </property>
    <column>
@@ -306,16 +306,6 @@
     <string>Stop Separ</string>
    </property>
   </widget>
-  <widget class="TCPLogsWigtets" name="logWidget" native="true">
-   <property name="geometry">
-    <rect>
-     <x>9</x>
-     <y>580</y>
-     <width>731</width>
-     <height>101</height>
-    </rect>
-   </property>
-  </widget>
   <widget class="TCPTimeOutWigget" name="towidget" native="true">
    <property name="geometry">
     <rect>
@@ -329,26 +319,20 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>SPRSpectrumListTable</class>
-   <extends>QTableWidget</extends>
-   <header>sprspectrumlisttable.h</header>
-  </customwidget>
-  <customwidget>
    <class>SPRSpectrumGraphicsWidget</class>
    <extends>QWidget</extends>
    <header>sprspectrumgraphicswidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>SPRSpectrumListTable</class>
+   <extends>QTableWidget</extends>
+   <header>sprspectrumlisttable.h</header>
+  </customwidget>
+  <customwidget>
    <class>SPRSpectrumSmallTable</class>
    <extends>QTableWidget</extends>
    <header>sprspectrumsmalltable.h</header>
-  </customwidget>
-  <customwidget>
-   <class>TCPLogsWigtets</class>
-   <extends>QWidget</extends>
-   <header>tcp/tcplogswigtets.h</header>
-   <container>1</container>
   </customwidget>
   <customwidget>
    <class>TCPTimeOutWigget</class>

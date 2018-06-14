@@ -60,11 +60,9 @@ SPRTestIMSWidget::SPRTestIMSWidget(QWidget *parent) :
 
     getSpectrumsCommand = new TCPGetSpectrumsGistogramms(nullptr, getspk, towidget);
     connect(getSpectrumsCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
-    connect(getSpectrumsCommand, SIGNAL(commandComplite(TCPCommand*)), ui.logsWidget, SLOT(onLogsCommand(TCPCommand*)));
 
     rentgenOnCommand = new TCPCommandRentgerOn(nullptr, towidget);
     connect(rentgenOnCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
-    connect(rentgenOnCommand, SIGNAL(commandComplite(TCPCommand*)), ui.logsWidget, SLOT(onLogsCommand(TCPCommand*)));
 
     rentgenOffCommand = new TCPCommandSet(nullptr, towidget, QVector<TCPCommand*>{
             new TCPCommand(expoff),
@@ -74,11 +72,9 @@ SPRTestIMSWidget::SPRTestIMSWidget(QWidget *parent) :
     rentgenOffCommand->findCommands(expoff).first()->setSendData(&ch0, sizeof(ch0));
 
     connect(rentgenOffCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
-    connect(rentgenOffCommand, SIGNAL(commandComplite(TCPCommand*)), ui.logsWidget, SLOT(onLogsCommand(TCPCommand*)));
 
     separatorOnCommand = new TCPCommandSeparatorOnOff(nullptr, towidget);
     connect(separatorOnCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
-    connect(separatorOnCommand, SIGNAL(commandComplite(TCPCommand*)), ui.logsWidget, SLOT(onLogsCommand(TCPCommand*)));
 
     separatorOffCommand = new TCPCommandSet(nullptr, towidget, {
         new TCPCommand(getstate),
@@ -88,22 +84,18 @@ SPRTestIMSWidget::SPRTestIMSWidget(QWidget *parent) :
         new TCPCommand(getstate)
                                            });
     connect(separatorOffCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
-    connect(separatorOffCommand, SIGNAL(commandComplite(TCPCommand*)), ui.logsWidget, SLOT(onLogsCommand(TCPCommand*)));
 
     rguReadStateCommand = new TCPCommandSet(nullptr, towidget,
         {new TCPCommand(getrgu2),
          new TCPCommand(getstate)
                                             });
     connect(rguReadStateCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
-    connect(rguReadStateCommand, SIGNAL(commandComplite(TCPCommand*)), ui.logsWidget, SLOT(onLogsCommand(TCPCommand*)));
 
     rguUpCommand = new TCPCommandRGUUpDown(nullptr, towidget, true);
     connect(rguUpCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
-    connect(rguUpCommand, SIGNAL(commandComplite(TCPCommand*)), ui.logsWidget, SLOT(onLogsCommand(TCPCommand*)));
 
     rguDownCommand = new TCPCommandRGUUpDown(nullptr, towidget, false);
     connect(rguDownCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
-    connect(rguDownCommand, SIGNAL(commandComplite(TCPCommand*)), ui.logsWidget, SLOT(onLogsCommand(TCPCommand*)));
 
     thermoReadStateCommand = new TCPCommandSet(nullptr, towidget, {});
     char *ct0 = "\x00\x00\x00\x00";
@@ -112,7 +104,6 @@ SPRTestIMSWidget::SPRTestIMSWidget(QWidget *parent) :
     thermoReadStateCommand->addCommand(new TCPTimeOutCommand(timeoutcommand, 2000));
     thermoReadStateCommand->addCommand(new TCPCommand(gettemp));
     connect(thermoReadStateCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
-    connect(thermoReadStateCommand, SIGNAL(commandComplite(TCPCommand*)), ui.logsWidget, SLOT(onLogsCommand(TCPCommand*)));
 
     thermoWriteStateCommand = new TCPCommandSet(nullptr, towidget, {});
     QByteArray term;
@@ -124,44 +115,62 @@ SPRTestIMSWidget::SPRTestIMSWidget(QWidget *parent) :
     TCPCommand *sthermo = new TCPCommand(settemp); sthermo->setSendData(term);
     thermoWriteStateCommand->addCommand(sthermo)->addCommand(new TCPTimeOutCommand(timeoutcommand, 2000))->addCommand(new TCPCommand(gettemp))->addCommand(new TCPCommand(getstate));
     connect(thermoWriteStateCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
-    connect(thermoWriteStateCommand, SIGNAL(commandComplite(TCPCommand*)), ui.logsWidget, SLOT(onLogsCommand(TCPCommand*)));
 
     startTestImsCommand = new TCPStartSopTestIMSCommand(nullptr, towidget);
     connect(startTestImsCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
-    connect(startTestImsCommand, SIGNAL(commandComplite(TCPCommand*)), ui.logsWidget, SLOT(onLogsCommand(TCPCommand*)));
 
     commandStartPitatel = new TCPCommandStartPitatel(nullptr);
     connect(commandStartPitatel, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
-    connect(commandStartPitatel, SIGNAL(commandComplite(TCPCommand*)), ui.logsWidget, SLOT(onLogsCommand(TCPCommand*)));
 
     commandStopPitatel = new TCPCommandStopPitatel(nullptr);
     connect(commandStopPitatel, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
-    connect(commandStopPitatel, SIGNAL(commandComplite(TCPCommand*)), ui.logsWidget, SLOT(onLogsCommand(TCPCommand*)));
 
     commandChangePersentPitatel = new TCPCommand(setpuw);
 //    uint16_t code = model->getSettingsControlModel()->VEMSBeginCode->getData();
 //    commandChangePersentPitatel->setSendData(&code, sizeof(code));
     connect(commandChangePersentPitatel, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
-    connect(commandChangePersentPitatel, SIGNAL(commandComplite(TCPCommand*)), ui.logsWidget, SLOT(onLogsCommand(TCPCommand*)));
 
     commandStartRasklad = new TCPCommand(oniw);
     connect(commandStartRasklad, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
-    connect(commandStartRasklad, SIGNAL(commandComplite(TCPCommand*)), ui.logsWidget, SLOT(onLogsCommand(TCPCommand*)));
 
     commandStopRasklad = new TCPCommand(offiw);
     connect(commandStopRasklad, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
-    connect(commandStopRasklad, SIGNAL(commandComplite(TCPCommand*)), ui.logsWidget, SLOT(onLogsCommand(TCPCommand*)));
 
     commandStartRudostusk = new TCPStartRudospuskCommand(nullptr, nullptr);
     connect(commandStartRudostusk, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
-    connect(commandStartRudostusk, SIGNAL(commandComplite(TCPCommand*)), ui.logsWidget, SLOT(onLogsCommand(TCPCommand*)));
 
     commandStopRudospusk = new TCPStopRudostuskCommand(nullptr, nullptr);
     connect(commandStopRudospusk, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
-    connect(commandStopRudospusk, SIGNAL(commandComplite(TCPCommand*)), ui.logsWidget, SLOT(onLogsCommand(TCPCommand*)));
 
 }
 
+void SPRTestIMSWidget::setLogWidget(TCPLogsWigtets *value)
+{
+    ISPRWidget::setLogWidget(value);
+
+    if(getLogWidget()){
+
+
+        connect(getSpectrumsCommand, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
+        connect(rentgenOnCommand, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
+        connect(rentgenOffCommand, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
+        connect(separatorOnCommand, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
+        connect(separatorOffCommand, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
+        connect(rguReadStateCommand, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
+        connect(rguUpCommand, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
+        connect(rguDownCommand, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
+        connect(thermoReadStateCommand, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
+        connect(thermoWriteStateCommand, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
+        connect(startTestImsCommand, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
+        connect(commandStartPitatel, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
+        connect(commandStopPitatel, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
+        connect(commandChangePersentPitatel, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
+        connect(commandStartRasklad, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
+        connect(commandStopRasklad, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
+        connect(commandStartRudostusk, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
+        connect(commandStopRudospusk, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
+    }
+}
 void SPRTestIMSWidget::onChangeValue(bool _val){
     if(sender() == ui.cbZonesShow){
         ui.wSpectrumWidget->setZonesShow(_val);
@@ -262,7 +271,7 @@ void SPRTestIMSWidget::onCommand(bool){
             return;
         }
         if(sender() == ui.bGetSpectrum){
-            getSpectrumsCommand->setThreadTimer(model->getSettingsMainModel()->getThreads()->getData(), 5000);
+            getSpectrumsCommand->setThreadTimer(model->getSettingsMainModel()->getThreads()->getData(), 5);
             getSpectrumsCommand->send(model->getServer());
             return;
         }
@@ -457,13 +466,13 @@ void SPRTestIMSWidget::onCommandComplite(TCPCommand *_comm){
     }
 }
 
-void SPRTestIMSWidget::onServerConnectError(ITCPCommand* _comm){
-    ui.logsWidget->onLogsCommand((TCPCommand*)_comm, tr("Ошибка присоединения"));
-}
+//void SPRTestIMSWidget::onServerConnectError(ITCPCommand* _comm){
+//    ui.logsWidget->onLogsCommand((TCPCommand*)_comm, tr("Ошибка присоединения"));
+//}
 
-void SPRTestIMSWidget::onServerReadWriteError(ITCPCommand* _comm){
-    ui.logsWidget->onLogsCommand((TCPCommand*)_comm, tr("Ошибка чтения/записи команды"));
-}
+//void SPRTestIMSWidget::onServerReadWriteError(ITCPCommand* _comm){
+//    ui.logsWidget->onLogsCommand((TCPCommand*)_comm, tr("Ошибка чтения/записи команды"));
+//}
 
 void SPRTestIMSWidget::onServerConnectChangeState(uint32_t _state){
     if(_state & spr_state_test_ims){
@@ -489,15 +498,15 @@ void SPRTestIMSWidget::onServerConnectChangeState(uint32_t _state){
 
 ISPRModelData *SPRTestIMSWidget::setModelData(SPRMainModel *_model)
 {
-    if(model){
+    if(_model){
         if(model){
             disconnect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
         }
         model = _model;
         connect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
 
-        connect(model->getServer(), SIGNAL(serverConnectTimeOutError(ITCPCommand*)), this, SLOT(onServerConnectError(ITCPCommand*)));
-        connect(model->getServer(), SIGNAL(serverReadWriteTimeOutError(ITCPCommand*)), this, SLOT(onServerReadWriteError(ITCPCommand*)));
+//        connect(model->getServer(), SIGNAL(serverConnectTimeOutError(ITCPCommand*)), this, SLOT(onServerConnectError(ITCPCommand*)));
+//        connect(model->getServer(), SIGNAL(serverReadWriteTimeOutError(ITCPCommand*)), this, SLOT(onServerReadWriteError(ITCPCommand*)));
         connect(model->getServer(), SIGNAL(serverStateChange(uint32_t)), this, SLOT(onServerConnectChangeState(uint32_t)));
 
         ui.wSpectrumWidget->setModelData(new SPRSpectrumListItemsModel(model->getSpectrumZonesTableModel(), model->getSettingsFormulaModel(),model->getSettingsMainModel()->getThreads(), model->getSettingsMainModel()->getSpectrumFileName(), model->getSettingsControlModel()->controlArea), spectrumsOnly, true);
@@ -544,3 +553,5 @@ void SPRTestIMSWidget::onModelChanget(IModelVariable *)
 {
     widgetsShow();
 }
+
+

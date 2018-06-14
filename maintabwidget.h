@@ -4,6 +4,7 @@
 #include "ui_maintabwidget.h"
 #include "isprwidget.h"
 #include "models/sprseparatemodel.h"
+#include "tcp/tcplogswigtets.h"
 
 class MainTabWidget : public QTabWidget, public ISPRWidget
 {
@@ -49,6 +50,11 @@ public slots:
 
     // ISPRWidget interface
 protected:
+
+    // ISPRWidget interface
+public:
+    virtual void setDoc(QString _fName);
+    void setLogWidget(TCPLogsWigtets *value);
 };
 
 

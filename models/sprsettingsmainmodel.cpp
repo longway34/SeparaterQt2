@@ -1,5 +1,15 @@
 #include "sprsettingsmainmodel.h"
 
+ServerConnect *SPRSettingsMainModel::getServer() const
+{
+    return server;
+}
+
+void SPRSettingsMainModel::setServer(ServerConnect *value)
+{
+    server = value;
+}
+
 SPRSettingsMainModel::SPRSettingsMainModel(QObject *parent)
 {
     name = nullptr;
@@ -19,7 +29,7 @@ SPRSettingsMainModel::SPRSettingsMainModel(QObject *parent)
 }
 
 SPRSettingsMainModel::SPRSettingsMainModel(QDomDocument *_doc, ISPRModelData *parent):
-    ISPRModelData(_doc, parent)
+    ISPRModelData(_doc, parent), server(nullptr)
 {
     name = new SPRQStringVariable(doc, SPR_SETTINGS_MAIN_NAME_XPATH, DEF_SPR_MAIN_NAME,this);
     ipAddress = new SPRQStringVariable(doc, SPR_SETTINGS_MAIN_ADDRESS_XPATH, DEF_SPR_MAIN_ADDRESS,this);
@@ -36,6 +46,12 @@ SPRSettingsMainModel::SPRSettingsMainModel(QDomDocument *_doc, ISPRModelData *pa
 //    date = new SPRDateVariable(doc, SPR_SETTINGS_MAIN_DATE_XPATH, DEF_SPR_MAIN_DATE);
 //    version = new SPRQStringVariable(doc, SPR_SETTINGS_MAIN_VERSION_XPATH, DEF_SPR_MAIN_VERSION);
     spectrumFileName = new SPRQStringVariable(doc, SPR_SETTINGS_MAIN_SPECTRUM_FNAME_XPATH, DEF_SPR_MAIN_SETTINGS_FNAME+DEF_SPR_MAIN_SPECTRUM_FNAME_SUFFIX, this);
+
+    server = new ServerConnect(ipAddress->getData(), ipPort->getData());
+    server->setVName(ipAddress);
+    server->setVPort(ipPort);
+
+
 }
 
 SPRSettingsMainModel::~SPRSettingsMainModel()
@@ -53,6 +69,8 @@ SPRSettingsMainModel::~SPRSettingsMainModel()
     setProperty("delete_threads", QVariant(false));
 //    if(date) delete date; date = nullptr;
 
+    if(server) delete server; server = nullptr;
+//    if(getStateCommand) delete getStateCommand; getStateCommand = nullptr;
 }
 
 void SPRSettingsMainModel::setName(SPRQStringVariable *value)

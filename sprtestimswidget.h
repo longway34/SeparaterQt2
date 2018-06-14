@@ -87,8 +87,8 @@ public:
 public slots:
     void onCommandComplite(TCPCommand* _comm);
     void onCommand(bool);
-    void onServerConnectError(ITCPCommand *);
-    void onServerReadWriteError(ITCPCommand *_comm);
+//    void onServerConnectError(ITCPCommand *);
+//    void onServerReadWriteError(ITCPCommand *_comm);
     void onServerConnectChangeState(uint32_t _state);
 
     virtual void onChangeValue(bool _val);
@@ -97,6 +97,10 @@ public slots:
 
     // ISPRWidget interface
 protected:
+
+    // ISPRWidget interface
+public:
+    virtual void setLogWidget(TCPLogsWigtets *value);
 };
 
 #endif // SPRTESTIMSWIDGET_H

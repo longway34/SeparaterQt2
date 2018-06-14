@@ -1,6 +1,8 @@
 #include "maintabwidget.h"
+#include "mainwindow.h"
 
 #include <QApplication>
+#include <QMainWindow>
 
 #include "models/sprspectrumlistitemsmodel.h"
 #include "models/sprelementsmodel.h"
@@ -12,11 +14,6 @@
 int main(int argc, char *argv[])
 {
 
-#ifdef WIN32
-    bool y = QDir::setCurrent("F:\\Projects\\Separator\\");
-#else
-    bool y = QDir::setCurrent("/home/longway/");
-#endif
 
 //    SPRElementsModel *model;
 
@@ -53,8 +50,8 @@ int main(int argc, char *argv[])
 //    MainWindow w(&doc);
 //    w.show();
 
-    MainTabWidget tw("Separator1.xml", nullptr);
-    tw.show();
+    MainWindow w;
+    w.show();
 
     return a.exec();
 }

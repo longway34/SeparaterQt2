@@ -10,8 +10,6 @@ void SPRMainModel::setDoc(QDomDocument *value)
     if(settingsMainModel) {delete settingsMainModel; settingsMainModel = nullptr;}
     settingsMainModel = new SPRSettingsMainModel(doc, this);
 
-    server = new ServerConnect(settingsMainModel->ipAddress->getData(), settingsMainModel->ipPort->getData());
-
     if(settingsPorogsModel) {delete settingsPorogsModel; settingsPorogsModel = nullptr;}
     settingsPorogsModel = new SPRSettingsPorogsModel(doc, this);
     settingsPorogsModel->setThreads(settingsMainModel->getThreads());
@@ -60,12 +58,12 @@ void SPRMainModel::setSpectrumFName(SPRQStringVariable *value)
 
 ServerConnect *SPRMainModel::getServer() const
 {
-    return server;
+    return settingsMainModel->getServer();
 }
 
 void SPRMainModel::setServer(ServerConnect *value)
 {
-    server = value;
+    settingsMainModel->setServer(value);
 }
 
 SPRSeparateModel *SPRMainModel::getSeparateModel() const
@@ -99,7 +97,7 @@ SPRMainModel::SPRMainModel(QDomDocument *_doc, ISPRModelData *parent): ISPRModel
     spectrumZonesTableModel(nullptr),
     spectrumListItemsModel(nullptr),
     elementsModel(nullptr),
-    server(nullptr),
+//    server(nullptr),
     separateModel(nullptr)
 {
     setDoc(_doc);
@@ -115,7 +113,7 @@ SPRMainModel::SPRMainModel(QString docFName, ISPRModelData *parent): ISPRModelDa
     spectrumZonesTableModel(nullptr),
     spectrumListItemsModel(nullptr),
     elementsModel(nullptr),
-    server(nullptr),
+//    server(nullptr),
     separateModel(nullptr)
 {
     filePath = "";

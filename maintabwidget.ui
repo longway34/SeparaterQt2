@@ -21,9 +21,7 @@
   </property>
   <property name="font">
    <font>
-    <pointsize>16</pointsize>
-    <weight>50</weight>
-    <bold>false</bold>
+    <pointsize>12</pointsize>
    </font>
   </property>
   <property name="windowTitle">
@@ -39,7 +37,7 @@
    <enum>QTabWidget::Rounded</enum>
   </property>
   <property name="currentIndex">
-   <number>1</number>
+   <number>2</number>
   </property>
   <property name="iconSize">
    <size>

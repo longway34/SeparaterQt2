@@ -129,6 +129,7 @@ public:
     virtual QByteArray getReplayData() = 0;
     virtual void setSendData(QByteArray sendData)=0;
     virtual QByteArray getSendData()=0;
+    virtual int getErrors()=0;
 private:
 
 };

@@ -15,42 +15,58 @@ void TCPLogsWigtets::onClear(bool){
     ui.ptLogs->clear();
 }
 
-void TCPLogsWigtets::onErrorLogsCommand(QString msg, TCPCommand *command){
-    QDateTime dt(QDateTime::currentDateTime());
-    QString sdt = dt.toString("hh:mm:ss");
-    QTextCharFormat old = ui.ptLogs->currentCharFormat();
-    QTextCharFormat tf = old;
-    tf.setForeground(QBrush(QColor(255, 128, 128)));
-    ui.ptLogs->setCurrentCharFormat(tf);
-    if(command){
-        onLogsCommand(command);
-    }
-    ui.ptLogs->appendPlainText(sdt+": "+msg);
-    ui.ptLogs->setCurrentCharFormat(old);
+void TCPLogsWigtets::onErrorLogsCommand(ITCPCommand *command, QString _prefix){
+    QString msg = _prefix + onLogsCommand(command);
+    onLogsCommand(msg, QColor(Qt::red));
 }
 
-void TCPLogsWigtets::onLogsCommand(TCPCommand *command){
-    if(command){
-        QDateTime dt(QDateTime::currentDateTime());
-        QString sdt = dt.toString("hh:mm:ss ");
-        QString msg = "command 0x"+QString::number((int8_t(command->getCommand()), 16))+"; result: ";
-        msg += command->getReplayData().toHex(':');
+QString TCPLogsWigtets::onLogsCommand(ITCPCommand *command){
+//    if(command){
+    QString ret = "";
+//    QDateTime dt(QDateTime::currentDateTime());
+//    QString sdt = dt.toString("hh:mm:ss ");
 
-        ui.ptLogs->appendPlainText(sdt+": "+msg);
-    }
+//        ret += sdt;
+
+        if(command){
+            QString msg = QString(tr("\nCommand 0x%1; send: %2; result: %3 ")).
+                    arg(QString::number(command->getCommand(), 16)).
+                    arg(QString::fromStdString(command->getSendData().toHex(':').toStdString())).
+                    arg(QString::fromStdString(command->getReplayData().toHex(':').toStdString()));
+            ret += msg ;
+
+        }
+        return ret;
+//        QString msg = "command 0x"+QString::number((int8_t(command->getCommand()), 16))+"; result: ";
+//        msg += command->getReplayData().toHex(':');
+
+//        ui.ptLogs->appendPlainText(sdt+": "+msg);
+//    }
 }
 
-void TCPLogsWigtets::onLogsCommand(TCPCommand *command, QString msg){
-    QDateTime dt(QDateTime::currentDateTime());
-    QString sdt = dt.toString("hh:mm:ss");
-    if(command){
-        onLogsCommand(command);
-    }
-    ui.ptLogs->appendPlainText(sdt+": "+msg);
+void TCPLogsWigtets::onLogsCommand(ITCPCommand *command, QString _prefix){
+    QString msg = _prefix + onLogsCommand(command);
+    onLogsCommand(msg);
+//    ui.ptLogs->appendPlainText(sdt+": "+msg);
 }
 
-void TCPLogsWigtets::onLogsCommand(QString msg){
+void TCPLogsWigtets::onLogsCommand(QString msg, QColor _color){
     QDateTime dt(QDateTime::currentDateTime());
     QString sdt = dt.toString("hh:mm:ss");
+    QTextCharFormat old = ui.ptLogs->currentCharFormat();;
+    if(_color.isValid()){
+        QTextCharFormat tf = old;
+        tf.setForeground(QBrush(_color));
+        ui.ptLogs->setCurrentCharFormat(tf);
+    }
+//    if(command){
+//        onLogsCommand(command);
+//    }
     ui.ptLogs->appendPlainText(sdt+": "+msg);
+    if(_color.isValid()){
+        ui.ptLogs->setCurrentCharFormat(old);
+    }
+//    QDateTime dt(QDateTime::currentDateTime());
+//    QString sdt = dt.toString("hh:mm:ss");
+//    ui.ptLogs->appendPlainText(sdt+": "+msg);
 }

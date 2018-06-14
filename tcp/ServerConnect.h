@@ -18,8 +18,10 @@
 #include <QQueue>
 #include <QByteArray>
 #include <QMutex>
-#include "ITCPCommand.h"
-//#include "TCPCommand.h"
+#include "tcp/tcplogswigtets.h"
+#include "tcp/ITCPCommand.h"
+#include "variables/sprvariable.h"
+#include "variables/sprqstringvariable.h"
 #include "QTimer"
 
 #define REMOTE_WAIT_C   0
@@ -41,9 +43,23 @@
 #define SPR_STATE_SEPATOR_ON            0x00010000
 #define SPR_STATE_RENTGEN_ON            0x00020000
 #define SPR_STATE_PITATEL_ON            0x00040000
+#define SPR_STATE_EXPOSITION_ON         0x00080000
 
 #define SPR_STATE_RENTGEN_NOT_REGIME    0x02000000
 #define SPR_STATE_ERROR_CONNECT         0x01000000
+#define SPR_STATE_SERVER_CONNECT        0x04000000
+
+#define SPR_REMOTE_ERROR_OK                     0x0 // Ok
+#define SPR_REMOTE_ERROR_UKNOWN_COMMAND         0x1 // N_KM
+#define SPR_REMOTE_ERROR_NO_DATA                0x2 // N_D_KM
+#define SPR_REMOTE_ERROR_NO_CORRECT_DATA        0x3 // N_DATE
+#define SPR_REMOTE_ERROR_NOT_READY_GET_COMMAND  0x4 // N_EX
+#define SPR_REMOTE_ERROR_NOT_READY_HARDWARE     0x5 // NN_EX
+#define SPR_REMOTE_ERROR_ER_SER                 0x6 // ER_SER
+#define SPR_REMOTE_ERROR_ER_RENT                0x7 // ER_RENT
+#define SPR_REMOTE_ERROR_ER_TERM                0x8 // ER_TERM
+#define SPR_REMOTE_ERROR_ER_IM                  0x9 // ER_IM
+#define SPR_REMOTE_ERROR_TCP                    (-1)
 
 typedef enum server_connect_state :uint32_t {
     spr_state_wait_command          = SPR_STATE_WAIT_COMMAND,
@@ -57,12 +73,26 @@ typedef enum server_connect_state :uint32_t {
     spr_state_separator_on          = SPR_STATE_SEPATOR_ON,
     spr_state_rentgen_on            = SPR_STATE_RENTGEN_ON,
     spr_state_pitatel_on            = SPR_STATE_PITATEL_ON,
+    spr_state_exposition_on         = SPR_STATE_EXPOSITION_ON,
 
     spr_state_rentgen_not_regime    = SPR_STATE_RENTGEN_NOT_REGIME,
-    spr_state_error_connect         = SPR_STATE_ERROR_CONNECT
+    spr_state_error_connect         = SPR_STATE_ERROR_CONNECT,
+    spr_state_server_connect        = SPR_STATE_SERVER_CONNECT
 
 } ServerConnectState;
 
+typedef enum server_command_state :uint{
+    spr_remote_error_ok                     = SPR_REMOTE_ERROR_OK,
+    spr_remote_error_unknown_command        = SPR_REMOTE_ERROR_UKNOWN_COMMAND,
+    spr_remote_error_no_data                = SPR_REMOTE_ERROR_NO_DATA,
+    spr_remote_error_no_correct_data        = SPR_REMOTE_ERROR_NO_CORRECT_DATA,
+    spr_remote_error_not_ready_get_command  = SPR_REMOTE_ERROR_NOT_READY_GET_COMMAND,
+    spr_remote_error_not_ready_hardware     = SPR_REMOTE_ERROR_NOT_READY_HARDWARE,
+    spr_remote_error_er_ser                 = SPR_REMOTE_ERROR_ER_SER,
+    spr_remote_error_er_rent                = SPR_REMOTE_ERROR_ER_RENT,
+    spr_remote_error_er_term                = SPR_REMOTE_ERROR_ER_TERM,
+    spr_remote_error_er_im                  = SPR_REMOTE_ERROR_ER_IM
+} ServerCommandState;
 
 //#define SPR_STATE_
 
@@ -71,7 +101,6 @@ class ServerConnect: public QTcpSocket{
     Q_OBJECT
     
     class getCommand :public ITCPCommand{
-
 
         // ITCPCommand interface
     public:
@@ -83,15 +112,23 @@ class ServerConnect: public QTcpSocket{
             server->addSendCommand(this);
         }
 
-        virtual void setReplayData(QByteArray replayData){}
-        virtual QByteArray getReplayData(){QByteArray res; return res;}
+        virtual void setReplayData(QByteArray replayData){this->replayData = replayData;}
+        virtual QByteArray getReplayData(){return replayData;}
         virtual void setSendData(QByteArray sendData){}
-        virtual QByteArray getSendData(){QByteArray res; return res;}
+        virtual QByteArray getSendData(){return sendData;}
+
+        // ITCPCommand interface
+    public:
+        virtual int getErrors()
+        {
+            if(replayData.size()>0){
+                return int(replayData[0]);
+            }
+            return -1;
+        }
     };
 
 
-    QString name;
-    uint16_t port;
     QQueue<ITCPCommand*> sendData;
     QMutex mutex;
     
@@ -100,56 +137,43 @@ class ServerConnect: public QTcpSocket{
     QByteArray replay;
     QTimer toGetStateCommand;
 
+    TCPLogsWigtets *logWidget;
+
+    ServerCommandState lastCommandError;
+
     uint32_t currentState;
     uint32_t setState(uint32_t _state){
         bool flag = currentState != _state;
-        currentState = _state;
+//        currentState = _state;
         if(flag){
-            emit serverStateChange(currentState);
+            emit serverStateChange(_state);
         }
     }
 
-    void changeRemoteState(QByteArray replay){
-        if(replay.size() > 1){
-            int _st = replay.at(1);
-            uint32_t st;
-            switch (_st) {
-            case REMOTE_WAIT_C:
-                st = currentState & 0xFFFFFF00;
-                break;
-            case REMOTE_SPK:
-                st = (currentState & 0xFFFFFF00) | spr_state_spector_scope;
-                break;
-            case REMOTE_SEP:
-                st = (currentState & 0xFFFFFF00) | spr_state_separated;
-                break;
-            case REMOTE_RENT:
-                st = (currentState & 0xFFFFFF00) | spr_state_rentgen_uknown;
-                break;
-            case REMOTE_TERM:
-                st = (currentState & 0xFFFFFF00) | spr_state_therm_set;
-                break;
-            case REMOTE_TEST:
-                st = (currentState & 0xFFFFFF00) | spr_state_test_ims;
-                break;
-            case REMOTE_RGU:
-                st = (currentState & 0xFFFFFF00) | spr_state_gru_moved;
-                break;
-            default:
-                break;
-            }
-            setState(st);
-        }
-    }
+protected:
+protected:
+    QString name;
+    uint16_t port;
+    SPRVariable<uint> *vPort;
+    SPRQStringVariable *vName;
+
+    void setError(ITCPCommand *command);
+
+    void changeRemoteState(QByteArray replay);
 public:
-    ServerConnect(QString _name, uint16_t _port): QTcpSocket(){
+    ServerConnect(QString _name, uint16_t _port, SPRQStringVariable *_vName = nullptr, SPRVariable<uint> *_vPort = nullptr): QTcpSocket(){
         name = _name;
         port = _port;
+        setVName(_vName);
+        setVPort(_vPort);
+
         currentState = 0;
+
+        connect(this, SIGNAL(serverStateChange(uint32_t)), this, SLOT(onServerStateChange(uint32_t)));
 //        connect(this, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
         connect(this, SIGNAL(addData()), this, SLOT(queueComplite()));
         getStateCommand = new getCommand(getstate);
-        toGetStateCommand.setInterval(25000);
+        toGetStateCommand.setInterval(2000);
         connect(&toGetStateCommand, SIGNAL(timeout()), this, SLOT(onTimeOutGetState()));
         toGetStateCommand.start();
 
@@ -178,6 +202,9 @@ public:
         return getState();
     }
 
+    void serverReconnect(){
+        this->disconnectFromHost();
+    }
     bool isState(ServerConnectState _state){
         if(currentState & ((uint32_t)_state)){
             return true;
@@ -187,6 +214,15 @@ public:
     }
 
     void clearQueue();
+    TCPLogsWigtets *getLogWidget() const;
+    void setLogWidget(TCPLogsWigtets *value);
+
+    SPRVariable<uint> *getVPort() const;
+    void setVPort(SPRVariable<uint> *value);
+
+    SPRQStringVariable *getVName() const;
+    void setVName(SPRQStringVariable *value);
+
 public slots:
     void queueComplite();
 
@@ -195,15 +231,16 @@ protected slots:
     void onTimeOutGetState(){
         getStateCommand->send(this);
     }
+    void onServerStateChange(uint32_t _state);
 
 signals:
     void addData();
     void commandComlite(ITCPCommand*);
+    void commandError(ITCPCommand*, ServerCommandState);
     void serverConnectTimeOutError(ITCPCommand*);
     void serverReadWriteTimeOutError(ITCPCommand*);
     void serverStateChange(uint32_t);
 
-private:
 
 };
 

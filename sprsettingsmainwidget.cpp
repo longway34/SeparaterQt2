@@ -2,6 +2,7 @@
 #include "ipvalidator.h"
 
 #include <QFileDialog>
+#include <QMessageBox>
 
 ISPRModelData *SPRSettingsMainWidget::setModelData(ISPRModelData *data)
 {
@@ -11,6 +12,13 @@ ISPRModelData *SPRSettingsMainWidget::setModelData(ISPRModelData *data)
         }
         model = (SPRSettingsMainModel*)data;
         connect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
+
+
+        if(model->getServer()){
+            connect(model->getServer(), SIGNAL(serverConnectTimeOutError(ITCPCommand*)), this, SLOT(onErrorStateConnectServer(ITCPCommand*)));
+            connect(model->getServer(), SIGNAL(serverReadWriteTimeOutError(ITCPCommand*)), this, SLOT(onErrorStateConnectServer(ITCPCommand*)));
+        }
+
         widgetsShow();
     }
 
@@ -48,6 +56,12 @@ SPRSettingsMainWidget::SPRSettingsMainWidget(QWidget *parent) :
 
     connect(ui.bFNameSelect, SIGNAL(clicked(bool)), this, SLOT(viewChange(bool)));
     connect(ui.bSpectrumFNameSelect, SIGNAL(clicked(bool)), this, SLOT(viewChange(bool)));
+
+    connect(ui.bTestIP, SIGNAL(clicked(bool)), this, SLOT(onServerConnectButtomClick(bool)));
+
+    getStateCommand = new TCPCommand(getstate);
+    connect(getStateCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onGetStateCommandComplite(TCPCommand*)));
+
 }
 
 
@@ -180,10 +194,16 @@ void SPRSettingsMainWidget::viewChange()
     if(model){
         if(sender() == ui.leName){ // изменилось название сепаратора
             model->name->setData(ui.leName->text());
+            if(model->getServer()){
+                model->getServer()->serverReconnect();
+            }
             return;
         }
         if(sender() == ui.leAddress){ // изменился IP адрес сепаратора
             model->ipAddress->setData(ui.leAddress->text());
+            if(model->getServer()){
+                model->getServer()->serverReconnect();
+            }
             return;
         }
         if(sender() == ui.lePort){ // изменился IP порт сепаратора
@@ -232,4 +252,30 @@ void SPRSettingsMainWidget::viewChange(bool)
 void SPRSettingsMainWidget::onModelChanget(IModelVariable *)
 {
     widgetsShow();
+}
+
+void SPRSettingsMainWidget::onServerConnectButtomClick(bool)
+{
+    if(model->getServer()){
+
+        getStateCommand->send(model->getServer());
+    }
+
+}
+
+void SPRSettingsMainWidget::onGetStateCommandComplite(TCPCommand* command)
+{
+    QString msg = QString(tr("Соединение с сервером %1:%2 установлено...")).arg(model->getServer()->getName()).arg(QString::number(model->getServer()->getPort()));
+
+    QMessageBox::information(nullptr, QString(tr("Проверка соединения")), msg, QMessageBox::Ok);
+
+}
+
+void SPRSettingsMainWidget::onErrorStateConnectServer(ITCPCommand *command)
+{
+    if(command == getStateCommand){
+
+        QString msg = QString(tr("Соединение с сервером %1:%2 не удалось...")).arg(model->getServer()->getName()).arg(QString::number(model->getServer()->getPort()));
+        QMessageBox::warning(nullptr, QString(tr("Проверка соединения")), msg, QMessageBox::Ok);
+    }
 }

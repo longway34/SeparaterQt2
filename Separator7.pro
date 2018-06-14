@@ -34,7 +34,6 @@ SOURCES += \
     _types.cpp \
     colorbutton.cpp \
     ipvalidator.cpp \
-    isprcontroller.cpp \
     isprwidget.cpp \
     main.cpp \
     sprformulaelement.cpp \
@@ -64,7 +63,6 @@ SOURCES += \
     models/sprsettingsporogsmodel.cpp \
     models/sprsettingsrentgenmodel.cpp \
     models/sprsettingsrmtautosetmodel.cpp \
-    models/sprsettingsspectrumrangesmodel.cpp \
     verticallabel.cpp \
     maintabwidget.cpp \
     sprsettingswidget.cpp \
@@ -121,13 +119,13 @@ SOURCES += \
     tcp/tcpcommandrentgenonfull.cpp \
     tcp/tcpcommandseparatoronoff.cpp \
     models/imainmodel.cpp \
-    sprrentgenvatable.cpp
+    sprrentgenvatable.cpp \
+    mainwindow.cpp
 
 HEADERS += \
     _types.h \
     colorbutton.h \
     ipvalidator.h \
-    isprcontroller.h \
     isprwidget.h \
     sprformulaelement.h \
     sprformulaitemwidget.h \
@@ -155,7 +153,6 @@ HEADERS += \
     models/sprsettingsporogsmodel.h \
     models/sprsettingsrentgenmodel.h \
     models/sprsettingsrmtautosetmodel.h \
-    models/sprsettingsspectrumrangesmodel.h \
     tcp/TCPCommandSet.h \
     verticallabel.h \
     maintabwidget.h \
@@ -213,7 +210,8 @@ HEADERS += \
     tcp/tcpcommandrentgenonfull.h \
     tcp/tcpcommandseparatoronoff.h \
     models/imainmodel.h \
-    sprrentgenvatable.h
+    sprrentgenvatable.h \
+    mainwindow.h
 
 FORMS += \
     sprsettingsrentgenmainwidget.ui \
@@ -239,7 +237,8 @@ FORMS += \
     sprelementpropertydialog.ui \
     sprzonesrangestablewidget.ui \
     sprspectrumlisttablewidget.ui \
-    sprspectrumchoisetimedialog.ui
+    sprspectrumchoisetimedialog.ui \
+    mainwindow.ui
 
 RESOURCES += \
     icons.qrc \

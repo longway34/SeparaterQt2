@@ -2,11 +2,14 @@
 #define TCPLOGSWIGTETS_H
 
 #include "ui_tcplogswigtets.h"
-#include "tcp/TCPCommand.h"
+#include "tcp/ITCPCommand.h"
 
 class TCPLogsWigtets : public QWidget
 {
     Q_OBJECT
+protected:
+    QString onLogsCommand(ITCPCommand *command);
+    void onLogsCommand(QString msg, QColor _color = QColor());
 
 public:
     explicit TCPLogsWigtets(QWidget *parent = 0);
@@ -14,10 +17,8 @@ public:
 
 public slots:
     void onClear(bool);
-    void onLogsCommand(TCPCommand *command);
-    void onLogsCommand(TCPCommand *command, QString msg);
-    void onLogsCommand(QString msg);
-    void onErrorLogsCommand(QString msg, TCPCommand *command = nullptr);
+    void onLogsCommand(ITCPCommand *command, QString _prefix);
+    void onErrorLogsCommand(ITCPCommand *command, QString _prefix);
 private:
 };
 

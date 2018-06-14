@@ -25,8 +25,8 @@ SPRSpectrumListTableWidget::SPRSpectrumListTableWidget(QWidget *parent) :
     connect(ui.tListBasedSpectrumItem, SIGNAL(cellClicked(int,int)), this, SLOT(onSpectSpectrumTableClick(int,int)));
     connect(ui.tListBasedSpectrumItem, SIGNAL(rowSelectedChecked(QList<int>,int)), this, SLOT(onChangeCheckedSpectrum(QList<int>,int)));
 
-    connect(ui.tRangesChannel, SIGNAL(changeColor(EnumElements,QColor)), this, SLOT(onChangeZoneColor(EnumElements,QColor)));
-    connect(ui.tRangesChannel, SIGNAL(tableChange(EnumElements,int,int)), this, SLOT(onChangeZoneRange(EnumElements,int,int)));
+//    connect(ui.tRangesChannel, SIGNAL(changeColor(EnumElements,QColor)), this, SLOT(onChangeZoneColor(EnumElements,QColor)));
+//    connect(ui.tRangesChannel, SIGNAL(tableChange(EnumElements,int,int)), this, SLOT(onChangeZoneRange(EnumElements,int,int)));
 
     connect(ui.bGetSpectrums, SIGNAL(clicked(bool)), this, SLOT(onGetSpectrums(bool)));
 

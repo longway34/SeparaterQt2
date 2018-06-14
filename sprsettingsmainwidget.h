@@ -10,6 +10,9 @@ class SPRSettingsMainWidget : public QWidget, public ISPRWidget
     Q_OBJECT
 
     SPRSettingsMainModel *model;
+
+    TCPCommand *getStateCommand;
+
 public:
     explicit SPRSettingsMainWidget(QWidget *parent = 0);
 
@@ -29,6 +32,9 @@ protected slots:
     virtual void viewChange();
     virtual void viewChange(bool);
     virtual void onModelChanget(IModelVariable *);
+    void onServerConnectButtomClick(bool);
+    void onGetStateCommandComplite(TCPCommand *command);
+    void onErrorStateConnectServer(ITCPCommand *command);
 signals:
     void doShow();
     void changeFileSettinds(QString);

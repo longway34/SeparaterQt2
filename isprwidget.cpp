@@ -14,7 +14,17 @@
 #include "isprwidget.h"
 
 
-ISPRWidget::ISPRWidget()
+TCPLogsWigtets *ISPRWidget::getLogWidget() const
+{
+    return logWidget;
+}
+
+void ISPRWidget::setLogWidget(TCPLogsWigtets *value)
+{
+    logWidget = value;
+}
+
+ISPRWidget::ISPRWidget():logWidget(nullptr)
 {
 }
 

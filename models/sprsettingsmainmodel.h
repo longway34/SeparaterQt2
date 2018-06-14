@@ -9,9 +9,12 @@
 #include "variables/sprqstringvariable.h"
 #include "variables/sprenumvariable.h"
 #include "variables/sprvariable.h"
+#include "tcp/ServerConnect.h"
+#include "tcp/TCPCommand.h"
 
 class SPRSettingsMainModel : public ISPRModelData
 {
+    ServerConnect *server;
 public:
     SPRSettingsMainModel(QObject *parent=nullptr);
     SPRSettingsMainModel(QDomDocument *_doc, ISPRModelData *parent = nullptr);
@@ -42,6 +45,8 @@ public:
     SPRVariable<uint> *getIpPort() const;
     void setIpPort(SPRVariable<uint> *value);
     void setName(SPRQStringVariable *value);
+    ServerConnect *getServer() const;
+    void setServer(ServerConnect *value);
 };
 
 #endif // SPRSETTINGSMAINMODEL_H

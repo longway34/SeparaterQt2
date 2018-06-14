@@ -25,7 +25,7 @@ class SPRMainModel : public ISPRModelData, public IMainModel
 //    QString fName;
 //    QString fPath;
 
-    ServerConnect *server;
+//    ServerConnect *server;
 
     SPRQStringVariable *spectrumFName;
 

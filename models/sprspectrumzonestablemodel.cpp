@@ -46,7 +46,7 @@ SPRSpectrumZonesTableModel::SPRSpectrumZonesTableModel(QDomDocument *_doc, SPREl
     }
 
     for(int i=0; i<MAX_SPR_MAIN_THREADS; i++){
-        items.push_back(new SPRSpectrumZonesModel(doc, i, elementsProperty));
+        items.push_back(new SPRSpectrumZonesModel(doc, i, elementsProperty, this));
     }
 }
 

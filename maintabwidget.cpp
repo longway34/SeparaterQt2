@@ -3,10 +3,10 @@
 #include <QFileInfo>
 
 MainTabWidget::MainTabWidget(QWidget *parent) :
-    QTabWidget(parent), model(nullptr)
+    QTabWidget(parent), ISPRWidget(), model(nullptr)
 {
     ui.setupUi(this);
-    setDoc(DEF_SPR_MAIN_SETTINGS_FNAME+DEF_SPR_MAIN_SETTINGS_FNAME_SUFFIX);
+//    setDoc(DEF_SPR_MAIN_SETTINGS_FNAME+DEF_SPR_MAIN_SETTINGS_FNAME_SUFFIX);
 
     connect(ui.tabSettings, SIGNAL(changeFileSettinds(QString)), this, SLOT(onChangeFileSettings(QString)));
     connect(ui.tabSettings, SIGNAL(changeFileSpectrum(QString)), this, SLOT(onChangeFileSpectrum(QString)));
@@ -19,7 +19,7 @@ MainTabWidget::MainTabWidget(QWidget *parent) :
 MainTabWidget::MainTabWidget(QDomDocument *_doc, QWidget *parent): QTabWidget(parent), model(nullptr)
 {
     ui.setupUi(this);
-    setDoc(doc);
+    ISPRWidget::setDoc(doc);
     setModelData(new SPRMainModel(doc));
 
     connect(ui.tabSettings, SIGNAL(changeFileSettinds(QString)), this, SLOT(onChangeFileSettings(QString)));
@@ -35,59 +35,23 @@ MainTabWidget::MainTabWidget(QDomDocument *_doc, QWidget *parent): QTabWidget(pa
 //    connect(ui.bSetSeparate, SIGNAL(clicked(bool)), SLOT(onClickSetSeparateButton(bool)));
 }
 
-MainTabWidget::MainTabWidget(QString _fName, QWidget *parent): QTabWidget(parent), model(nullptr)
+MainTabWidget::MainTabWidget(QString _fName, QWidget *parent): QTabWidget(parent), ISPRWidget(), model(nullptr)
 {
     ui.setupUi(this);
-    bool createNewDoc = false;
-    if(!QFile::exists(_fName)){
-        _fName = ":/def/defSettings.xml";
-        createNewDoc = true;
 
-    }
     setDoc(_fName);
-    setModelData(new SPRMainModel(doc));
-
-    if(createNewDoc){
-//        QString fName = model->getSettingsMainModel()->name->toString();
-//        QString fName = DEF_SPR_MAIN_SETTINGS_FNAME+DEF_SPR_MAIN_SETTINGS_FNAME_SUFFIX;
-        model->setFName(docFileName);
-        QFile out(docFileName);
-        if(out.open(QIODevice::WriteOnly)){
-        QTextStream stream( &out );
-          stream << doc->toString();
-
-          out.close();
-        }
-    } else {
-        if(model)
-            model->setFName(docFileName);
-    }
-
-    connect(ui.tabSettings, SIGNAL(changeFileSettinds(QString)), this, SLOT(onChangeFileSettings(QString)));
-    connect(ui.tabSettings, SIGNAL(changeFileSpectrum(QString)), this, SLOT(onChangeFileSpectrum(QString)));
-    connect(this, SIGNAL(currentChanged(int)), this, SLOT(widgetsShow()));
-//    connect(ui.bSetSeparate, SIGNAL(clicked(bool)), this, SLOT(onClickSetSeparateButton(bool)));
 }
 
-//void MainTabWidget::setDoc(QString _fName)
-//{
-//    QFile in(_fName);
-//    if(in.open(QIODevice::ReadOnly)){
-//        if(document.setContent(&in)){
-//            QFileInfo fi(_fName);
-//            docFileName = fi.absoluteFilePath();
-//            docFilePath = fi.absolutePath();
-//            doc = &document;
-//            setDoc(doc);
-//        }
-//    }
-//}
+void MainTabWidget::setLogWidget(TCPLogsWigtets *value)
+{
+    ISPRWidget::setLogWidget(value);
+//    logWidget = value;
+    model->getServer()->setLogWidget(value);
 
-//void MainTabWidget::setDoc(QDomDocument *_doc)
-//{
-//    doc = _doc;
-//    ui.tabSettings->setModel(new SPRMainModel(doc));
-//}
+    ui.tabTest->setLogWidget(value);
+    ui.wTest->setLogWidget(value);
+//    ui.wTest->setl
+}
 
 ISPRModelData *MainTabWidget::setModelData(SPRMainModel *_model)
 {
@@ -97,10 +61,7 @@ ISPRModelData *MainTabWidget::setModelData(SPRMainModel *_model)
     model = _model;
     connect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
     ui.tabSettings->setModelData(model);
-//    QFile f(model->getSettingsMainModel()->spectrumFileName->getData());
-//    if(f.open(QIODevice::ReadOnly)){
-//        f.close();
-//    }
+
     ui.tabSpectrum->setModelData(model);
     ui.wTest->setModelData(model);
 
@@ -147,4 +108,38 @@ void MainTabWidget::onChangeFileSpectrum(QString fName){
 void MainTabWidget::onModelChanget(IModelVariable *)
 {
     widgetsShow();
+}
+
+
+void MainTabWidget::setDoc(QString _fName)
+{
+    bool createNewDoc = false;
+    if(!QFile::exists(_fName)){
+        _fName = ":/def/defSettings.xml";
+        createNewDoc = true;
+
+    }
+    ISPRWidget::setDoc(_fName);
+    setModelData(new SPRMainModel(doc));
+
+    if(createNewDoc){
+//        QString fName = model->getSettingsMainModel()->name->toString();
+//        QString fName = DEF_SPR_MAIN_SETTINGS_FNAME+DEF_SPR_MAIN_SETTINGS_FNAME_SUFFIX;
+        model->setFName(docFileName);
+        QFile out(docFileName);
+        if(out.open(QIODevice::WriteOnly)){
+        QTextStream stream( &out );
+          stream << doc->toString();
+
+          out.close();
+        }
+    } else {
+        if(model)
+            model->setFName(docFileName);
+    }
+
+    connect(ui.tabSettings, SIGNAL(changeFileSettinds(QString)), this, SLOT(onChangeFileSettings(QString)));
+    connect(ui.tabSettings, SIGNAL(changeFileSpectrum(QString)), this, SLOT(onChangeFileSpectrum(QString)));
+    connect(this, SIGNAL(currentChanged(int)), this, SLOT(widgetsShow()));
+//    connect(ui.bSetSeparate, SIGNAL(clicked(bool)), this, SLOT(onClickSetSeparateButton(bool)));
 }

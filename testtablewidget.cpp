@@ -11,7 +11,6 @@ testTableWidget::testTableWidget(QWidget *parent) :
 
 //    connect(ui.bAdd, SIGNAL(clicked(bool)), this, SLOT(onClickAdd(bool)));
     connect(ui.baseTable, SIGNAL(rowSelectedChecked(QList<int>,int)), ui.baseGrapthics, SLOT(onChangeSelectedCheckedItems(QList<int>,int)));
-    connect(ui.baseTable, SIGNAL(modelChanged()), this, SLOT(onModelChanged()));
 
 //    connect(ui.kspectTable, SIGNAL(rowSelectedChecked(QList<int>,int)), ui.kSpertGraphic, SLOT(onChangeSelectedCheckedItems(QList<int>,int)));
 
@@ -49,11 +48,12 @@ ISPRModelData *testTableWidget::setModelData(SPRMainModel *_model){
         mainModel = _model;
 //        spectrumsBaseModel = new SPRSpectrumListItemsModel(_model->getSpectrumZonesTableModel(), _model->getSettingsFormulaModel(),_model->getSettingsMainModel()->getThreads(), _model->getSettingsMainModel()->getSpectrumFileName());
         kSpectrumsModel = new SPRSpectrumListItemsModel(_model->getSpectrumZonesTableModel(), _model->getSettingsFormulaModel(),_model->getSettingsMainModel()->getThreads(), _model->getSettingsMainModel()->getSpectrumFileName(), _model->getSettingsControlModel()->controlArea);
+        connect(kSpectrumsModel, SIGNAL(modelChanged()), this, SLOT(onModelChanged()));
 //        separateModel = new SPRSeparateModel(mainModel->getDoc());
 //        separateModel->setModelData(_model);
         separateModel = mainModel->getSeparateModel();
 
-        startSeparate = new TCPTestStartSeparate(nullptr, mainModel, ui.towidget, ui.logWidget);
+        startSeparate = new TCPTestStartSeparate(nullptr, mainModel, ui.towidget, getLogWidget());
         getRen = startSeparate->findCommands(getren).last();
         connect(getRen, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
         connect(startSeparate, SIGNAL(errorCommand(TCPCommand*)), this, SLOT(onCommandError(TCPCommand*)));
@@ -291,7 +291,8 @@ void testTableWidget::onCommandComplite(TCPCommand *_command)
         return;
     }
     if(sender() == stopSeparate){
-        ui.logWidget->onLogsCommand(startSeparate, "Сепаратор остановлен...");
+        if(getLogWidget())
+            getLogWidget()->onLogsCommand(startSeparate, "Сепаратор остановлен...");
         return;
     }
     if(sender() == rentgenOnFull){
@@ -304,8 +305,9 @@ void testTableWidget::onCommandComplite(TCPCommand *_command)
         memcpy(&v, res.constData()+1, sizeof(v));
         memcpy(&mka, res.constData()+3, sizeof(mka));
 
-        ui.logWidget->onLogsCommand(_command, "return: v="+QString::number(v, 16)+" mka="+QString::number(mka, 16));
-
+        if(getLogWidget()){
+            getLogWidget()->onLogsCommand(_command, "return: v="+QString::number(v, 16)+" mka="+QString::number(mka, 16));
+        }
         QVector<TCPCommand*> vspk = getSpectrumsSetCommand->findCommands(getspk);
         for(int i=0; i<vspk.size();i++){
             QByteArray spk = vspk[i]->getReplayData().right(DEF_SPECTRUM_DATA_LENGTH_BYTE);
@@ -322,7 +324,8 @@ void testTableWidget::onCommandComplite(TCPCommand *_command)
             memcpy(&mka, res.constData()+3, sizeof(mka));
             QString msg = QString(tr("Рентген вышел на рабочий режим kV=0x%1, mka=0x%2 > 0х600")).
                     arg(QString::number(kV, 16)).arg(QString::number(mka, 16));
-            ui.logWidget->onLogsCommand(msg);
+            if(getLogWidget())
+                getLogWidget()->onErrorLogsCommand(nullptr, msg);
             return;
         }
     }
@@ -337,7 +340,8 @@ void testTableWidget::onCommandError(TCPCommand *_command)
         memcpy(&mka, res.constData()+3, sizeof(mka));
         QString msg = QString(tr("Ошибка...\nРентген не вышел на рабочий режим kV=0x%1, mka=0x%2 < 0х600")).
                 arg(QString::number(kV, 16)).arg(QString::number(mka, 16));
-        ui.logWidget->onErrorLogsCommand(msg);
+        if(getLogWidget())
+            getLogWidget()->onErrorLogsCommand(nullptr, msg);
         return;
     }
 }
@@ -370,3 +374,17 @@ void testTableWidget::onCommandError(TCPCommand *_command)
 //        ui.baseGrapthics->widgetsShow();
 //    }
 //}
+
+
+ISPRModelData *testTableWidget::getModelData()
+{
+}
+
+void testTableWidget::setLogWidget(TCPLogsWigtets *value)
+{
+    ISPRWidget::setLogWidget(value);
+}
+
+void testTableWidget::onModelChanget(IModelVariable *)
+{
+}
