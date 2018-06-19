@@ -19,8 +19,12 @@ protected:
     QDomDocument document;
     QString fileName;
     QString filePath;
+
+    QList<IModelVariable *> myVariables;
 //    QDomDocument *doc;
 //    QDomElement root;
+
+
 
 public:
     ISPRModelData(){}
@@ -32,6 +36,29 @@ public:
     void setDoc(QString fname, IModelVariable *parent = nullptr);
 
     QString getFileName() const;
+
+//    QList<IModelVariable *> getVariables() const;
+//    void setVariables(const QList<IModelVariable *> &value);
+
+//    bool isVariables(IModelVariable* variable){
+//        myVariables.contains(variable);
+//    }
+
+//    QList<IModelVariable *> *addVariables(IModelVariable* variable){
+//        if(!isVariables(variable)){
+//            myVariables.append(variable);
+//        }
+//        return &myVariables;
+//    }
+
+//    QList<IModelVariable *> *addVariables(QList<IModelVariable*> listVariable){
+//        foreach(IModelVariable *var, listVariable){
+//            addVariables(var);
+//        }
+//        return &myVariables;
+//    }
+
+//    IModelVariable *
 
 public slots:
     void saveAs(QString fname = "");

@@ -14,8 +14,8 @@ ISPRModelData *SPRDEUCodesTable::setModelData(SPRSettingsRentgenModel *data)
         if(model){
             disconnect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
         }
-        connect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
         model = data;
+        connect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
     }
 }
 

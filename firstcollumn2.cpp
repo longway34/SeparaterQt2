@@ -48,6 +48,23 @@ void FirstCollumn2::widgetsShow(){
     ui.bDelete->setVisible(deleteVisible);
 }
 
+void FirstCollumn2::setColorVariable(SPRQColorVariable *value)
+{
+    if(value){
+        if(vcolor != value){
+            if(vcolor){
+                disconnect(vcolor, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
+            }
+            vcolor = value;
+        }
+
+    }
+}
+
+void FirstCollumn2::onModelChanget(IModelVariable*){
+    widgetsShow();
+}
+
 void FirstCollumn2::setSelectVisible(bool value)
 {
     selectVisible = value;

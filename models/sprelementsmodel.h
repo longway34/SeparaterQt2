@@ -100,24 +100,13 @@ public:
         }
     }
 
-    void deleteElement(EnumElements element){
-        SPRElementsProperty *el = changeElementPropery(element, QString::number(static_cast<int>(element)));
-        if(el){
-            if(elements.contains(element)){
-                elements.remove(element);
-                emit modelChanget(elements[element]->key);
-            }
-            if(unisedElements.contains(element)){
-                unisedElements.remove(element);
-            }
-            unisedElements[element] = el;
-        }
-    }
+    void deleteElement(EnumElements element);
 
     SPRElementsProperty *changeElementPropery(EnumElements el, QString _sName, QString _fName="", QColor _color = QColor()){
         SPRElementsProperty *nel = nullptr;
         if(allElements.contains(el)){
             nel = allElements[el];
+            nel->key->setData(el);
             nel->sName->setData(_sName);
             nel->fName->setData(_fName);
             nel->color->setData(_color);
@@ -144,6 +133,14 @@ public:
         allElements.clear();
         elements.clear();
         unisedElements.clear();
+    }
+
+    SPRQColorVariable *getColorVariable(EnumElements el){
+        if(elements.contains(el)){
+            return elements[el]->color;
+        } else {
+            return nullptr;
+        }
     }
 
     QColor getColor(EnumElements el){

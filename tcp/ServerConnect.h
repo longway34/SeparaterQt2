@@ -20,6 +20,7 @@
 #include <QMutex>
 #include "tcp/tcplogswigtets.h"
 #include "tcp/ITCPCommand.h"
+#include "models/imodelvariable.h"
 #include "variables/sprvariable.h"
 #include "variables/sprqstringvariable.h"
 #include "QTimer"
@@ -126,6 +127,19 @@ class ServerConnect: public QTcpSocket{
             }
             return -1;
         }
+
+        // ITCPCommand interface
+    public:
+        virtual bool noErrors()
+        {
+            int res = getErrors();
+            if(res < 0 || res != 0){
+                return false;
+            } else {
+                return true;
+            }
+
+        }
     };
 
 
@@ -135,7 +149,7 @@ class ServerConnect: public QTcpSocket{
     ITCPCommand *current;
     getCommand *getStateCommand;
     QByteArray replay;
-    QTimer toGetStateCommand;
+    QTimer timerGetStateCommand;
 
     TCPLogsWigtets *logWidget;
 
@@ -150,7 +164,6 @@ class ServerConnect: public QTcpSocket{
         }
     }
 
-protected:
 protected:
     QString name;
     uint16_t port;
@@ -173,15 +186,31 @@ public:
 //        connect(this, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
         connect(this, SIGNAL(addData()), this, SLOT(queueComplite()));
         getStateCommand = new getCommand(getstate);
-        toGetStateCommand.setInterval(2000);
-        connect(&toGetStateCommand, SIGNAL(timeout()), this, SLOT(onTimeOutGetState()));
-        toGetStateCommand.start();
+//        timerGetStateCommand.setInterval(2000);
+        connect(&timerGetStateCommand, SIGNAL(timeout()), this, SLOT(onTimeOutGetState()));
+//        timerGetStateCommand.start();
+        setTimer(fastTypeServerTimer);
 
     }
     virtual ~ServerConnect();
     
-    void timerStart(){toGetStateCommand.start();}
-    void timerStop(){toGetStateCommand.start();}
+    void timerStart(){timerGetStateCommand.start();}
+    void timerStop(){timerGetStateCommand.start();}
+
+    typedef enum serverTimerType{
+        fastTypeServerTimer, slowTypeServerTimer
+    } ServerTimerType;
+
+
+    void setTimer(ServerTimerType _type = fastTypeServerTimer){
+        timerGetStateCommand.stop();
+        if(_type == fastTypeServerTimer){
+            timerGetStateCommand.setInterval(2000);
+        } else if(_type == slowTypeServerTimer){
+            timerGetStateCommand.setInterval(20000);
+        }
+        timerGetStateCommand.start();
+    }
 
     void addSendCommand(ITCPCommand* _sender);
     void setPort(uint16_t port);
@@ -204,6 +233,9 @@ public:
 
     void serverReconnect(){
         this->disconnectFromHost();
+        clearState(spr_state_rentgen_on);
+        clearState(spr_state_separator_on);
+        clearState(spr_state_exposition_on);
     }
     bool isState(ServerConnectState _state){
         if(currentState & ((uint32_t)_state)){
@@ -225,6 +257,7 @@ public:
 
 public slots:
     void queueComplite();
+    void onChangeModelData(IModelVariable *var);
 
 protected slots:    
     void onReadyRead();

@@ -3,60 +3,35 @@
 
 #include <QObject>
 #include "tcp/TCPCommandSet.h"
+#include "tcp/tcpcommandrentgenonfull.h"
+#include "models/sprsettingsrentgenmodel.h"
+#include "tcp/tcplogswigtets.h"
+
 #include "_types.h"
 
 class TCPGetSpectrumsGistogramms : public TCPCommandSet
 {
     Q_OBJECT
     
-    uint threadNum;
+//    uint threadNum;
     QList<int8_t> workingThreads;
     EnumCommands dataType;
-    uint tTimeOut;
+    uint timeOfSpectorScope;
+
+    SPRMainModel *model;
+//    TCPLogsWigtets *logWidget;
 
 public:
     TCPGetSpectrumsGistogramms();
-    TCPGetSpectrumsGistogramms(ServerConnect *_server, EnumCommands _dataType, TCPTimeOutWigget *_widget = nullptr, uint _threads = MAX_SPR_MAIN_THREADS);
+    TCPGetSpectrumsGistogramms(ServerConnect *_server, EnumCommands _dataType, SPRMainModel *_model, TCPTimeOutWigget *_widget = nullptr, TCPLogsWigtets *_logWidget = nullptr);
 
-    QByteArray getKSpectrumData(int thread = -1){
-        QVector<TCPCommand*>vspect = findCommands(getkspk);
-        QByteArray res0, res;
-        if(vspect.size() > 0){
-            if(thread < 0 || thread >= vspect.size())
-                thread = vspect.size()-1;
-
-            res0 = vspect[thread]->getReplayData();
-//            res = res0.right(res0.size() - (5));
-            res = res0.right(DEF_SPECTRUM_DATA_LENGTH_BYTE);
-        }
-        return res;
+    void setModelData(SPRMainModel *_model){
+        model = _model;
     }
-    uint32_t getKSpectrumTime(int thread){
-        QVector<TCPCommand*>vspect = findCommands(getkspk);
-        QByteArray res0; uint32_t res = 0;
-        if(vspect.size() > 0){
-            if(thread < 0 || thread >= vspect.size())
-                thread = vspect.size()-1;
 
-            res0 = vspect[thread]->getReplayData();
-            res0 = res0.left(5);
-            res0 = res0.right(4);
-            memcpy(&res, res0.constData(), sizeof(res));
-//            res = res0.toInt();
-        }
-        return res;
-    }
-    QByteArray getSpectrumData(int thread){
-        QVector<TCPCommand*>vspect = findCommands(getspk);
-        QByteArray res;
-        if(vspect.size() > 0){
-            if(thread < 0 || thread >= vspect.size())
-                thread = vspect.size()-1;
-
-            res = vspect[thread]->getReplayData().right(DEF_SPECTRUM_DATA_LENGTH_BYTE);
-        }
-        return res;
-    }
+    QByteArray getKSpectrumData(int thread = -1);
+    uint32_t getKSpectrumTime(int thread);
+    QByteArray getSpectrumData(int thread);
 
     QByteArray getGistogrammData(int thread){
         QVector<TCPCommand*> vcomm = findCommands(getgist);
@@ -73,6 +48,10 @@ public:
     void setThreadTimer(uint _threadsNum, double _time_in_sec = 1, QList<uint8_t> _wtList = {});
 
     virtual EnumCommands getDataType() const;
+
+    bool isRentgenReady(uint *_mkv = nullptr, uint *_mka = nullptr);
+//    TCPLogsWigtets *getLogWidget() const;
+//    virtual void setLogWidget(TCPLogsWigtets *value);
 
 protected slots:
     virtual void go(TCPCommand *_command = NULL);

@@ -94,7 +94,6 @@ SOURCES += \
     sprseparatewidget.cpp \
     tcp/tcpstartstopseparate.cpp \
     tcp/tcpgetspectrumsgistogramms.cpp \
-    tcp/tcpgetrentgensparams.cpp \
     sprspectrumsmalltable.cpp \
     tcp/tcpteststartseparate.cpp \
     tcp/tcpteststopseparate.cpp \
@@ -120,7 +119,10 @@ SOURCES += \
     tcp/tcpcommandseparatoronoff.cpp \
     models/imainmodel.cpp \
     sprrentgenvatable.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    scrollbar.cpp \
+    scrollzoomer.cpp \
+    sprgraphitem.cpp
 
 HEADERS += \
     _types.h \
@@ -184,7 +186,6 @@ HEADERS += \
     sprseparatewidget.h \
     tcp/tcpstartstopseparate.h \
     tcp/tcpgetspectrumsgistogramms.h \
-    tcp/tcpgetrentgensparams.h \
     sprspectrumsmalltable.h \
     tcp/tcpteststartseparate.h \
     tcp/tcpteststopseparate.h \
@@ -211,7 +212,10 @@ HEADERS += \
     tcp/tcpcommandseparatoronoff.h \
     models/imainmodel.h \
     sprrentgenvatable.h \
-    mainwindow.h
+    mainwindow.h \
+    scrollbar.h \
+    scrollzoomer.h \
+    sprgraphitem.h
 
 FORMS += \
     sprsettingsrentgenmainwidget.ui \

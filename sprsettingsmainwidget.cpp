@@ -194,16 +194,16 @@ void SPRSettingsMainWidget::viewChange()
     if(model){
         if(sender() == ui.leName){ // изменилось название сепаратора
             model->name->setData(ui.leName->text());
-            if(model->getServer()){
-                model->getServer()->serverReconnect();
-            }
+//            if(model->getServer()){
+//                model->getServer()->serverReconnect();
+//            }
             return;
         }
         if(sender() == ui.leAddress){ // изменился IP адрес сепаратора
             model->ipAddress->setData(ui.leAddress->text());
-            if(model->getServer()){
-                model->getServer()->serverReconnect();
-            }
+//            if(model->getServer()){
+//                model->getServer()->serverReconnect();
+//            }
             return;
         }
         if(sender() == ui.lePort){ // изменился IP порт сепаратора

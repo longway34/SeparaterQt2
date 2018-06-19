@@ -13,7 +13,17 @@
 
 #include "ITCPCommand.h"
 
-ITCPCommand::ITCPCommand() {
+TCPLogsWigtets *ITCPCommand::getLogWidget() const
+{
+    return logWidget;
+}
+
+void ITCPCommand::setLogWidget(TCPLogsWigtets *value)
+{
+    logWidget = value;
+}
+
+ITCPCommand::ITCPCommand(): logWidget(nullptr) {
 }
 
 

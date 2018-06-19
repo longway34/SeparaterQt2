@@ -22,6 +22,7 @@ TCPTimeOutCommand::TCPTimeOutCommand(): TCPCommand() {
 TCPTimeOutCommand::TCPTimeOutCommand(EnumCommands _command, uint _timeout_in_msec, uint _parts, TCPTimeOutWigget *_widget, QString _title, QString _message):
     TCPCommand(_command), widget(_widget), parts(_parts), timeout(_timeout_in_msec), title(_title), message(_message)
 {
+    command = timeoutcommand;
         connect(&timer, SIGNAL(timeout()), this, SLOT(onTimeOut()));
 //    if(widget){
 //        connect(this, SIGNAL(compliteParts(int, int)), widget, SLOT(onRangeChange(int, int)));

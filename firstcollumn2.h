@@ -6,6 +6,8 @@
 #include <QStyleFactory>
 #include <QColorDialog>
 
+#include "variables/sprqcolorvariable.h"
+
 class FirstCollumn2 : public QWidget
 {
     Q_OBJECT
@@ -17,11 +19,16 @@ class FirstCollumn2 : public QWidget
 
     QString text;
     QColor color;
+
+    SPRQColorVariable *vcolor;
+
     int row;
+
+
 public:
 
     explicit FirstCollumn2(QWidget *parent = 0) :
-        QWidget(parent), selectVisible(true), deleteVisible(true), textVisible(true), colorVisible(true), text("99"), color(QColor(Qt::black)), row(-1)
+        QWidget(parent), vcolor(nullptr), selectVisible(true), deleteVisible(true), textVisible(true), colorVisible(true), text("99"), color(QColor(Qt::black)), row(-1)
     {
         ui.setupUi(this);
 
@@ -32,11 +39,18 @@ public:
 
     void setColor(QColor _color){
         if(_color.isValid()){
+            if(vcolor){
+                vcolor->setData(_color);
+            }
             color = _color;
-            widgetsShow();
         }
     }
-    QColor getColor() {return color;}
+    QColor getColor() {
+        if(vcolor){
+            return vcolor->getData();
+        }
+        return color;
+    }
     QString getText() {return text;}
 
     bool isSelect(){return ui.cbSelect->isChecked();}
@@ -53,6 +67,8 @@ public:
     int getRow() const;
     void setRow(int value);
 
+    void setColorVariable(SPRQColorVariable *value);
+
 private:
     Ui::FirstCollumn2 ui;
 
@@ -62,7 +78,8 @@ public slots:
         QColor newColor = QColorDialog::getColor(color, this);
         if(newColor.isValid() && newColor != color){
             setColor(newColor);
-            emit colorChanged(newColor);
+            if(!vcolor)
+                emit colorChanged(newColor);
         }
     }
 
@@ -75,6 +92,7 @@ public slots:
     }
 
     void setParams(int _row, QString _text, QColor _color, bool _selected);
+    void onModelChanget(IModelVariable *);
 signals:
     void colorChanged(QColor);
     void deleteRow(int);

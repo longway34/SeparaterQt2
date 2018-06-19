@@ -58,9 +58,6 @@ SPRTestIMSWidget::SPRTestIMSWidget(QWidget *parent) :
 // init commands and connects
 // *********************************************************************
 
-    getSpectrumsCommand = new TCPGetSpectrumsGistogramms(nullptr, getspk, towidget);
-    connect(getSpectrumsCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
-
     rentgenOnCommand = new TCPCommandRentgerOn(nullptr, towidget);
     connect(rentgenOnCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
 
@@ -72,17 +69,7 @@ SPRTestIMSWidget::SPRTestIMSWidget(QWidget *parent) :
     rentgenOffCommand->findCommands(expoff).first()->setSendData(&ch0, sizeof(ch0));
 
     connect(rentgenOffCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
-
-    separatorOnCommand = new TCPCommandSeparatorOnOff(nullptr, towidget);
-    connect(separatorOnCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
-
-    separatorOffCommand = new TCPCommandSet(nullptr, towidget, {
-        new TCPCommand(getstate),
-        new TCPCommand(offren),
-        new TCPCommand(offosw),
-        new TCPCommand(offsep),
-        new TCPCommand(getstate)
-                                           });
+    separatorOffCommand = new TCPTestStopSeparate(towidget);
     connect(separatorOffCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
 
     rguReadStateCommand = new TCPCommandSet(nullptr, towidget,
@@ -148,28 +135,30 @@ void SPRTestIMSWidget::setLogWidget(TCPLogsWigtets *value)
 {
     ISPRWidget::setLogWidget(value);
 
-    if(getLogWidget()){
+    getSpectrumsCommand->setLogWidget(value);
+    separatorOnCommand->setLogWidget(value);
+//    if(getLogWidget()){
 
 
-        connect(getSpectrumsCommand, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
-        connect(rentgenOnCommand, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
-        connect(rentgenOffCommand, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
-        connect(separatorOnCommand, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
-        connect(separatorOffCommand, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
-        connect(rguReadStateCommand, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
-        connect(rguUpCommand, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
-        connect(rguDownCommand, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
-        connect(thermoReadStateCommand, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
-        connect(thermoWriteStateCommand, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
-        connect(startTestImsCommand, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
-        connect(commandStartPitatel, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
-        connect(commandStopPitatel, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
-        connect(commandChangePersentPitatel, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
-        connect(commandStartRasklad, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
-        connect(commandStopRasklad, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
-        connect(commandStartRudostusk, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
-        connect(commandStopRudospusk, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(TCPCommand*)));
-    }
+//        connect(getSpectrumsCommand, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(ITCPCommand*,QString)));
+//        connect(rentgenOnCommand, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(ITCPCommand*,QString)));
+//        connect(rentgenOffCommand, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(ITCPCommand*,QString)));
+//        connect(separatorOnCommand, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(ITCPCommand*,QString)));
+//        connect(separatorOffCommand, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(ITCPCommand*,QString)));
+//        connect(rguReadStateCommand, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(ITCPCommand*,QString)));
+//        connect(rguUpCommand, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(ITCPCommand*,QString)));
+//        connect(rguDownCommand, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(ITCPCommand*,QString)));
+//        connect(thermoReadStateCommand, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(ITCPCommand*,QString)));
+//        connect(thermoWriteStateCommand, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(ITCPCommand*,QString)));
+//        connect(startTestImsCommand, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(ITCPCommand*,QString)));
+//        connect(commandStartPitatel, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(ITCPCommand*,QString)));
+//        connect(commandStopPitatel, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(ITCPCommand*,QString)));
+//        connect(commandChangePersentPitatel, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(ITCPCommand*,QString)));
+//        connect(commandStartRasklad, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(ITCPCommand*,QString)));
+//        connect(commandStopRasklad, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(ITCPCommand*,QString)));
+//        connect(commandStartRudostusk, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(ITCPCommand*,QString)));
+//        connect(commandStopRudospusk, SIGNAL(commandComplite(TCPCommand*)), getLogWidget(), SLOT(onLogsCommand(ITCPCommand*,QString)));
+//    }
 }
 void SPRTestIMSWidget::onChangeValue(bool _val){
     if(sender() == ui.cbZonesShow){
@@ -343,8 +332,8 @@ void SPRTestIMSWidget::onCommandComplite(TCPCommand *_comm){
         msgTitle = tr("Команда выключить сепаратор");
         if(err == 0){
             msgText = tr("Выплнена успешно.");
-            model->getServer()->clearState(spr_state_separator_on);
-            model->getServer()->clearState(spr_state_rentgen_on);
+//            model->getServer()->clearState(spr_state_separator_on);
+//            model->getServer()->clearState(spr_state_rentgen_on);
         } else {
             msgText = tr("Выполнено с ошибкой %1 state %2").arg(QString::number(err));
         }
@@ -443,7 +432,7 @@ void SPRTestIMSWidget::onCommandComplite(TCPCommand *_comm){
         if(res.size() > 0 && res[0] == 0){
             QMessageBox::information(this, tr("Получение спектров"), tr("Спектры получены"));
             ((SPRSpectrumListItemsModel*)(ui.wSpectrumWidget->getModelData()))->clearGraphicsItemModel();
-            for(int ch=0; MAX_SPR_MAIN_THREADS; ch++){
+            for(int ch=0; ch<MAX_SPR_MAIN_THREADS; ch++){
                 QByteArray sp = getSpectrumsCommand->getSpectrumData(ch);
                 ((SPRSpectrumListItemsModel*)(ui.wSpectrumWidget->getModelData()))->addSpectrum(sp);
 //                QColor col = colors[ch % colors.size()];
@@ -511,8 +500,15 @@ ISPRModelData *SPRTestIMSWidget::setModelData(SPRMainModel *_model)
 
         ui.wSpectrumWidget->setModelData(new SPRSpectrumListItemsModel(model->getSpectrumZonesTableModel(), model->getSettingsFormulaModel(),model->getSettingsMainModel()->getThreads(), model->getSettingsMainModel()->getSpectrumFileName(), model->getSettingsControlModel()->controlArea), spectrumsOnly, true);
 
-        getSpectrumsCommand->setThreadTimer(model->getSettingsMainModel()->getThreads()->getData());
-        separatorOnCommand->setModel(model->getSettingsRentgenModel());
+        getSpectrumsCommand = new TCPGetSpectrumsGistogramms(nullptr, getspk, model, towidget, getLogWidget());
+        connect(getSpectrumsCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
+
+//        getSpectrumsCommand->setThreadTimer(model->getSettingsMainModel()->getThreads()->getData());
+
+        separatorOnCommand = new TCPCommandSeparatorOnFull(model->getServer(), model, towidget);
+//        separatorOnCommand->setModelData(model);
+        connect(separatorOnCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
+
         rentgenOnCommand->setModel(model->getSettingsRentgenModel());
         commandStartPitatel->setModelVariable(model->getSettingsControlModel()->VEMSBeginCode);
 

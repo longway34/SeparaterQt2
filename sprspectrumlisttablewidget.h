@@ -16,6 +16,7 @@
 #include "tcp/tcpcommandrentgeron.h"
 #include "tcp/TCPCommandSet.h"
 #include "tcp/tcpcommandrguupdown.h"
+#include "tcp/tcpteststopseparate.h"
 
 #include "qwt_plot_curve.h"
 #include "qwt_plot_histogram.h"
@@ -33,7 +34,8 @@ class SPRSpectrumListTableWidget : public QWidget, public ISPRWidget
     SPRSpectrumChoiseTimeDialog *choiseTimeDialog;
 
     TCPGetSpectrumsGistogramms *gettingSpectrumsCommand;
-    TCPCommandSeparatorOnFull *rentgenOnCommand;
+    TCPGetSpectrumsGistogramms *gettingBaseSpectrumsCommand;
+    TCPTestStopSeparate *separateOffCommand;
     TCPCommandRGUUpDown *rguUpDownCommand;
     TCPCommand *rentgenOffCommand;
     TCPCommandSet *commands;
@@ -64,10 +66,12 @@ public slots:
         }
     }
 
+    void onClickedBooton(bool value);
     void onGetSpectrums(bool);
     void onCompliteCommand(TCPCommand *command);
     void onErrorsCommand(TCPCommand *command);
     void onSpectSpectrumTableClick(int row, int col, SPRSpectrumListTable *_sender=nullptr);
+    void onChangeSpectrumsFileName();
 private:
     Ui::SPRSpectrumListTableWidget ui;
 
@@ -87,6 +91,10 @@ protected slots:
 
     // ISPRWidget interface
 protected:
+
+    // ISPRWidget interface
+public:
+    virtual void setLogWidget(TCPLogsWigtets *value);
 };
 
 #endif // SPRSPECTRUMLISTTABLEWIDGET_H

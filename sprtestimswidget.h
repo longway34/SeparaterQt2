@@ -18,6 +18,9 @@
 #include "tcp/tcpstartrudospuskcommand.h"
 #include "tcp/tcpstoprudostuskcommand.h"
 
+#include "tcp/tcpteststopseparate.h"
+#include "tcp/tcpcommandrentgenonfull.h"
+
 class SPRTestIMSWidget : public QWidget, public ISPRWidget
 {
     Q_OBJECT
@@ -30,8 +33,8 @@ public:
 //    TCPCommandGetSpectrums *getSpectrumsCommand;
     TCPGetSpectrumsGistogramms *getSpectrumsCommand;
 
-    TCPCommandSeparatorOnOff *separatorOnCommand;
-    TCPCommandSet *separatorOffCommand;
+    TCPCommandSeparatorOnFull *separatorOnCommand;
+    TCPTestStopSeparate *separatorOffCommand;
 
     TCPCommandRentgerOn *rentgenOnCommand;
     TCPCommandSet *rentgenOffCommand;

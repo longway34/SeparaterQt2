@@ -24,7 +24,11 @@ void TCPCommandSeparatorOnFull::setModelData(SPRMainModel *value)
 //        addCommand(new TCPCommand(offosw));
         addCommand(new TCPCommand(onosw));
 
-//        addCommand(new TCPTimeOutCommand(timeoutcommand, 6000, 10, widget, QString(tr("Включение экспозиции...")), QString(tr("Включение экспозиции..."))));
+        uint timeHotTube = model->getSettingsRentgenModel()->timeOnRA->getData();
+
+        addCommand(new TCPTimeOutCommand(timeoutcommand, timeHotTube * 1000 + 1000,
+                                         10, widget, QString(tr("Включение рентгена...")),
+                                         QString(tr("Прогрев трубок (%1 секунд)...")).arg(timeHotTube)));
 
 //        addCommand(new TCPCommand(getren));
     }

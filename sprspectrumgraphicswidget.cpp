@@ -78,8 +78,12 @@ SPRSpectrumGraphicsWidget::SPRSpectrumGraphicsWidget(QWidget *parent) :
     zonesShow = true;
 
     ui.canvas->setAxisScale(QwtPlot::Axis::xBottom, 0, 256, 10);
+    QPalette pal = ui.canvas->palette();
+    pal.setBrush(ui.canvas->foregroundRole(), QColor(Qt::white));
 
-    zoomer = new MyZoomer(ui.canvas->canvas());
+    ui.canvas->setPalette(pal);
+
+    zoomer = new ScrollZoomer(ui.canvas->canvas(), ui.canvas);
 
     const QColor c( Qt::darkBlue );
     zoomer->setRubberBandPen( c );
@@ -94,7 +98,8 @@ void SPRSpectrumGraphicsWidget::widgetsShow()
         spectrums = model->getSpectrumsModel(typeSpectrumSet);
         for(int i=0; i<spectrums->size(); i++){
     //        if(i >= graphItems.size()){ // add new sectrum
-                GraphItem *gi = new GraphItem(spectrums->at(i), ui.canvas);
+//                GraphItem *gi = new GraphItem(spectrums->at(i), ui.canvas);
+                SPRGraphItem *gi = new SPRGraphItem(spectrums->at(i), ui.canvas);
                 graphItems.push_back(gi);
     //        }
         }

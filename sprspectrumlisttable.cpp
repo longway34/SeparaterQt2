@@ -3,7 +3,7 @@
 #include "_types.h"
 
 void SPRSpectrumListTable::connectFirstTable(FirstCollumn2 *fc){
-    connect(fc, SIGNAL(changeColor(QColor)), this, SLOT(viewChange(QColor)));
+    connect(fc, SIGNAL(colorChanged(QColor)), this, SLOT(viewChange(QColor)));
     connect(fc, SIGNAL(selectedRow(bool,int)), this, SLOT(onRowSelect(bool,int)));
     connect(fc, SIGNAL(deleteRow(int)), this, SLOT(onDeleteRow(int)));
     connect(this, SIGNAL(doShow()), fc, SLOT(widgetsShow()));
@@ -285,9 +285,11 @@ void SPRSpectrumListTable::viewChange(QColor color)
     if(sender()->property("tw").value<QTableWidget*>() == this){
         int row = sender()->property("row").toInt();
 
-        *spectrums->at(row)->getSpectrumData()->red = color.red();
-        *spectrums->at(row)->getSpectrumData()->green = color.green();
-        *spectrums->at(row)->getSpectrumData()->blue = color.blue();
+        spectrums->at(row)->setSpectrumColor(color);
+
+//        *spectrums->at(row)->getSpectrumData()->red = color.red();
+//        *spectrums->at(row)->getSpectrumData()->green = color.green();
+//        *spectrums->at(row)->getSpectrumData()->blue = color.blue();
 //        emit rowChangeColor(row);
         widgetsShow();
     }

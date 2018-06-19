@@ -21,7 +21,7 @@ class TCPStartStopSeparate : public TCPCommandSet
     int timeOutsCount;
 public:
     TCPStartStopSeparate();
-    TCPStartStopSeparate(ServerConnect *_server, TCPTimeOutWigget *_widget);
+    TCPStartStopSeparate(ServerConnect *_server, SPRMainModel _model, TCPTimeOutWigget *_widget);
     void setModel(SPRMainModel *value);
 
 protected slots:

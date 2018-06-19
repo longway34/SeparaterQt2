@@ -103,6 +103,7 @@ void SPRZonesRanges::widgetsShow()
             if(firstCollumnVisible){
                 FirstCollumn2 *fc = new FirstCollumn2(this);
                 fc->setParams(row, zoneModel->getElementsProperty()->getSName(el), zoneModel->getElementsProperty()->getColor(el), false);
+                fc->setColorVariable(zoneModel->getElementsProperty()->getColorVariable(el));
                 fc->setProperty("element", static_cast<QVariant>(el));
                 fc->setSelectVisible(selectEnable);
 //                fc->setRow(row);
@@ -115,7 +116,7 @@ void SPRZonesRanges::widgetsShow()
                 QSize t2 = fc->sizeHint();
                 fc->setMinimumSize(fc->geometry().size());
                 connect(fc, SIGNAL(colorChanged(QColor)), this,SLOT(onChangeColor(QColor)));
-                connect(fc, SIGNAL(deleteRow()), this, SLOT(onDeleteElements()));
+                connect(fc, SIGNAL(deleteRow(int)), this, SLOT(onDeleteElements(int)));
                 connect(fc,SIGNAL(selectedRow(bool,int)), this, SLOT(onChangeSelectedRow(bool, int)));
                 //                setColumnWidth(colCount, fc->sizeHint().width());
                 setColumnWidth(colCount, t1.width());
@@ -160,11 +161,11 @@ void SPRZonesRanges::onChangeColor(QColor color){
     widgetsShow();
 }
 
-void SPRZonesRanges::onDeleteElements(){
+void SPRZonesRanges::onDeleteElements(int){
     EnumElements el = sender()->property("element").value<EnumElements>();
 
     zoneModel->deleteElement(el);
-    emit deleteElement(zoneModel->tIndex, el);
+//    emit deleteElement(zoneModel->tIndex, el);
     widgetsShow();
 }
 

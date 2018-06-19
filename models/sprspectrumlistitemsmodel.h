@@ -139,6 +139,10 @@ public:
         SPRSpectrumItemModel *ret = nullptr;
         QVector<SPRSpectrumItemModel*> *model = getSpectrumsModel(spectrumBase);
 
+        if(ch < 0 || ch > getThreads()->getData()){
+            ch = getThreads()->getData() % abs(ch);
+        }
+
         for(int i=0; i<model->size(); i++){
             if(model->at(i)->getSpectrumThread() == ch){
                ret = model->at(i);

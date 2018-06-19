@@ -1,7 +1,9 @@
 #include "sprspectrumlisttablewidget.h"
 #include <QHeaderView>
 #include <QMessageBox>
-
+#include <QFileDialog>
+#include <QDir>
+#include <QMessageBox>
 
 SPRSpectrumListTableWidget::SPRSpectrumListTableWidget(QWidget *parent) :
     QWidget(parent), ISPRWidget(),
@@ -9,7 +11,8 @@ SPRSpectrumListTableWidget::SPRSpectrumListTableWidget(QWidget *parent) :
     spectrums(nullptr),
     choiseTimeDialog(nullptr),
     gettingSpectrumsCommand(nullptr),
-    rentgenOnCommand(nullptr),
+    gettingBaseSpectrumsCommand(nullptr),
+    separateOffCommand(nullptr),
     rguUpDownCommand(nullptr),
     rentgenOffCommand(nullptr),
     commands(nullptr),
@@ -29,6 +32,15 @@ SPRSpectrumListTableWidget::SPRSpectrumListTableWidget(QWidget *parent) :
 //    connect(ui.tRangesChannel, SIGNAL(tableChange(EnumElements,int,int)), this, SLOT(onChangeZoneRange(EnumElements,int,int)));
 
     connect(ui.bGetSpectrums, SIGNAL(clicked(bool)), this, SLOT(onGetSpectrums(bool)));
+    connect(ui.bGetBaseSpectrum, SIGNAL(clicked(bool)), this, SLOT(onGetSpectrums(bool)));
+
+    connect(ui.bSeparatorOff, SIGNAL(clicked(bool)), this, SLOT(onClickedBooton(bool)));
+    connect(ui.bRecompliteSpectrums, SIGNAL(clicked(bool)), this, SLOT(onClickedBooton(bool)));
+    connect(ui.bOpenSpectrums, SIGNAL(clicked(bool)), this, SLOT(onClickedBooton(bool)));
+    connect(ui.bSaveSpectrums, SIGNAL(clicked(bool)), this, SLOT(onClickedBooton(bool)));
+    connect(ui.bSpectrumFNameSelect, SIGNAL(clicked(bool)), this, SLOT(onClickedBooton(bool)));
+
+    connect(ui.leSpectrumsFName, SIGNAL(editingFinished()), this, SLOT(onChangeSpectrumsFileName()));
 
     ui.gbBasetSpectrums->setVisible(ui.cbBasetSpectrumVisible->isChecked());
 
@@ -36,38 +48,117 @@ SPRSpectrumListTableWidget::SPRSpectrumListTableWidget(QWidget *parent) :
 
 }
 
-void SPRSpectrumListTableWidget::onGetSpectrums(bool){
-    if(choiseTimeDialog){
-        choiseTimeDialog->setModelData(model);
-
-        int res = choiseTimeDialog->exec();
-
-        if(res == QDialog::Accepted){
-            double time = choiseTimeDialog->getTime();
-            QList<uint8_t> lth = choiseTimeDialog->getThreads();
-
-            gettingSpectrumsCommand->setThreadTimer(model->getSettingsMainModel()->getThreads()->getData(), time, lth);
-
-            if(!commands){
-                commands = new TCPCommandSet(model->getServer(), toWidget, {});
-            }
-
-            commands->clear();
-            if(choiseTimeDialog->isRGUDown()){
-                commands->addCommand(rguUpDownCommand);
-            }
-            if(choiseTimeDialog->isRentgenOn()){
-                commands->addCommand(rentgenOnCommand);
-            }
-
-            commands->addCommand(gettingSpectrumsCommand);
-
-            if(choiseTimeDialog->isRentgenOff()){
-                commands->addCommand(rentgenOffCommand);
-            }
-
-            commands->send(model->getServer());
+void SPRSpectrumListTableWidget::onChangeSpectrumsFileName(){
+    if(model){
+        blockSignals(true);
+        if(sender() == ui.leSpectrumsFName){
+            model->getSettingsMainModel()->getSpectrumFileName()->setData(ui.leSpectrumsFName->text());
         }
+        blockSignals(false);
+    }
+}
+
+void SPRSpectrumListTableWidget::onClickedBooton(bool){
+    if(model){
+        if(sender() == ui.bSeparatorOff){
+            if(separateOffCommand){
+                separateOffCommand->send(model->getServer());
+            }
+        }
+        if(sender() == ui.bOpenSpectrums){
+            QString fname = QFileDialog::getOpenFileName(this, tr("Выберите файл с готовыми спекрами..."), QDir::currentPath(), tr("файлы спектров (*.spc)"));
+
+            this->blockSignals(true);
+            model->getSpectrumListItemsModel()->addSpectrums(fname);
+            this->blockSignals(false);
+        }
+        if(sender() == ui.bRecompliteSpectrums){
+            uint32_t res =
+            QMessageBox::warning(nullptr, tr("Необходимо подтверждение"),
+                                 tr("Вы действительно хотите пересчитать спектры?"),
+                                 QMessageBox::Yes, QMessageBox::No);
+
+            if(res == QMessageBox::Yes){
+                this->blockSignals(true);
+    //            QVector<SPRSpectrumItemModel*> *items = model->getSpectrumListItemsModel()->getSpectrumsModel(spectrumBase);
+    //            for(int i = 0; i<items->size(); i++){
+    //                SPRSpectrumItemModel *it = items->at(i);
+    //                if(it){
+    //                    model->getSpectrumListItemsModel()->recomplite(it, spectrumBase);
+    //                }
+    //            }
+    //            items = model->getSpectrumListItemsModel()->getSpectrumsModel(spectrumsOnly);
+    //            for(int i=0; i < items->size(); i++){
+    //                SPRSpectrumItemModel *it = items->at(i);
+    //                if(it){
+    //                    model->getSpectrumListItemsModel()->recomplite(it, spectrumsOnly);
+    //                }
+    //            }
+
+                model->getSpectrumListItemsModel()->recomplite();
+
+                blockSignals(false);
+                ui.tListSpectrumItem->widgetsShow();
+                ui.tListBasedSpectrumItem->widgetsShow();
+            }
+        }
+        if(sender() == ui.bSpectrumFNameSelect){
+            QString fName = model->getSettingsMainModel()->getSpectrumFileName()->getData();
+            QString nfName = QFileDialog::getSaveFileName(nullptr,
+                                QString(tr("Выберите файл для записи")),
+                                QDir::currentPath(),
+                                QString(tr("файлы спектров (*.spc)")));
+
+            if(fName != nfName){
+                 model->getSettingsMainModel()->getSpectrumFileName()->setData(nfName);
+           }
+        }
+        if(sender() == ui.bSaveSpectrums){
+            model->getSpectrumListItemsModel()->saveAs(model->getSettingsMainModel()->getSpectrumFileName()->getData());
+        }
+    }
+}
+
+void SPRSpectrumListTableWidget::onGetSpectrums(bool){
+    if(sender() == ui.bGetSpectrums){
+        if(choiseTimeDialog){
+            choiseTimeDialog->setModelData(model);
+
+            int res = choiseTimeDialog->exec();
+
+            if(res == QDialog::Accepted){
+                double time = choiseTimeDialog->getTime();
+                QList<uint8_t> lth = choiseTimeDialog->getThreads();
+
+                gettingSpectrumsCommand->setThreadTimer(model->getSettingsMainModel()->getThreads()->getData(), time, lth);
+
+                if(!commands){
+                    commands = new TCPCommandSet(model->getServer(), toWidget, {});
+                    commands->setLogWidget(getLogWidget());
+                }
+
+                commands->clear();
+                if(choiseTimeDialog->isRGUDown()){
+                    commands->addCommand(rguUpDownCommand);
+                }
+    //            if(choiseTimeDialog->isRentgenOn()){
+    //                commands->addCommand(rentgenOnCommand);
+    //            }
+
+                commands->addCommand(gettingSpectrumsCommand);
+
+    //            if(choiseTimeDialog->isRentgenOff()){
+    //                commands->addCommand(rentgenOffCommand);
+    //            }
+
+                commands->send(model->getServer());
+            }
+        }
+    }
+    if(sender() == ui.bGetBaseSpectrum){
+        gettingBaseSpectrumsCommand->setThreadTimer(model->getThreads()->getData(), 30);
+
+        gettingBaseSpectrumsCommand->send(model->getServer());
     }
 }
 
@@ -80,7 +171,18 @@ void SPRSpectrumListTableWidget::onCompliteCommand(TCPCommand *command)
         QList<uint8_t> lth = choiseTimeDialog->getThreads();
 
         for(uint8_t th=0; th<lth.size(); th++) {
+            SPRSpectrumItemModel *item =
             model->getSpectrumListItemsModel()->addSpectrum(gettingSpectrumsCommand->getSpectrumData(th), lth[th], choiseTimeDialog->getPrefix());
+            item->setTimeScope(choiseTimeDialog->getTime());
+        }
+        widgetsShow();
+    }
+    if(command == gettingBaseSpectrumsCommand){
+        QVector<TCPCommand*> vec = gettingBaseSpectrumsCommand->findCommands(getspk);
+
+        for(uint8_t th=0; th<vec.size(); th++){
+            QByteArray buf = gettingBaseSpectrumsCommand->getSpectrumData(th);
+            model->getSpectrumListItemsModel()->setSpectrumData(th, buf, spectrumBase);
         }
         widgetsShow();
     }
@@ -106,7 +208,7 @@ ISPRModelData *SPRSpectrumListTableWidget::setModelData(SPRMainModel *mainModel)
         connect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
 
         spectrums = mainModel->getSpectrumListItemsModel();
-        connect(spectrums, SIGNAL(modelChanget()), this, SLOT(widgetsShow()));
+//        connect(spectrums, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(widgetsShow()));
 
         ui.graphic->setModelData(spectrums, spectrumsAll, true);
 
@@ -127,22 +229,38 @@ ISPRModelData *SPRSpectrumListTableWidget::setModelData(SPRMainModel *mainModel)
         }
 
         if(!gettingSpectrumsCommand){
-            gettingSpectrumsCommand = new TCPGetSpectrumsGistogramms(model->getServer(), getspk, toWidget);
+            gettingSpectrumsCommand = new TCPGetSpectrumsGistogramms(model->getServer(), getspk, model, toWidget);
             connect(gettingSpectrumsCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCompliteCommand(TCPCommand*)));
+            connect(gettingSpectrumsCommand, SIGNAL(commandNotComplite(TCPCommand*)), this, SLOT(onErrorsCommand(TCPCommand*)));
         }
-        if(!rentgenOnCommand){
-            rentgenOnCommand = new TCPCommandSeparatorOnFull(model->getServer(), model, toWidget);
-            connect(rentgenOnCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCompliteCommand(TCPCommand*)));
-            connect(rentgenOnCommand, SIGNAL(errorsCommand(TCPCommand*)), this, SLOT(onErrorsCommand(TCPCommand*)));
+        gettingSpectrumsCommand->setModelData(model);
+
+        if(!gettingBaseSpectrumsCommand){
+            gettingBaseSpectrumsCommand = new TCPGetSpectrumsGistogramms(model->getServer(), getspk, model, toWidget);
+            connect(gettingBaseSpectrumsCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCompliteCommand(TCPCommand*)));
+            connect(gettingBaseSpectrumsCommand, SIGNAL(commandNotComplite(TCPCommand*)), this, SLOT(onErrorsCommand(TCPCommand*)));
         }
+        gettingBaseSpectrumsCommand->setModelData(model);
+
+
+        if(!separateOffCommand){
+            separateOffCommand = new TCPTestStopSeparate(toWidget);
+            connect(separateOffCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCompliteCommand(TCPCommand*)));
+            connect(separateOffCommand, SIGNAL(commandNotComplite(TCPCommand*)), this, SLOT(onErrorsCommand(TCPCommand*)));
+        }
+//        if(!rentgenOnCommand){
+//            rentgenOnCommand = new TCPCommandSeparatorOnFull(model->getServer(), model, toWidget);
+//            connect(rentgenOnCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCompliteCommand(TCPCommand*)));
+//            connect(rentgenOnCommand, SIGNAL(errorsCommand(TCPCommand*)), this, SLOT(onErrorsCommand(TCPCommand*)));
+//        }
         if(!rguUpDownCommand){
             rguUpDownCommand = new TCPCommandRGUUpDown(model->getServer(), toWidget, false);
             connect(rguUpDownCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCompliteCommand(TCPCommand*)));
         }
-        if(!rentgenOffCommand){
-            rentgenOffCommand = new TCPCommand(expoff);
-            connect(rentgenOffCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCompliteCommand(TCPCommand*)));
-        }
+//        if(!rentgenOffCommand){
+//            rentgenOffCommand = new TCPCommand(expoff);
+//            connect(rentgenOffCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCompliteCommand(TCPCommand*)));
+//        }
     }
 
     widgetsShow();
@@ -156,6 +274,11 @@ void SPRSpectrumListTableWidget::widgetsShow()
     ui.tListSpectrumItem->widgetsShow();
     ui.tRangesChannel->widgetsShow();
     ui.graphic->widgetsShow();
+    if(model){
+        blockSignals(true);
+        ui.leSpectrumsFName->setText(model->getSettingsMainModel()->getSpectrumFileName()->getData());
+        blockSignals(false);
+    }
 }
 
 void SPRSpectrumListTableWidget::onChangeSpectColor(int row)
@@ -237,4 +360,14 @@ void SPRSpectrumListTableWidget::onChangeZoneRange(EnumElements el, int thread, 
 void SPRSpectrumListTableWidget::onModelChanget(IModelVariable *)
 {
     widgetsShow();
+}
+
+
+void SPRSpectrumListTableWidget::setLogWidget(TCPLogsWigtets *value)
+{
+    ISPRWidget::setLogWidget(value);
+    gettingSpectrumsCommand->setLogWidget(value);
+    gettingBaseSpectrumsCommand->setLogWidget(value);
+    rguUpDownCommand->setLogWidget(value);
+    separateOffCommand->setLogWidget(value);
 }

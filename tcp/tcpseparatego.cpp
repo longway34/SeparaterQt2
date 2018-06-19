@@ -10,15 +10,21 @@ SPRMainModel *TCPSeparateGo::getModel() const
 void TCPSeparateGo::setModel(SPRMainModel *value)
 {
     model = value;
-    QVector<TCPCommand*> vcomm= findCommands(setGetSpectrumsGistorfamms);
-    for(int i=0; i<vcomm.size();i++){
-        ((TCPGetSpectrumsGistogramms*)vcomm[i])->setThreadTimer(model->getSettingsMainModel()->getThreads()->getData());
-    }
+
+    kspectCommand->setModelData(value);
+    histCommand->setModelData(value);
+//    QVector<TCPCommand*> vcomm= findCommands(setGetSpectrumsGistorfamms);
+//    for(int i=0; i<vcomm.size();i++){
+//        ((TCPGetSpectrumsGistogramms*)vcomm[i])->setThreadTimer(model->getSettingsMainModel()->getThreads()->getData());
+//    }
 }
 
 void TCPSeparateGo::setLogWidget(TCPLogsWigtets *value)
 {
     logWidget = value;
+    getseparCommand->setLogWidget(value);
+    kspectCommand->setLogWidget(value);
+    histCommand->setLogWidget(value);
 }
 
 TCPGetSpectrumsGistogramms *TCPSeparateGo::getKspectCommand() const
@@ -51,10 +57,11 @@ TCPSeparateGo::TCPSeparateGo(TCPLogsWigtets *log):
 //    addCommand(new TCPTimeOutCommand(timeoutcommand, 1000));
     addCommand(new TCPCommand(getstate));
     getseparCommand = new TCPCommand(getsepar);
+    getseparCommand->setLogWidget(getLogWidget());
     addCommand(getseparCommand);
-    kspectCommand = new TCPGetSpectrumsGistogramms(nullptr, getkspk);
+    kspectCommand = new TCPGetSpectrumsGistogramms(nullptr, getkspk, nullptr, nullptr, getLogWidget());
     addCommand(kspectCommand);
-    histCommand = new TCPGetSpectrumsGistogramms(nullptr, getgist);
+    histCommand = new TCPGetSpectrumsGistogramms(nullptr, getgist, nullptr, nullptr, getLogWidget());
     addCommand(histCommand);
 //    addCommand(new TCPCommand(nocommand));
 }

@@ -41,6 +41,16 @@ QString ISPRModelData::getFileName() const
     return fileName;
 }
 
+//QList<IModelVariable *> ISPRModelData::getMyVariables() const
+//{
+//    return myVariables;
+//}
+
+//void ISPRModelData::setMyVariables(const QList<IModelVariable *> &value)
+//{
+//    myVariables = value;
+//}
+
 ISPRModelData::ISPRModelData(QString fname, IModelVariable *parent): IModelVariable(nullptr, parent)
 {
     setDoc(fname, parent);

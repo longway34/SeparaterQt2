@@ -50,6 +50,7 @@ void MainTabWidget::setLogWidget(TCPLogsWigtets *value)
 
     ui.tabTest->setLogWidget(value);
     ui.wTest->setLogWidget(value);
+    ui.tabSpectrum->setLogWidget(value);
 //    ui.wTest->setl
 }
 

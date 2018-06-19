@@ -37,6 +37,7 @@ void SPRMainModel::setDoc(QDomDocument *value)
 
     if(spectrumListItemsModel) {delete spectrumListItemsModel; spectrumListItemsModel = nullptr;}
     spectrumListItemsModel = new SPRSpectrumListItemsModel(spectrumZonesTableModel, settingsFormulaModel, settingsMainModel->getThreads(), settingsMainModel->getSpectrumFileName(), settingsControlModel->controlArea, this);
+//    spectrumListItemsModel->setSpectrumsfName(settingsMainModel->getSpectrumFileName());
 
     if(separateModel){delete separateModel; separateModel = nullptr;}
     separateModel = new SPRSeparateModel(doc, this);

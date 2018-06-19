@@ -13,7 +13,7 @@
 
 #include "TCPCommand.h"
 
-TCPCommand::TCPCommand(){
+TCPCommand::TCPCommand() :ITCPCommand(){
     command = nocommand;
 }
 

@@ -61,7 +61,7 @@ class IModelVariable: public QObject
 //                QString v = xmlNode.nodeValue();
 //                QString v1 = QString::fromUtf8(xmlNode.nodeValue().toStdString().c_str());
                 value = xmlNode.nodeValue();
-                emit modelChanget(this);
+//                emit modelChanget(this);
             }
         }
     }

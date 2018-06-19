@@ -43,6 +43,9 @@ void spectumItemData::setData(uint8_t *inp, uint16_t inplength)
     if(inp){
         if(inplength == bufLength){
             memcpy(buf, inp, bufLength);
+            if(*thread >= MAX_SPR_MAIN_THREADS){
+                *thread = 0;
+            }
             return;
         }
         if(inplength == DEF_SPECTRUM_DATA_LENGTH_BYTE){

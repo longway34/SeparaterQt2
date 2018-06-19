@@ -60,6 +60,11 @@ public:
     QColor getColor(){
         return QColor(*red, *green, *blue);
     }
+    bool isValidData(){
+        if(*thread >= MAX_SPR_MAIN_THREADS || *thread < 0){
+            return false;
+        }
+    }
 
 } SpectrumItemData;
 
@@ -113,6 +118,7 @@ public:
         *spectrumData.red = (uint8_t)color.red();
         *spectrumData.green = (uint8_t)color.green();
         *spectrumData.blue = (uint8_t)color.blue();
+//        emit modelChanget(this);
     }
 
     QString getSpectrumName(){
@@ -121,6 +127,7 @@ public:
 
     void setSpectrumName(QString name){
         memcpy(spectrumData.name, name.toStdString().c_str(), name.length());
+//        emit modelChanget(this);
     }
 
     void setSpectrumThread(uint th){

@@ -11,6 +11,10 @@ protected:
     QString onLogsCommand(ITCPCommand *command);
     void onLogsCommand(QString msg, QColor _color = QColor());
 
+
+    QTextCharFormat textCharFormatDefault;
+    QTextCharFormat textCharFormatAther;
+
 public:
     explicit TCPLogsWigtets(QWidget *parent = 0);
     Ui::TCPLogsWigtets ui;

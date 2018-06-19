@@ -110,7 +110,7 @@ SPRSpectrumItemModel *SPRSpectrumListItemsModel::addSpect(uint8_t *buf, int bufL
         item->setSpectrumName(pref+QString::number(model->size()));
         item->setSpectrumColor(mainColors[model->size() % mainColors.size()]);
         item->setSpectrumDateTime(QDateTime::currentDateTime());
-        if(numTh > 0){
+        if(numTh >= 0){
             item->setSpectrumThread(numTh);
         }
     }
@@ -136,7 +136,7 @@ void SPRSpectrumListItemsModel::addSpectrums(QString fName){
     int specCount = spectrumsModelBase.size();
     uint8_t buf[DEF_SPECTRUM_DATA_BUF_LENGTH];
     if(in.open(QIODevice::ReadOnly)){
-       QByteArray b2 = in.read(sizeof(b2));
+       QByteArray b2 = in.read(2);
        while(in.read((char*)buf, DEF_SPECTRUM_DATA_BUF_LENGTH) == DEF_SPECTRUM_DATA_BUF_LENGTH){
            if(specCount < threads->getData()){
                addSpect(buf, DEF_SPECTRUM_DATA_BUF_LENGTH, spectrumBase);
@@ -189,6 +189,16 @@ void SPRSpectrumListItemsModel::setSpectrumsfName(SPRQStringVariable *value)
         if(spectrumsfName && property("delete_spectrumFName").value<bool>()) delete spectrumsfName;
         spectrumsfName = value;
         setProperty("delete_spectrumFName", QVariant(false));
+
+        if(zonesTableModel){
+            blockSignals(true);
+
+            clearSpectrumsBase();
+            clearSpectrums();
+
+            setSpectrums();
+        }
+        blockSignals(false);
     }
 }
 
@@ -241,7 +251,6 @@ SPRSpectrumListItemsModel::SPRSpectrumListItemsModel(QDomDocument *_doc, SPRElem
 SPRSpectrumListItemsModel::SPRSpectrumListItemsModel(SPRSpectrumZonesTableModel *_model, SPRSettingsFormulaModel *_formulas, SPRVariable<uint> *_threads, SPRQStringVariable *sfName, SPREnumVariable<EnumElements> *_controlArea, ISPRModelData *parent): threads(0), spectrumsfName(nullptr), corelControlArea(nullptr), zonesTableModel(nullptr), formulas(nullptr), spectrumsModel()
 {
     setThreads(_threads);
-    setSpectrumsfName(sfName);
 
     if(_controlArea){
         setCorelControlArea(_controlArea);
@@ -253,6 +262,7 @@ SPRSpectrumListItemsModel::SPRSpectrumListItemsModel(SPRSpectrumZonesTableModel 
     setFormulasModel(_formulas);
     setElementsProperty(_model->elementsProperty);
 
+    setSpectrumsfName(sfName);
     setSpectrums();
 }
 
@@ -356,9 +366,13 @@ void SPRSpectrumListItemsModel::recomplite(SPRSpectrumItemModel *item, typeSpect
 }
 
 void SPRSpectrumListItemsModel::recomplite(){
-    QVector<SPRSpectrumItemModel*> *model = getSpectrumsModel();
+    QVector<SPRSpectrumItemModel*> *model = getSpectrumsModel(spectrumsAll);
     for(int i=0; i<model->size(); i++){
-        recomplite(model->at(i));
+        if(i < getThreads()->getData()){
+            recomplite(model->at(i), spectrumBase);
+        } else {
+            recomplite(model->at(i), spectrumsOnly);
+        }
     }
 }
 

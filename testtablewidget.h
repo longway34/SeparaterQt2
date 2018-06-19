@@ -25,6 +25,8 @@ class testTableWidget : public QWidget, public ISPRWidget
 public:
     explicit testTableWidget(QWidget *parent = 0);
 
+    TCPTimeOutWigget *towidget;
+
     SPRMainModel *mainModel;
 //    SPRSpectrumListItemsModel *spectrumsBaseModel;
     SPRSpectrumListItemsModel *kSpectrumsModel;
@@ -36,7 +38,7 @@ public:
     TCPCommand *setSeparate;
 
     TCPCommandSeparatorOnFull *rentgenOnFull;
-    TCPCommandGetSpectrums *getSpectrumsSetCommand;
+//    TCPGetSpectrumsGistogramms *getSpectrumsSetCommand;
 
 
     TCPTestStartSeparate *startSeparate;
@@ -70,7 +72,7 @@ public:
     void onKSpectrumReady(TCPGetSpectrumsGistogramms *_command);
 public slots:
 //    void onClickAdd(bool);
-    void onModelChanged();
+    void onModelChanged(IModelVariable *);
     void onGetButtomsClick(bool);
     void onCommandComplite(TCPCommand *_command);
     void onCommandError(TCPCommand *_command);

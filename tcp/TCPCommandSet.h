@@ -28,6 +28,7 @@ public:
 //    TCPCommandSet(TCPTimeOutWigget *_widget): TCPTimeOutCommand(nocommand, 0, 1, _widget, "", ""){}
     TCPCommandSet(ServerConnect *_server, TCPTimeOutWigget *_widget, QVector<TCPCommand*> _vcomm): TCPTimeOutCommand(timeoutcommand, 0, 1, _widget, "", ""){
         server = _server;
+        replayData = QByteArray(1, '\0');
         addCommand(_vcomm);
     }
     virtual ~TCPCommandSet();
@@ -45,6 +46,18 @@ public:
         return this;
     }
     
+    TCPCommandSet *addCommand(QVector<EnumCommands> _ecomm){
+        for(int i=0; i<_ecomm.size(); i++){
+            addCommand(_ecomm[i]);
+        }
+        return this;
+    }
+
+    TCPCommandSet *addCommand(EnumCommands ecommand){
+        return addCommand(new TCPCommand(ecommand));
+    }
+
+
     virtual void send(ServerConnect *_server){
         server = _server;
         if(server){
@@ -148,6 +161,10 @@ public:
         }
         return res;
     }
+
+    virtual bool isCommamdCompare(TCPCommand *_command){
+        return true;
+    }
 //    QVector<TCPCommand*> findCommands(EnumCommands _command=lastcommand){
 //        if(_command == lastcommand){
 //            return QVector<TCPCommand*>({commandSet.last()});
@@ -167,6 +184,15 @@ protected:
     
 protected slots:
     virtual void go(TCPCommand *_command = NULL);
+    virtual void onCommandNotComplite(TCPCommand*_command);
+
+    // ITCPCommand interface
+public:
+    virtual void setLogWidget(TCPLogsWigtets *value);
+
+    // ITCPCommand interface
+public:
+    virtual bool noErrors();
 };
 
 #endif /* TCPCOMMANSET_H */

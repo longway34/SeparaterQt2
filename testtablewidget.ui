@@ -13,309 +13,234 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="SPRSpectrumGraphicsWidget" name="baseGrapthics" native="true">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>30</y>
-     <width>451</width>
-     <height>171</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QComboBox" name="cbThread">
-   <property name="geometry">
-    <rect>
-     <x>940</x>
-     <y>98</y>
-     <width>161</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="currentIndex">
-    <number>4</number>
-   </property>
+  <layout class="QVBoxLayout" name="verticalLayout_3" stretch="30,30,30">
    <item>
-    <property name="text">
-     <string>thread 1</string>
-    </property>
+    <widget class="QWidget" name="widget_5" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="90,10">
+      <item>
+       <widget class="QWidget" name="widget_2" native="true">
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="SPRSpectrumGraphicsWidget" name="kSpertGraphic" native="true"/>
+         </item>
+         <item>
+          <widget class="SPRSpectrumGraphicsWidget" name="baseGrapthics" native="true"/>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="widget_4" native="true">
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QPushButton" name="bGetBaseSpectrum">
+           <property name="text">
+            <string>Get Base Spectrum</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="bSeparatorOn">
+           <property name="text">
+            <string>Separator On</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="bSeparatorOff">
+           <property name="text">
+            <string>Separator Off</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="cbThread">
+           <property name="currentIndex">
+            <number>4</number>
+           </property>
+           <item>
+            <property name="text">
+             <string>thread 1</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>thread 2</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>thread 3</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>thread 4</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>All threads</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="bSetSepar">
+           <property name="text">
+            <string>Set Separ</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="bStartSepar">
+           <property name="text">
+            <string>Start Separ</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="bStopSepar">
+           <property name="text">
+            <string>Stop Separ</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
    </item>
    <item>
-    <property name="text">
-     <string>thread 2</string>
-    </property>
+    <widget class="QWidget" name="widget_3" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="SPRSpectrumListTable" name="baseTable"/>
+      </item>
+      <item>
+       <widget class="SPRSpectrumSmallTable" name="kspectTable">
+        <property name="alternatingRowColors">
+         <bool>true</bool>
+        </property>
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectRows</enum>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
    </item>
    <item>
-    <property name="text">
-     <string>thread 3</string>
-    </property>
+    <widget class="QWidget" name="widget" native="true">
+     <widget class="QTableWidget" name="workSeparTable">
+      <property name="geometry">
+       <rect>
+        <x>9</x>
+        <y>9</y>
+        <width>1081</width>
+        <height>271</height>
+       </rect>
+      </property>
+      <column>
+       <property name="text">
+        <string>i_prg[0]</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>i_prd[1]</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>i_prd[2]</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>i_prd[3]</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>p_prg[0]</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>p_prd[1]</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>p_prd[2]</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>p_prd[3]</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>p_tk</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>p_tkH1</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>p_tkH2</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>p_tkH3</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>w_count</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>s_rst1</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>s_rst2</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>s_rst3</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>s_rst4</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>s_rst5</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>error</string>
+       </property>
+      </column>
+     </widget>
+    </widget>
    </item>
-   <item>
-    <property name="text">
-     <string>thread 4</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>All threads</string>
-    </property>
-   </item>
-  </widget>
-  <widget class="QTableWidget" name="workSeparTable">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>380</y>
-     <width>1091</width>
-     <height>291</height>
-    </rect>
-   </property>
-   <column>
-    <property name="text">
-     <string>i_prg[0]</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>i_prd[1]</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>i_prd[2]</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>i_prd[3]</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>p_prg[0]</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>p_prd[1]</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>p_prd[2]</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>p_prd[3]</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>p_tk</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>p_tkH1</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>p_tkH2</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>p_tkH3</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>w_count</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>s_rst1</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>s_rst2</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>s_rst3</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>s_rst4</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>s_rst5</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>error</string>
-    </property>
-   </column>
-  </widget>
-  <widget class="SPRSpectrumListTable" name="baseTable">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>220</y>
-     <width>561</width>
-     <height>151</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="bSeparatorOff">
-   <property name="geometry">
-    <rect>
-     <x>940</x>
-     <y>68</y>
-     <width>161</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Separator Off</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="bSeparatorOn">
-   <property name="geometry">
-    <rect>
-     <x>940</x>
-     <y>38</y>
-     <width>161</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Separator On</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="bGetBaseSpectrum">
-   <property name="geometry">
-    <rect>
-     <x>940</x>
-     <y>8</y>
-     <width>161</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Get Base Spectrum</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="bSetSepar">
-   <property name="geometry">
-    <rect>
-     <x>940</x>
-     <y>128</y>
-     <width>161</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Set Separ</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="bStartSepar">
-   <property name="geometry">
-    <rect>
-     <x>940</x>
-     <y>158</y>
-     <width>161</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Start Separ</string>
-   </property>
-  </widget>
-  <widget class="SPRSpectrumGraphicsWidget" name="kSpertGraphic" native="true">
-   <property name="geometry">
-    <rect>
-     <x>470</x>
-     <y>30</y>
-     <width>461</width>
-     <height>171</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>67</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Base</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_2">
-   <property name="geometry">
-    <rect>
-     <x>470</x>
-     <y>10</y>
-     <width>67</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>kSpec</string>
-   </property>
-  </widget>
-  <widget class="SPRSpectrumSmallTable" name="kspectTable">
-   <property name="geometry">
-    <rect>
-     <x>580</x>
-     <y>220</y>
-     <width>521</width>
-     <height>151</height>
-    </rect>
-   </property>
-   <property name="alternatingRowColors">
-    <bool>true</bool>
-   </property>
-   <property name="selectionBehavior">
-    <enum>QAbstractItemView::SelectRows</enum>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="bStopSepar">
-   <property name="geometry">
-    <rect>
-     <x>940</x>
-     <y>180</y>
-     <width>161</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Stop Separ</string>
-   </property>
-  </widget>
-  <widget class="TCPTimeOutWigget" name="towidget" native="true">
-   <property name="geometry">
-    <rect>
-     <x>750</x>
-     <y>580</y>
-     <width>351</width>
-     <height>101</height>
-    </rect>
-   </property>
-  </widget>
+  </layout>
  </widget>
  <customwidgets>
   <customwidget>
@@ -333,12 +258,6 @@
    <class>SPRSpectrumSmallTable</class>
    <extends>QTableWidget</extends>
    <header>sprspectrumsmalltable.h</header>
-  </customwidget>
-  <customwidget>
-   <class>TCPTimeOutWigget</class>
-   <extends>QWidget</extends>
-   <header>tcp/tcptimeoutwigget.h</header>
-   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

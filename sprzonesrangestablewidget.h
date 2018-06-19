@@ -32,12 +32,12 @@ public slots:
     void setControlEnabled(SPRZonesRanges *_thread, QLineEdit *_el);
     void onRoundClick(bool);
     virtual void onModelChanget(IModelVariable *);
+    virtual void widgetsShow();
 private:
     Ui::SPRZonesRangesTableWidget ui;
 
     // ISPRWidget interface
 public:
-    virtual void widgetsShow();
     virtual ISPRModelData *getModelData();
     void setSelectBottonRowVisible(bool value);
 

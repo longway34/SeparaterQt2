@@ -17,6 +17,8 @@
 #include <QByteArray>
 #include <QString>
 
+//#include "tcp/tcplogswigtets.h"
+
 typedef enum _tcp_commands: unsigned char{
             getstate    = 0x0A,
             testim      = 0x0B,
@@ -85,6 +87,8 @@ typedef enum _tcp_commands: unsigned char{
 
 typedef QMap<EnumCommands, QString> TCPPseudoName;
 
+class TCPLogsWigtets;
+
 class ITCPCommand :public QObject{
     
     Q_OBJECT
@@ -94,6 +98,8 @@ protected:
     QByteArray sendData;
     QByteArray replayData;
     
+    TCPLogsWigtets *logWidget;
+
 public:
     ITCPCommand();
     virtual ~ITCPCommand();
@@ -130,6 +136,10 @@ public:
     virtual void setSendData(QByteArray sendData)=0;
     virtual QByteArray getSendData()=0;
     virtual int getErrors()=0;
+    virtual bool noErrors() = 0;
+    virtual TCPLogsWigtets *getLogWidget() const;
+    virtual void setLogWidget(TCPLogsWigtets *value);
+
 private:
 
 };

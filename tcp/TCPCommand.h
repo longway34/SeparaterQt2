@@ -29,7 +29,7 @@ protected:
 
 public:
     TCPCommand();
-    TCPCommand(EnumCommands _command){
+    TCPCommand(EnumCommands _command): ITCPCommand(){
         command = _command;
     }
     virtual ~TCPCommand();
@@ -43,7 +43,11 @@ public:
 
     virtual void setReplayData(QByteArray replayData){
         this->replayData = replayData;
-        emit commandComplite(this);
+        if(noErrors()){
+            emit commandComplite(this);
+        } else {
+            emit commandNotComplite(this);
+        }
     }
 
     virtual QByteArray getReplayData() {
@@ -139,6 +143,7 @@ private:
     
 signals:
     void commandComplite(TCPCommand*);
+    void commandNotComplite(TCPCommand*);
 
 };
 

@@ -29,8 +29,8 @@ public:
             if(zoneModel){
                 disconnect(zoneModel, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
             }
+            zoneModel = _model;
             connect(zoneModel, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
-           zoneModel = _model;
         }
 //        widgetsShow();
     }
@@ -71,7 +71,7 @@ public slots:
 
     // ISPRWidget interface
     void onChangeColor(QColor color);
-    void onDeleteElements();
+    void onDeleteElements(int);
     //    void onFocusCurrentCell(QModelIndex index);
     void onChangeSelectedRow(bool value, int row);
     virtual void onModelChanget(IModelVariable *);

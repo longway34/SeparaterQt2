@@ -33,6 +33,7 @@ void ServerConnect::setVPort(SPRVariable<uint> *value)
     vPort = value;
     if(vPort){
         port = vPort->getData();
+        connect(vName, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onChangeModelData(IModelVariable*)));
     }
 }
 
@@ -46,6 +47,7 @@ void ServerConnect::setVName(SPRQStringVariable *value)
     vName = value;
     if(vName){
         name = vName->getData();
+        connect(vName, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onChangeModelData(IModelVariable*)));
     }
 }
 
@@ -181,8 +183,13 @@ void ServerConnect::queueComplite(){
             connectToHost(getName(), getPort());
             if(!waitForConnected(500)){
                 mutex.unlock();
+                setTimer(fastTypeServerTimer);
                 emit serverConnectTimeOutError(current);
+//                clearState(SPR_STATE_SERVER_CONNECT | SPR_STATE_RENTGEN_ON | SPR_STATE_SEPATOR_ON | SPR_STATE_EXPOSITION_ON);
                clearState(spr_state_server_connect);
+               clearState(spr_state_rentgen_on);
+               clearState(spr_state_separator_on);
+               clearState(spr_state_exposition_on);
                addState(spr_state_error_connect);
                return;
            }
@@ -196,10 +203,22 @@ void ServerConnect::queueComplite(){
         } else {
             mutex.unlock();
             emit serverReadWriteTimeOutError(current);
+            setTimer(fastTypeServerTimer);
             clearState(spr_state_server_connect);
+            clearState(spr_state_rentgen_on);
+            clearState(spr_state_separator_on);
+            clearState(spr_state_exposition_on);
+//            clearState(SPR_STATE_SERVER_CONNECT | SPR_STATE_RENTGEN_ON | SPR_STATE_SEPATOR_ON | SPR_STATE_EXPOSITION_ON);
             addState(spr_state_error_connect);
         }
-   } 
+    }
+}
+
+void ServerConnect::onChangeModelData(IModelVariable *var)
+{
+    if(var == this->vName || var == this->vPort){
+        this->disconnectFromHost();
+    }
 }
 
 void ServerConnect::onReadyRead(){
@@ -210,9 +229,38 @@ void ServerConnect::onReadyRead(){
     mutex.unlock();
     clearState(spr_state_error_connect);
     addState(spr_state_server_connect);
-    if(current->getCommand() == getstate){
+    setTimer(slowTypeServerTimer);
+
+    EnumCommands com = current->getCommand();
+
+    if(com == getstate){
         changeRemoteState(replay);
+    } else if(com == onren){
+        if(current->noErrors()){
+            addState(spr_state_rentgen_on);
+        } else {
+            clearState(spr_state_rentgen_on);
+        }
+    } else if(com == onsep){
+        if(current->noErrors()){
+            addState(spr_state_separator_on);
+        } else {
+            clearState(spr_state_separator_on);
+        }
+    } else if(com == expon){
+        if(current->noErrors()){
+            addState(spr_state_exposition_on);
+        } else {
+            clearState(spr_state_exposition_on);
+        }
+    } else if(com == offren){
+        clearState(spr_state_rentgen_on);
+    } else if(com == offsep){
+        clearState(spr_state_separator_on);
+    } else if(com == expoff){
+        clearState((spr_state_exposition_on));
     }
+
     current->setReplayData(replay);
     setError(current);
     //    emit commandComlite(current);
@@ -283,6 +331,8 @@ void ServerConnect::onServerStateChange(uint32_t _state)
     }
     currentState = _state;
 }
+
+
 
 
 

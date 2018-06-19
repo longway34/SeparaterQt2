@@ -9,6 +9,8 @@ TCPLogsWigtets::TCPLogsWigtets(QWidget *parent) :
     ui.setupUi(this);
 
     connect(ui.bClearLogs, SIGNAL(clicked(bool)), this, SLOT(onClear(bool)));
+    textCharFormatDefault = ui.ptLogs->currentCharFormat();
+    textCharFormatAther = textCharFormatDefault;
 }
 
 void TCPLogsWigtets::onClear(bool){
@@ -55,17 +57,19 @@ void TCPLogsWigtets::onLogsCommand(QString msg, QColor _color){
     QString sdt = dt.toString("hh:mm:ss");
     QTextCharFormat old = ui.ptLogs->currentCharFormat();;
     if(_color.isValid()){
-        QTextCharFormat tf = old;
-        tf.setForeground(QBrush(_color));
-        ui.ptLogs->setCurrentCharFormat(tf);
+//        QTextCharFormat tf = old;
+        textCharFormatAther.setForeground(QBrush(_color));
+        ui.ptLogs->setCurrentCharFormat(textCharFormatAther);
+    } else {
+        ui.ptLogs->setCurrentCharFormat(textCharFormatDefault);
     }
 //    if(command){
 //        onLogsCommand(command);
 //    }
     ui.ptLogs->appendPlainText(sdt+": "+msg);
-    if(_color.isValid()){
-        ui.ptLogs->setCurrentCharFormat(old);
-    }
+//    if(_color.isValid()){
+//        ui.ptLogs->setCurrentCharFormat(old);
+//    }
 //    QDateTime dt(QDateTime::currentDateTime());
 //    QString sdt = dt.toString("hh:mm:ss");
 //    ui.ptLogs->appendPlainText(sdt+": "+msg);

@@ -92,7 +92,7 @@ public:
 //            elements.remove(el);
 //        }
         elementsProperty->deleteElement(el);
-        emit doStore();
+//        emit doStore();
     }
     void setMinMax(EnumElements el, uint min, uint max){
         if(elements.contains(el)){

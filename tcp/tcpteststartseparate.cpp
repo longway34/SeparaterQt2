@@ -43,7 +43,7 @@ TCPTestStartSeparate::TCPTestStartSeparate(ServerConnect *_server, SPRMainModel 
 //    addCommand(new TCPTimeOutCommand(timeoutcommand, ))
 
 
-    getBaseSpectrumCommand = new TCPGetSpectrumsGistogramms(_server, getspk, _widget);
+    getBaseSpectrumCommand = new TCPGetSpectrumsGistogramms(_server, getspk, mainModel, _widget, getLogWidget());
     getBaseSpectrumCommand->setThreadTimer(MAX_SPR_MAIN_THREADS, 1);
     addCommand(getBaseSpectrumCommand); // 10
 
