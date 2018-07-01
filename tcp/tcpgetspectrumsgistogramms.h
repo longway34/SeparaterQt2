@@ -55,6 +55,10 @@ public:
 
 protected slots:
     virtual void go(TCPCommand *_command = NULL);
+
+signals:
+    void rentgenReady(TCPCommand*);
+    void rentgenNotReady(TCPCommand*);
 };
 
 #endif // TCPGETSPECTRUMSGISTORGAMMS_H

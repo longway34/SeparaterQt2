@@ -37,12 +37,16 @@ public:
     virtual void clear(){
         for(int i=0; i<commandSet.size(); i++){
             commandSet[i]->clear();
+            delete commandSet[i];
         }
         commandSet.clear();
     }
 
     virtual void setReplayData(QByteArray replayData){
         this->replayData = replayData;
+
+        qDebug() << "command: "<<QString::number(getCommand(),16)<< "; send:" << getSendData().toHex(':')<< "; res: "<<getReplayData().toHex(':');
+
         if(noErrors()){
             emit commandComplite(this);
         } else {
@@ -145,6 +149,10 @@ signals:
     void commandComplite(TCPCommand*);
     void commandNotComplite(TCPCommand*);
 
+
+    // ITCPCommand interface
+public:
+    virtual bool isCommandSet();
 };
 
 #endif /* TCPCOMMAND_H */

@@ -7,10 +7,10 @@ void TCPCommandSeparatorOnFull::setModelData(SPRMainModel *value)
     if(value){
         model =  value;
 
-        for(int i=0; i<commandSet.size(); i++){
-            if(commandSet[i]) delete commandSet[i];
-        }
-
+//        for(int i=0; i<commandSet.size(); i++){
+//            if(commandSet[i]) delete commandSet[i];
+//        }
+        clear();
 //        command =
         addCommand(new TCPCommand(getstate));
 

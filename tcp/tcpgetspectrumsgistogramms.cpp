@@ -1,4 +1,5 @@
 #include "tcpgetspectrumsgistogramms.h"
+#include "tcp/tcpexpositionoff.h"
 
 void TCPGetSpectrumsGistogramms::setThreadTimer(uint _threadsNum, double _time_in_sec, QList<uint8_t> _wtList)
 {
@@ -102,13 +103,14 @@ TCPGetSpectrumsGistogramms::TCPGetSpectrumsGistogramms(ServerConnect *_server, E
     TCPCommandSet(_server, _widget, {}), model(_model), dataType(_dataType)
 {
     command = setGetSpectrumsGistorfamms;
+    setName(tr("setGetSpectrumsGistorfamms"));
     setLogWidget(_logWidget);
 }
 
 void TCPGetSpectrumsGistogramms::go(TCPCommand *_command)
 {
     if(!_command){
-        commandSet.clear();
+        clear();
 
         if(dataType == getspk){
             char ren = '\0';
@@ -116,21 +118,23 @@ void TCPGetSpectrumsGistogramms::go(TCPCommand *_command)
                 addCommand(new TCPCommandSeparatorOnFull(server, model, widget));
 
             }
-            addCommand(new TCPCommand(expon));
-            findCommands(expon).last()->setSendData(&ren, sizeof(ren));
+            if(!server->isState(spr_state_exposition_on)){
+                addCommand(new TCPCommand(expon));
+                findCommands(expon).last()->setSendData(&ren, sizeof(ren));
 
-            addCommand(new TCPCommand(onosw));
-            uint expTo = DEF_SPR_RENTGEN_TIME_HOT_RA;
-            if(model){
-                expTo = model->getSettingsRentgenModel()->timeHotRA->getData();
+                addCommand(new TCPCommand(offosw));
+                addCommand(new TCPCommand(onosw));
+                uint expTo = DEF_SPR_RENTGEN_TIME_HOT_RA;
+                if(model){
+                    expTo = model->getSettingsRentgenModel()->timeHotRA->getData();
+                }
+
+                addCommand(new TCPTimeOutCommand(timeoutcommand, expTo*1000+2000, 10, widget,
+                                    QString(tr("Включение экспозиции...")),
+                                    QString(tr("Включение экспозиции (%1 секунд)")).arg(expTo)));
+                addCommand(new TCPCommand(getren));
+                findCommands(getren).last()->setSendData(&ren, sizeof(ren));
             }
-
-            addCommand(new TCPTimeOutCommand(timeoutcommand, expTo*1000+2000, 10, widget,
-                                QString(tr("Включение экспозиции...")),
-                                QString(tr("Включение экспозиции (%1 секунд)")).arg(expTo)));
-            addCommand(new TCPCommand(getren));
-            findCommands(getren).last()->setSendData(&ren, sizeof(ren));
-
             addCommand(new TCPCommand(setspk));
             int32_t spkT = timeOfSpectorScope * 10;
             findCommands(setspk).last()->setSendData(&spkT, sizeof(spkT));
@@ -144,7 +148,7 @@ void TCPGetSpectrumsGistogramms::go(TCPCommand *_command)
             threads = model->getSettingsMainModel()->getThreads()->getData();
         }
 
-        if(dataType == getspk || dataType == getkspk){
+        if(dataType == getspk || dataType == getkspk || dataType == getgist){
             for(uint8_t i=0; i<threads; i++){
                addCommand(dataType);
                findCommands(dataType).last()->setSendData(&i, sizeof(i));
@@ -155,12 +159,12 @@ void TCPGetSpectrumsGistogramms::go(TCPCommand *_command)
 
         addCommand(new TCPCommand(nocommand));
 
-        if(dataType == getspk){
-            char ren = '\0';
-            addCommand(new TCPCommand(expoff));
-            findCommands(expoff).last()->setSendData(&ren,sizeof(ren));
-            addCommand(new TCPCommand(offosw));
-        }
+//        if(dataType == getspk){
+//            char ren = '\0';
+//            addCommand(new TCPCommand(expoff));
+//            findCommands(expoff).last()->setSendData(&ren,sizeof(ren));
+//            addCommand(new TCPCommand(offosw));
+//        }
     } else {
         if(_command->getCommand() == getren){
             uint mkv, mka;
@@ -170,15 +174,17 @@ void TCPGetSpectrumsGistogramms::go(TCPCommand *_command)
                 if(lw){
                     lw->onLogsCommand(nullptr, QString(tr("Рентген вышел на рабочий режим... (%1 mkV, %2 mkA)")).arg(QString::number(mkv, 16)).arg(QString::number(mka, 16)));
                 }
+                emit rentgenReady(_command);
             } else {
                 if(lw){
                     lw->onErrorLogsCommand(nullptr, QString(tr("Рентген не вышел на рабочий режим... (%1 mkV, %2 mkA)")).arg(QString::number(mkv, 16)).arg(QString::number(mka, 16)));
                 }
+                emit rentgenNotReady(_command);
 //                _command = findCommands(nocommand).last();
                 char ch='\0';
-                TCPCommand *exp = new TCPCommand(expoff);
-                exp->setSendData(&ch, sizeof(ch));
-                addCommand(expoff);
+                TCPExpositionOff *exp = new TCPExpositionOff(getLogWidget());
+//                exp->setSendData(&ch, sizeof(ch));
+//                addCommand(expoff);
                 exp->send(model->getServer());
                 emit commandNotComplite(_command);
                 return;

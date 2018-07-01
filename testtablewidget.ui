@@ -13,18 +13,40 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_3" stretch="30,30,30">
+  <layout class="QVBoxLayout" name="verticalLayout_3" stretch="20,20,60">
+   <property name="spacing">
+    <number>2</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
    <item>
     <widget class="QWidget" name="widget_5" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="90,10">
       <item>
        <widget class="QWidget" name="widget_2" native="true">
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="50,50">
          <item>
-          <widget class="SPRSpectrumGraphicsWidget" name="kSpertGraphic" native="true"/>
+          <widget class="SPRSeparateGistogrammWidget" name="testGistogramm" native="true">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>194</height>
+            </size>
+           </property>
+          </widget>
          </item>
          <item>
-          <widget class="SPRSpectrumGraphicsWidget" name="baseGrapthics" native="true"/>
+          <widget class="SPRSpectrumGraphicsWidget" name="kSpertGraphic" native="true"/>
          </item>
         </layout>
        </widget>
@@ -115,8 +137,23 @@
    <item>
     <widget class="QWidget" name="widget_3" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="spacing">
+       <number>3</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
       <item>
-       <widget class="SPRSpectrumListTable" name="baseTable"/>
+       <widget class="SPRSeparateDetailsTable" name="separateDetailsTable"/>
       </item>
       <item>
        <widget class="SPRSpectrumSmallTable" name="kspectTable">
@@ -133,111 +170,179 @@
    </item>
    <item>
     <widget class="QWidget" name="widget" native="true">
-     <widget class="QTableWidget" name="workSeparTable">
-      <property name="geometry">
-       <rect>
-        <x>9</x>
-        <y>9</y>
-        <width>1081</width>
-        <height>271</height>
-       </rect>
+     <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="70,30">
+      <property name="spacing">
+       <number>0</number>
       </property>
-      <column>
-       <property name="text">
-        <string>i_prg[0]</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>i_prd[1]</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>i_prd[2]</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>i_prd[3]</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>p_prg[0]</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>p_prd[1]</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>p_prd[2]</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>p_prd[3]</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>p_tk</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>p_tkH1</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>p_tkH2</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>p_tkH3</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>w_count</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>s_rst1</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>s_rst2</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>s_rst3</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>s_rst4</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>s_rst5</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>error</string>
-       </property>
-      </column>
-     </widget>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QTableWidget" name="workSeparTable">
+        <property name="alternatingRowColors">
+         <bool>true</bool>
+        </property>
+        <property name="selectionMode">
+         <enum>QAbstractItemView::SingleSelection</enum>
+        </property>
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectRows</enum>
+        </property>
+        <column>
+         <property name="text">
+          <string>#</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Date</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Th</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>i_prg[0]</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>i_prd[1]</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>i_prd[2]</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>i_prd[3]</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>p_prg[0]</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>p_prd[1]</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>p_prd[2]</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>p_prd[3]</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>p_tk</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>p_tkH1</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>p_tkH2</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>p_tkH3</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>w_count</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>s_rst1</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>s_rst2</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>s_rst3</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>s_rst4</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>s_rst5</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>error</string>
+         </property>
+        </column>
+       </widget>
+      </item>
+      <item>
+       <widget class="QTableWidget" name="workGistorrammTable">
+        <property name="alternatingRowColors">
+         <bool>true</bool>
+        </property>
+        <property name="selectionMode">
+         <enum>QAbstractItemView::SingleSelection</enum>
+        </property>
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectRows</enum>
+        </property>
+        <column>
+         <property name="text">
+          <string>#</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Thread</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Data</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Содержимое</string>
+         </property>
+        </column>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
   </layout>
@@ -250,14 +355,20 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>SPRSpectrumListTable</class>
-   <extends>QTableWidget</extends>
-   <header>sprspectrumlisttable.h</header>
-  </customwidget>
-  <customwidget>
    <class>SPRSpectrumSmallTable</class>
    <extends>QTableWidget</extends>
    <header>sprspectrumsmalltable.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SPRSeparateGistogrammWidget</class>
+   <extends>QWidget</extends>
+   <header>sprseparategistogrammwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SPRSeparateDetailsTable</class>
+   <extends>QTableView</extends>
+   <header>sprseparatedetailstable.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

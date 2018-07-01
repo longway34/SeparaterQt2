@@ -95,6 +95,7 @@ class ITCPCommand :public QObject{
 protected:
     EnumCommands command;
     int num;
+    QString name;
     QByteArray sendData;
     QByteArray replayData;
     
@@ -137,8 +138,12 @@ public:
     virtual QByteArray getSendData()=0;
     virtual int getErrors()=0;
     virtual bool noErrors() = 0;
+    virtual bool isCommandSet() = 0;
     virtual TCPLogsWigtets *getLogWidget() const;
     virtual void setLogWidget(TCPLogsWigtets *value);
+
+    QString getName() const;
+    void setName(const QString &value);
 
 private:
 

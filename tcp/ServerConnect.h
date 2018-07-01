@@ -140,6 +140,13 @@ class ServerConnect: public QTcpSocket{
             }
 
         }
+
+        // ITCPCommand interface
+    public:
+        virtual bool isCommandSet()
+        {
+            return false;
+        }
     };
 
 

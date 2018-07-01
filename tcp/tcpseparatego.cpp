@@ -70,8 +70,8 @@ void TCPSeparateGo::go(TCPCommand *_command)
 {
     if(!_command){
         toCount = 0;
-        commandSet[0]->send(server);
         timer.start();
+//        commandSet[0]->send(server);
         return;
     } else {
 //        if(_command->getCommand() == timeoutcommand){
@@ -123,7 +123,7 @@ void TCPSeparateGo::go(TCPCommand *_command)
             if(logWidget){
                logWidget->onLogsCommand(nullptr, "separate data ready...");
             }
-            emit commandComplite(_command);
+            emit separateDataReady(_command);
 //            commandSet[0]->send(server);
             return;
         }
@@ -131,7 +131,7 @@ void TCPSeparateGo::go(TCPCommand *_command)
             if(logWidget){
                logWidget->onLogsCommand(nullptr,"kspectrums data ready...");
             }
-//            emit commandComplite(_command);
+            emit kspectrumsDataReady(_command);
 //            commandSet[0]->send(server);
             return;
         }
@@ -139,7 +139,7 @@ void TCPSeparateGo::go(TCPCommand *_command)
             if(logWidget){
                logWidget->onLogsCommand(nullptr, "historgamms data ready...");
             }
-//            emit commandComplite(_command);
+            emit gistogrammsDataReady(_command);
 //            commandSet[0]->send(server);
             return;
         }

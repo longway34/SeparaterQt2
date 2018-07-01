@@ -54,6 +54,7 @@ SPRSettingsMainWidget::SPRSettingsMainWidget(QWidget *parent) :
     connect(ui.cbIMCount, SIGNAL(currentIndexChanged(int)), SLOT(viewChange(int)));
     connect(ui.cbThreads, SIGNAL(currentIndexChanged(int)), SLOT(viewChange(int)));
 
+    connect(ui.leSpectrumsFName, SIGNAL(editingFinished()), this, SLOT(viewChange()));
     connect(ui.bFNameSelect, SIGNAL(clicked(bool)), this, SLOT(viewChange(bool)));
     connect(ui.bSpectrumFNameSelect, SIGNAL(clicked(bool)), this, SLOT(viewChange(bool)));
 
@@ -73,6 +74,7 @@ void SPRSettingsMainWidget::widgetsShow()
         QString v1 = codec->toUnicode(model->name->getData().toStdString().c_str());
         QString v2 = tr(model->name->getData().toStdString().c_str());
         ui.leName->setText(QString::fromUtf8(model->name->getData().toStdString().c_str()));
+//        ui.leName->setToolTip(QString::fromUtf8(docFileName));
         ui.leAddress->setText(model->ipAddress->getData());
         ui.lePort->setText(model->ipPort->toString());
         ui.leSpectrumsFName->setText(model->spectrumFileName->getData());
@@ -209,6 +211,12 @@ void SPRSettingsMainWidget::viewChange()
         if(sender() == ui.lePort){ // изменился IP порт сепаратора
             model->ipPort->setData(QString(ui.lePort->text()).toInt());
             return;
+        }
+        if(sender() == ui.leSpectrumsFName){
+            if(model->spectrumFileName->getData() != ui.leSpectrumsFName->text()){
+                model->spectrumFileName->setData(ui.leSpectrumsFName->text());
+                emit changeFileSpectrum(model->getSpectrumFileName()->getData());
+            }
         }
     }
 }

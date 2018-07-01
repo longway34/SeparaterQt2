@@ -50,15 +50,19 @@ void TCPCommandRentgerOn::go(TCPCommand *_command)
 {
     if(model){
         if(!_command){
-            while(commandSet.size() > 0){
-                commandSet.remove(0);
-            }
-            commandSet.clear();
+//            while(commandSet.size() > 0){
+//                commandSet.remove(0);
+//            }
+            clear();
             rentgenNum = 1; /* DEF_SPR_MAIN_RENTGENS;*/
             QByteArray va;
             va.append("\0", 1);
-            uint16_t mkv = model->uTubes[0]->getData() * (-109) + 1176;
-            uint16_t mka = model->iTubes[0]->getData() * (-117) + 1186;
+            double dmkv = model->uTubes[0]->getData() * 21.8 - 23;
+            double dmka = model->uTubes[0]->getData() * 23.4 - 101;
+            uint16_t mkv = round(dmkv);
+            uint16_t mka = round(dmka);
+//            uint16_t mkv = model->uTubes[0]->getData() * (-109) + 1176;
+//            uint16_t mka = model->iTubes[0]->getData() * (-117) + 1186;
             va.append((char*)&mkv, sizeof(mkv));
             va.append((char*)&mka, sizeof(mka));
 

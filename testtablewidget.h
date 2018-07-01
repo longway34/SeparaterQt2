@@ -18,11 +18,14 @@
 #include "tcp/tcpcommandrentgenonfull.h"
 #include "tcp/tcpcommandgetspectrums.h"
 
+#include "tcp/tcpstartseparate2.h"
+
 class testTableWidget : public QWidget, public ISPRWidget
 {
     Q_OBJECT
 
 public:
+    Ui::testTableWidget ui;
     explicit testTableWidget(QWidget *parent = 0);
 
     TCPTimeOutWigget *towidget;
@@ -31,6 +34,7 @@ public:
 //    SPRSpectrumListItemsModel *spectrumsBaseModel;
     SPRSpectrumListItemsModel *kSpectrumsModel;
     SPRSeparateModel *separateModel;
+    SPRSeparateModel *separateModelLast;
 
     TCPGetSpectrumsGistogramms *getGistogramm;
     TCPGetSpectrumsGistogramms *getKSpectrums;
@@ -41,7 +45,7 @@ public:
 //    TCPGetSpectrumsGistogramms *getSpectrumsSetCommand;
 
 
-    TCPTestStartSeparate *startSeparate;
+    TCPStartSeparate2 *startSeparate;
 
     TCPTestStopSeparate *stopSeparate;
 
@@ -76,8 +80,8 @@ public slots:
     void onGetButtomsClick(bool);
     void onCommandComplite(TCPCommand *_command);
     void onCommandError(TCPCommand *_command);
+    void onStartSepareteCommandComplite(TCPCommand *command);
 private:
-    Ui::testTableWidget ui;
 
     // ISPRWidget interface
 public:

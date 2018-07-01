@@ -85,8 +85,8 @@ SPRTestIMSWidget::SPRTestIMSWidget(QWidget *parent) :
     connect(rguDownCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
 
     thermoReadStateCommand = new TCPCommandSet(nullptr, towidget, {});
-    char *ct0 = "\x00\x00\x00\x00";
-    TCPCommand *stemp = new TCPCommand(settemp); stemp->setSendData(&ct0, 4);
+    char ct0[] = {0, 0, 0, 0};
+    TCPCommand *stemp = new TCPCommand(settemp); stemp->setSendData(ct0, 4);
     thermoReadStateCommand->addCommand(stemp);
     thermoReadStateCommand->addCommand(new TCPTimeOutCommand(timeoutcommand, 2000));
     thermoReadStateCommand->addCommand(new TCPCommand(gettemp));
@@ -508,6 +508,8 @@ ISPRModelData *SPRTestIMSWidget::setModelData(SPRMainModel *_model)
         separatorOnCommand = new TCPCommandSeparatorOnFull(model->getServer(), model, towidget);
 //        separatorOnCommand->setModelData(model);
         connect(separatorOnCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
+
+        separatorOffCommand->setModelData(model);
 
         rentgenOnCommand->setModel(model->getSettingsRentgenModel());
         commandStartPitatel->setModelVariable(model->getSettingsControlModel()->VEMSBeginCode);

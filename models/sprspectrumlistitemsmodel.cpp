@@ -1,4 +1,5 @@
 #include "sprspectrumlistitemsmodel.h"
+#include "QDebug"
 
 static const QVector<QColor> mainColors = {Qt::red, Qt::green, Qt::blue, Qt::cyan, Qt::magenta, Qt::yellow,
                                     Qt::darkRed, Qt::darkBlue, Qt::darkGreen, Qt::darkCyan, Qt::darkMagenta, Qt::darkYellow,
@@ -56,6 +57,23 @@ void  SPRSpectrumListItemsModel::clearSpectrums(QVector<SPRSpectrumItemModel*> *
     }
     model->clear();
     unionModels();
+    emit modelChanget(this);
+}
+
+void SPRSpectrumListItemsModel::clearSpectrums(SPRTypeSpectrumSet type){
+    blockSignals(true);
+    if(type == spectrumBase){
+        clearSpectrumsBase();
+    }
+    if(type == spectrumsOnly){
+        clearSpectrums();
+    }
+    if(type == spectrumsAll){
+        clearSpectrums();
+        clearSpectrumsBase();
+    }
+    unionModels();
+    blockSignals(false);
     emit modelChanget(this);
 }
 
@@ -132,9 +150,12 @@ SPRSettingsFormulaModel *SPRSpectrumListItemsModel::getFormulas() const
 }
 
 void SPRSpectrumListItemsModel::addSpectrums(QString fName){
-    QFile in(fName);
+    qDebug()<<"addSpectrums: cur dir: " << QDir::current() << "; qcurrpath: "<<QDir::currentPath();
+
+    QFile in(fName.toUtf8());
     int specCount = spectrumsModelBase.size();
     uint8_t buf[DEF_SPECTRUM_DATA_BUF_LENGTH];
+
     if(in.open(QIODevice::ReadOnly)){
        QByteArray b2 = in.read(2);
        while(in.read((char*)buf, DEF_SPECTRUM_DATA_BUF_LENGTH) == DEF_SPECTRUM_DATA_BUF_LENGTH){

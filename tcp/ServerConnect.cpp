@@ -108,7 +108,7 @@ void ServerConnect::changeRemoteState(QByteArray replay){
             st = (currentState & 0xFFFFFF00) | spr_state_spector_scope;
             break;
         case REMOTE_SEP:
-            st = (currentState & 0xFFFFFF00) | spr_state_separated;
+            st = (currentState & 0xFFFFFF00) | spr_state_separated | spr_state_exposition_on | spr_state_rentgen_on | spr_state_separator_on;
             break;
         case REMOTE_RENT:
             st = (currentState & 0xFFFFFF00) | spr_state_rentgen_uknown;
@@ -186,11 +186,13 @@ void ServerConnect::queueComplite(){
                 setTimer(fastTypeServerTimer);
                 emit serverConnectTimeOutError(current);
 //                clearState(SPR_STATE_SERVER_CONNECT | SPR_STATE_RENTGEN_ON | SPR_STATE_SEPATOR_ON | SPR_STATE_EXPOSITION_ON);
-               clearState(spr_state_server_connect);
-               clearState(spr_state_rentgen_on);
-               clearState(spr_state_separator_on);
-               clearState(spr_state_exposition_on);
-               addState(spr_state_error_connect);
+                if(!isState(spr_state_separator_on)){
+                   clearState(spr_state_server_connect);
+                   clearState(spr_state_rentgen_on);
+                   clearState(spr_state_separator_on);
+                   clearState(spr_state_exposition_on);
+                }
+                addState(spr_state_error_connect);
                return;
            }
        }
@@ -204,10 +206,12 @@ void ServerConnect::queueComplite(){
             mutex.unlock();
             emit serverReadWriteTimeOutError(current);
             setTimer(fastTypeServerTimer);
-            clearState(spr_state_server_connect);
-            clearState(spr_state_rentgen_on);
-            clearState(spr_state_separator_on);
-            clearState(spr_state_exposition_on);
+            if(!isState(spr_state_separator_on)){
+                clearState(spr_state_server_connect);
+                clearState(spr_state_rentgen_on);
+                clearState(spr_state_separator_on);
+                clearState(spr_state_exposition_on);
+            }
 //            clearState(SPR_STATE_SERVER_CONNECT | SPR_STATE_RENTGEN_ON | SPR_STATE_SEPATOR_ON | SPR_STATE_EXPOSITION_ON);
             addState(spr_state_error_connect);
         }
@@ -331,6 +335,8 @@ void ServerConnect::onServerStateChange(uint32_t _state)
     }
     currentState = _state;
 }
+
+
 
 
 

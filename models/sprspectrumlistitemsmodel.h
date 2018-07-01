@@ -169,6 +169,7 @@ public:
     SPREnumVariable<EnumElements> *getCorelControlArea() const;
 
     void recomplite();
+    void clearSpectrums(SPRTypeSpectrumSet type);
 signals:
     //    void modelChanget();
 

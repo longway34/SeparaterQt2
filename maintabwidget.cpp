@@ -67,6 +67,8 @@ ISPRModelData *MainTabWidget::setModelData(SPRMainModel *_model)
     ui.wTest->setModelData(model);
 
     ui.tabTest->setModelData(model);
+    ui.tabTestSeparateDetail->setModelData(model);
+//    ui.testSeparateDetail->setModelData(model);
 
     separateModel = new SPRSeparateModel(model->getDoc());
 
@@ -99,8 +101,14 @@ void MainTabWidget::onChangeFileSettings(QString fName)
 void MainTabWidget::onChangeFileSpectrum(QString fName){
     QFile spc(fName);
     if(spc.open(QIODevice::ReadOnly)){
+        if(model){
+            blockSignals(true);
+            model->getSpectrumListItemsModel()->clearSpectrums(spectrumsAll);
         //        ui.tabSpectrum->setModel(model->getSpectrumZonesTableModel(), &spc);
 //        ui.wTest->addSpectrumsModel(&spc);
+            model->getSpectrumListItemsModel()->addSpectrums(fName);
+            blockSignals(false);
+        }
         spc.close();
     }
 }

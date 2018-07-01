@@ -39,6 +39,7 @@ public slots:
 //        ui.tabSeparate->
 //        ui.tabHistory->wid
         ui.tabTest->widgetsShow();
+        ui.tabTestSeparateDetail->widgetsShow();
     }
 
     void onChangeFileSettings(QString fName);

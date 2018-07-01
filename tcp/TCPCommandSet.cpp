@@ -25,21 +25,23 @@ TCPCommandSet::~TCPCommandSet() {
 void TCPCommandSet::go(TCPCommand* _command){
     if(_command){
 
-        qDebug() << "command: "<<QString::number(_command->getCommand(),16)<< "; send:" << _command->getSendData().toHex(':')<< "; res: "<<_command->getReplayData().toHex(':');
-
         int num = _command->getNum();
         if(num < commandSet.size() - 1){
             if(isCommamdCompare(_command)){
                 commandSet[num+1]->send(server);
             } else {
-                emit commandComplite(_command);
+                emit commandNotComplite(_command);
                 server->timerStart();
             }
         } else {
             if(server){
                 server->timerStart();
             }
-            emit commandComplite(this);
+            if(isCommamdCompare(_command)){
+                emit commandComplite(this);
+            } else {
+                emit commandNotComplite(_command);
+            }
         }
     } else {
         if(commandSet.size() > 0){
@@ -75,4 +77,10 @@ bool TCPCommandSet::noErrors()
         res &= commandSet[i]->noErrors();
     }
     return res;
+}
+
+
+bool TCPCommandSet::isCommandSet()
+{
+    return true;
 }

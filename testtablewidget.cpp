@@ -2,7 +2,7 @@
 #include "models/sprspectrumlistitemsmodel.h"
 #include <QFile>
 #include <QMessageBox>
-
+#include <QList>
 
 testTableWidget::testTableWidget(QWidget *parent) :
     QWidget(parent), mainModel(nullptr), separateModel(nullptr)
@@ -12,7 +12,7 @@ testTableWidget::testTableWidget(QWidget *parent) :
     towidget = new TCPTimeOutWigget();
 
 //    connect(ui.bAdd, SIGNAL(clicked(bool)), this, SLOT(onClickAdd(bool)));
-    connect(ui.baseTable, SIGNAL(rowSelectedChecked(QList<int>,int)), ui.baseGrapthics, SLOT(onChangeSelectedCheckedItems(QList<int>,int)));
+//    connect(ui.baseTable, SIGNAL(rowSelectedChecked(QList<int>,int)), ui.baseGrapthics, SLOT(onChangeSelectedCheckedItems(QList<int>,int)));
 
 //    connect(ui.kspectTable, SIGNAL(rowSelectedChecked(QList<int>,int)), ui.kSpertGraphic, SLOT(onChangeSelectedCheckedItems(QList<int>,int)));
 
@@ -32,7 +32,7 @@ testTableWidget::testTableWidget(QWidget *parent) :
 
     towidget->setVisible(false);
 
-    ui.baseGrapthics->getCanvas()->setAxisScale(QwtPlot::Axis::xBottom, 0, 256, 25);
+//    ui.baseGrapthics->getCanvas()->setAxisScale(QwtPlot::Axis::xBottom, 0, 256, 25);
     ui.kSpertGraphic->getCanvas()->setAxisScale(QwtPlot::Axis::xBottom, 0, 256, 25);
 
 //    startSeparate = new TCPTestStartSeparate(nullptr, ui.towidget, ui.logWidget);
@@ -48,23 +48,36 @@ testTableWidget::testTableWidget(QWidget *parent) :
 ISPRModelData *testTableWidget::setModelData(SPRMainModel *_model){
     if(_model){
         mainModel = _model;
+
+        ui.separateDetailsTable->setModelData(mainModel);
+        ui.separateDetailsTable->getMyModel()->setVisibleThreads(QList<int>({0,1,2,3}));
+        ui.separateDetailsTable->getMyModel()->setScopeData(0);
+
 //        spectrumsBaseModel = new SPRSpectrumListItemsModel(_model->getSpectrumZonesTableModel(), _model->getSettingsFormulaModel(),_model->getSettingsMainModel()->getThreads(), _model->getSettingsMainModel()->getSpectrumFileName());
-        kSpectrumsModel = new SPRSpectrumListItemsModel(_model->getSpectrumZonesTableModel(), _model->getSettingsFormulaModel(),_model->getSettingsMainModel()->getThreads(), _model->getSettingsMainModel()->getSpectrumFileName(), _model->getSettingsControlModel()->controlArea);
+//        kSpectrumsModel = new SPRSpectrumListItemsModel(_model->getSpectrumZonesTableModel(), _model->getSettingsFormulaModel(),_model->getSettingsMainModel()->getThreads(), _model->getSettingsMainModel()->getSpectrumFileName(), _model->getSettingsControlModel()->controlArea);
+        kSpectrumsModel = new SPRSpectrumListItemsModel(_model->getSpectrumZonesTableModel(), _model->getSettingsFormulaModel(),_model->getSettingsMainModel()->getThreads(), nullptr, _model->getSettingsControlModel()->controlArea);
         connect(kSpectrumsModel, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanged(IModelVariable*)));
 //        separateModel = new SPRSeparateModel(mainModel->getDoc());
 //        separateModel->setModelData(_model);
         separateModel = mainModel->getSeparateModel();
 
-        startSeparate = new TCPTestStartSeparate(nullptr, mainModel, towidget, getLogWidget());
+        startSeparate = new TCPStartSeparate2(_model, towidget, getLogWidget());
+//        startSeparate = new TCPTestStartSeparate(nullptr, mainModel, towidget, getLogWidget());
 //        getRen = startSeparate->findCommands(getren).last();
 //        connect(getRen, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
         connect(startSeparate, SIGNAL(errorCommand(TCPCommand*)), this, SLOT(onCommandError(TCPCommand*)));
 
+        stopSeparate->setModelData(mainModel);
+
         ui.kspectTable->setModelData(kSpectrumsModel, spectrumsOnly);
         ui.kSpertGraphic->setModelData(kSpectrumsModel, spectrumsOnly, true);
 
-        ui.baseTable->setModelData(kSpectrumsModel, spectrumBase);
-        ui.baseGrapthics->setModelData(kSpectrumsModel, spectrumBase, true);
+        ui.separateDetailsTable->setModelData(mainModel);
+//        ui.baseGrapthics->setModelData(kSpectrumsModel, spectrumBase, true);
+        ui.testGistogramm->setModelData(mainModel->getSeparateModel());
+
+
+
 
         rentgenOnFull = new TCPCommandSeparatorOnFull(mainModel->getServer(), mainModel, towidget);
         rentgenOnFull->setModelData(mainModel);
@@ -92,20 +105,20 @@ ISPRModelData *testTableWidget::setModelData(SPRMainModel *_model){
 //        getBaseSpectrumCommand = startSeparate->getGetBaseSpectrumCommand();
         connect(getBaseSpectrumCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
 
-        kspecCommand = startSeparate->getSeparateGoCommand()->getKspectCommand();
-        connect(kspecCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
+//        kspecCommand = startSeparate->getSeparateGoCommand()->getKspectCommand();
+//        connect(kspecCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
 
-        hiskCommand = startSeparate->getSeparateGoCommand()->getHistCommand();
-        connect(hiskCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
+//        hiskCommand = startSeparate->getSeparateGoCommand()->getHistCommand();
+//        connect(hiskCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
 
-        getseparCommand = startSeparate->getSeparateGoCommand()->getGetseparCommand();
-        connect(getseparCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
+//        getseparCommand = startSeparate->getSeparateGoCommand()->getGetseparCommand();
+//        connect(getseparCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
 
-        QVector<TCPCommand*> vcomm = startSeparate->findCommands(setGetSpectrumsGistorfamms);
-        for(int i=0; i<vcomm.size();i++){
-            connect(((TCPGetSpectrumsGistogramms*)vcomm[i]), SIGNAL(commandComplite(TCPCommand*)), SLOT(onCommandComplite(TCPCommand*)));
-        }
-
+//        QVector<TCPCommand*> vcomm = startSeparate->findCommands(setGetSpectrumsGistorfamms);
+//        for(int i=0; i<vcomm.size();i++){
+//            connect(((TCPGetSpectrumsGistogramms*)vcomm[i]), SIGNAL(commandComplite(TCPCommand*)), SLOT(onCommandComplite(TCPCommand*)));
+//        }
+          connect(startSeparate, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onStartSepareteCommandComplite(TCPCommand*)));
     }
 
     //        model->setModel(_model);
@@ -123,51 +136,125 @@ void testTableWidget::widgetsShow(){
         while(ui.workSeparTable->rowCount()>0){
             ui.workSeparTable->removeRow(0);
         }
-        ui.workSeparTable->setRowCount(separateModel->workSeparate.size() * MAX_SPR_MAIN_THREADS);
-        qDebug() << "ws_model rows:" << separateModel->workSeparate.size() << " workspase table rows:" << ui.workSeparTable->rowCount();
+        ui.workSeparTable->setRowCount(separateModel->workSetarateRows.size());
+        qDebug() << "ws_model rows:" << separateModel->workSetarateRows.size() << " workspase table rows:" << ui.workSeparTable->rowCount();
 
         uint row = 0;
-        for(int i=0; i<separateModel->workSeparate.size(); i++){
+        for(int i=0; i<separateModel->workSetarateRows.size(); i++){
 
-            for(uint th=0; th<mainModel->getSettingsMainModel()->getThreads()->getData(); th++){
                 QVector<double> data = {
-                    separateModel->workSeparate[i]->i_prd[th][0],separateModel->workSeparate[i]->i_prd[th][1],separateModel->workSeparate[i]->i_prd[th][2],separateModel->workSeparate[i]->i_prd[th][3],
-                    separateModel->workSeparate[i]->p_prd[th][0],separateModel->workSeparate[i]->p_prd[th][1],separateModel->workSeparate[i]->p_prd[th][2],separateModel->workSeparate[i]->p_prd[th][3],
+                    separateModel->workSetarateRows[i]->i_prd[0],separateModel->workSetarateRows[i]->i_prd[1],separateModel->workSetarateRows[i]->i_prd[2],separateModel->workSetarateRows[i]->i_prd[3],
+                    separateModel->workSetarateRows[i]->p_prd[0],separateModel->workSetarateRows[i]->p_prd[1],separateModel->workSetarateRows[i]->p_prd[2],separateModel->workSetarateRows[i]->p_prd[3],
 
-                    separateModel->workSeparate[i]->p_tk[th],
-                    separateModel->workSeparate[i]->p_tkh1[th],
-                    separateModel->workSeparate[i]->p_tkh2[th],
-                    separateModel->workSeparate[i]->p_tkh3[th],
+                    separateModel->workSetarateRows[i]->p_tk,
+                    separateModel->workSetarateRows[i]->p_tkh1,
+                    separateModel->workSetarateRows[i]->p_tkh2,
+                    separateModel->workSetarateRows[i]->p_tkh3,
 
-                    separateModel->workSeparate[i]->wcount[th],
-                    separateModel->workSeparate[i]->s_rst[th][0],separateModel->workSeparate[i]->s_rst[th][1],separateModel->workSeparate[i]->s_rst[th][2],separateModel->workSeparate[i]->s_rst[th][3],separateModel->workSeparate[i]->s_rst[th][4],
-
+                    separateModel->workSetarateRows[i]->wcount,
+                    separateModel->workSetarateRows[i]->s_rst[0],separateModel->workSetarateRows[i]->s_rst[1],separateModel->workSetarateRows[i]->s_rst[2],separateModel->workSetarateRows[i]->s_rst[3],separateModel->workSetarateRows[i]->s_rst[4],
                 };
-                data.push_back(separateModel->workSeparate[i]->error);
+//                data.push_back(separateModel->workSeparateCurrent[i].error);
 
-                for(int col=0; col<ui.workSeparTable->columnCount(); col++){
-                    QLabel *lb = new QLabel(QString::number(data[col],'f', 3));
-                        ui.workSeparTable->setCellWidget(row, col, lb);
+                QLabel *lb = new QLabel(QString::number(separateModel->workSetarateRows[i]->number));
+                ui.workSeparTable->setCellWidget(i, 0, lb);
+
+                lb = new QLabel(separateModel->workSetarateRows[i]->dt.toString("dd.MM hh:mm:ss"));
+                ui.workSeparTable->setCellWidget(i, 1, lb);
+
+                lb = new QLabel(QString::number(separateModel->workSetarateRows[i]->thread));
+                ui.workSeparTable->setCellWidget(i, 2, lb);
+
+
+                for(int col=3, vec = 0; col<ui.workSeparTable->columnCount()-1 && vec < data.size(); col++, vec++){
+                    lb = new QLabel(QString::number(data[vec],'f', 3));
+                        ui.workSeparTable->setCellWidget(i, col, lb);
                 }
-                row++;
-            }
+                lb = new QLabel(QString::number(round(separateModel->workSeparateCurrent.error)));
         }
+        while (ui.workGistorrammTable->rowCount() > 0) {
+            ui.workGistorrammTable->removeRow(0);
+        }
+        ui.workGistorrammTable->setRowCount(separateModel->workGistogrammRows.size());
+        for(int row=0; row < separateModel->workGistogrammRows.size(); row++){
+            ui.workGistorrammTable->setCellWidget(row, 0, new QLabel(
+                                        QString::number(row)));
+            ui.workGistorrammTable->setCellWidget(row, 1, new QLabel(
+                                        QString::number(separateModel->workGistogrammRows[row].thread)));
+            ui.workGistorrammTable->setCellWidget(row, 2, new QLabel(
+                                        QString(separateModel->workGistogrammRows[row].dt.toString("dd.MM hh:mm:ss"))));
+            ui.workGistorrammTable->setCellWidget(row, 3, new QLabel(
+                                        QString(separateModel->workGistogrammRows[row].toString())));
+        }
+
     }
+    ui.workGistorrammTable->resizeColumnsToContents();
     ui.workSeparTable->resizeColumnsToContents();
 
     ui.kspectTable->widgetsShow();
     ui.kSpertGraphic->widgetsShow();
-    ui.baseTable->widgetsShow();
-    ui.baseGrapthics->widgetsShow();
+//    ui.baseTable->widgetsShow();
+    ui.testGistogramm->widgetsShow();
+//    ui.baseGrapthics->widgetsShow();
 }
 
 void testTableWidget::onModelChanged(IModelVariable*){
-    ui.baseGrapthics->setModelData(mainModel->getSpectrumListItemsModel(), spectrumBase, true);
-    ui.baseTable->setModelData(mainModel->getSpectrumListItemsModel(), spectrumBase);
-    ui.baseGrapthics->widgetsShow();
-    ui.baseTable->widgetsShow();
+//    ui.baseGrapthics->setModelData(mainModel->getSpectrumListItemsModel(), spectrumBase, true);
+//    ui.baseTable->setModelData(mainModel->getSpectrumListItemsModel(), spectrumBase);
+//    ui.baseGrapthics->widgetsShow();
+//    ui.baseTable->widgetsShow();
     
 }
+
+void testTableWidget::onStartSepareteCommandComplite(TCPCommand *command){
+    if(sender() == startSeparate){
+        if(command->getCommand() == getsepar){
+            QByteArray res = command->getReplayData();
+            int s = res.size();
+            if(s > 1){
+                separateModel->setWorkSeparateData(res.right(s-1));
+                widgetsShow();
+            }
+        } else {
+            EnumCommands ccc = command->getCommand();
+            bool res = command->isCommandSet();
+            QString n = command->getName();
+            if(command->isCommandSet() && command->getName() == "setGetSpectrumsGistorfamms"){
+                TCPGetSpectrumsGistogramms *comm = (TCPGetSpectrumsGistogramms*)command;
+                if(comm->getDataType() == getkspk){
+                    blockSignals(true);
+                    kSpectrumsModel->clearSpectrums();
+                    onKSpectrumReady(comm);
+                    ui.kSpertGraphic->setVisibleAll();
+                    widgetsShow();
+                    blockSignals(false);
+
+                }
+                if(comm->getDataType() == getspk){
+                    QVector<TCPCommand*> vspk = comm->findCommands(getspk);
+                    for(int i=0; i<vspk.size();i++){
+                        QByteArray spk = vspk[i]->getReplayData().right(DEF_SPECTRUM_DATA_LENGTH_BYTE);
+                        SPRSpectrumItemModel *item = kSpectrumsModel->setSpectrumData(i, spk);
+                        item->setTimeScope(1);
+                    }
+//                    ui.baseGrapthics->setVisibleAll();
+                    widgetsShow();
+                }
+                if(comm->getDataType() == getgist){
+                    QVector<TCPCommand*> vgist = comm->findCommands(getgist);
+                    for(int i=0; i<vgist.size();i++){
+                        QByteArray gist = vgist[i]->getReplayData();
+                        int s = gist.size();
+                        if(s > 1){
+                            separateModel->setWorkGistogrammData(gist.right(s-1), i);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 void testTableWidget::onGetButtomsClick(bool)
 {
@@ -200,6 +287,7 @@ void testTableWidget::onGetButtomsClick(bool)
 }
 
 void testTableWidget::onKSpectrumReady(TCPGetSpectrumsGistogramms *_command){
+    blockSignals(true);
     QVector<TCPCommand*> vkspect = _command->findCommands(getkspk);
     for(int th=0; th<vkspect.size();th++){
         QByteArray res = _command->getKSpectrumData(th);
@@ -216,6 +304,7 @@ void testTableWidget::onKSpectrumReady(TCPGetSpectrumsGistogramms *_command){
             }
         }
     }
+    blockSignals(false);
 
 }
 
@@ -228,14 +317,14 @@ void testTableWidget::onCommandComplite(TCPCommand *_command)
     }
     if(sender() == getSeparate){
         QByteArray res = getSeparate->getReplayData();
-        separateModel->addWorkSeparateData(res);
-        widgetsShow();
+        separateModel->setWorkSeparateData(res);
+//        widgetsShow();
         return;
     }
     if(sender() == getseparCommand){
         QByteArray res = getseparCommand->getReplayData();
-        separateModel->addWorkSeparateData(res);
-        widgetsShow();
+        separateModel->setWorkSeparateData(res);
+//        widgetsShow();
         return;
     }
     if(sender() == getKSpectrums){
@@ -272,7 +361,7 @@ void testTableWidget::onCommandComplite(TCPCommand *_command)
 //            ui.baseTable->setModel(spectrumsBaseModel);
 //        }
 
-        ui.baseGrapthics->setVisibleAll();
+//        ui.baseGrapthics->setVisibleAll();
         widgetsShow();
         return;
     }
@@ -373,6 +462,8 @@ void testTableWidget::setLogWidget(TCPLogsWigtets *value)
     getBaseSpectrumCommand->setLogWidget(value);
     getGistogramm->setLogWidget(value);
     getKSpectrums->setLogWidget(value);
+
+    startSeparate->setLogWidget(value);
 }
 
 void testTableWidget::onModelChanget(IModelVariable *)

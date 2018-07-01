@@ -23,6 +23,16 @@ void ITCPCommand::setLogWidget(TCPLogsWigtets *value)
     logWidget = value;
 }
 
+QString ITCPCommand::getName() const
+{
+    return name;
+}
+
+void ITCPCommand::setName(const QString &value)
+{
+    name = value;
+}
+
 ITCPCommand::ITCPCommand(): logWidget(nullptr) {
 }
 

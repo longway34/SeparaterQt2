@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QByteArray>
+#include <QDateTime>
 
 #include "_types.h"
 #include "models/isprmodeldata.h"
@@ -12,7 +13,7 @@
 #include "models/sprporogsmodel.h"
 #include "models/imainmodel.h"
 
-
+#include "qwt_interval.h"
 
 struct sobl{
     double ls;
@@ -40,7 +41,7 @@ typedef struct sep_ust{
                                                         // 2 = H1 и H2 и H3 (6 сравнений) из SPRSettingsFormulaModel
     double fotb; // инверсия отбора 0 или 1 из SPRSettingrPorogsModel
     double fotbR2; // тоже для второго ряда
-    double maxg1;  // что то минимальное и максимальное из SPRSettingsFormulaModel
+    double maxg1;  // минимальное и максимальное параметра из SPRSettingsFormulaModel для деления на категории в гистограмме
     double ming1;
     double gcol; // колличество элементов гистограммы из собственной модели 10 - 200
 
@@ -73,9 +74,129 @@ typedef struct ssep_work {
   double p_tkh2[MAX_SPR_MAIN_THREADS]; // 8x4 = 32
   double p_tkh3[MAX_SPR_MAIN_THREADS]; // 8x4 = 32
   double wcount[MAX_SPR_MAIN_THREADS]; // 8x4 = 32
-  double s_rst[MAX_SPR_MAIN_THREADS][DEF_SPR_IMS_PARTS_SIZE+1]; // MAX_GR = 5 = 8x4x5 = 160
+  double s_rst[MAX_SPR_MAIN_THREADS][5]; // MAX_CH = 4 MAX_GR = 5 = 8x4x5 = 160
   double error ; // = 8 ///////
+
+  ssep_work(){
+      clear();
+  }
+  void clear(){
+      for(int th=0; th<MAX_SPR_MAIN_THREADS; th++){
+          for(int i=0; i<4; i++){
+              i_prd[th][i] = 0; p_prd[th][i] = 0;
+          }
+          for(int i=0; i<5; i++){
+              s_rst[th][i] = 0;
+          }
+          p_tk[th] = 0; p_tkh1[th] = 0; p_tkh2[th] = 0; p_tkh3[th] = 0;
+          wcount[th] = 0;
+      }
+      error = 0;
+  }
 } SPRWorkSeparate;
+
+typedef struct ssep_work_row{
+    int id;
+    int number;
+    QDateTime dt;
+    int thread;
+    double i_prd[4]; // MAX_CH = 4 = 8x4 = 32
+    double p_prd[4]; // 8x4= 32
+    double p_tk; // 8 = 8
+    double p_tkh1; // 8
+    double p_tkh2; // 8
+    double p_tkh3; // 8
+    double wcount; // 8
+    double s_rst[5]; // MAX_GR = 5 = 8x5 = 40
+
+    bool isNullStucture(){
+        double summ = 0;
+//        summ += p_tk + p_tkh1 + p_tkh2 + p_tkh3 + wcount;
+
+        for(int i=0; i < 4; i++){
+            summ += i_prd[i]/* + p_prd[i]*/;
+        }
+        for(int i=0; i<5; i++){
+            summ += s_rst[i];
+        }
+        return fabs(summ) < 1e-6;
+    }
+    ssep_work_row(){
+        id = rand();
+        clear();
+    }
+    void clear(){
+        for(int i=0; i<4; i++){
+            i_prd[i] = 0; p_prd[i] = 0;
+        }
+        for(int i=0; i<5; i++){
+            s_rst[i] = 0;
+        }
+        p_tk = 0; p_tkh1 = 0; p_tkh2 = 0; p_tkh3 = 0;
+        wcount = 0;
+    }
+} SPRWorkSeparateRow;
+
+typedef struct sgist{
+    int gist[DEF_SPR_SEPARATE_GCOL];
+    int gcol;
+    int thread;
+    int number;
+
+    QDateTime dt;
+
+    bool isNullStructure(){
+        int summ = 0;
+        for(int i=0; i < DEF_SPR_SEPARATE_GCOL; i++){
+            summ += gist[i];
+        }
+        return summ == 0;
+    }
+    QString toString(){
+        QString ret = "";
+        if(!isNullStructure()){
+            ret += QString::number(thread) + " ";
+//            if(dt.isValid()){
+//                ret += dt.toString("dd.MM hh:mm:ss ");
+//            }
+            for(int i=0; i < gcol; i++){
+                if(gist[i] > 0){
+                    if(i < gcol-1){
+                        ret += QString("s%1=%2 ").arg(i).arg(QString::number(gist[i]));
+                    } else {
+                        ret += QString("???=%1").arg(gist[i]);
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+    sgist(int _gcol = DEF_SPR_SEPARATE_GCOL, int _thread = 0) {
+        if(_gcol <= DEF_SPR_SEPARATE_GCOL && _gcol >= 0){
+            gcol = _gcol;
+        } else {
+            gcol = DEF_SPR_SEPARATE_GCOL;
+        }
+        if(_thread >=0 && _thread < MAX_SPR_MAIN_THREADS){
+            thread = _thread;
+        } else {
+            thread = 0;
+        }
+        dt=QDateTime::currentDateTime();
+        clear();
+    }
+    void clear(){
+        for(int i=0; i<DEF_SPR_SEPARATE_GCOL; i++){
+            gist[i] = 0;
+        }
+    }
+
+
+public:
+    int getGcol() const;
+    void setGcol(int value);
+} SPRWorkGistogrammRow;
+
 
 class SPRSeparateModel : public ISPRModelData
 {
@@ -83,12 +204,23 @@ class SPRSeparateModel : public ISPRModelData
 //    SPRMainModel *mainModel;
     SPRSettintsSeparate settingsSeparate;
 
-    void *fullWorkSeparate(SPRWorkSeparate *dst, QByteArray rawData){
-        return memcpy(dst, rawData.constData()+1, sizeof(SPRWorkSeparate));
-    }
+    bool separateStructupeEmpty;
+
+    void *fullWorkSeparate(SPRWorkSeparate *dst, QByteArray rawData);
+    void *fullWorkGistogramm(SPRWorkGistogrammRow *dst, QByteArray rawData);
+    void addWorkSeparateDataRow(SPRWorkSeparateRow *row);
+    void addWorkGistogrammDataRow(SPRWorkGistogrammRow row);
+
 public:
 //    QMap<EnumElements, SPRSpectrumZonesModel::SpectorRange> elements;
-    QVector<SPRWorkSeparate*> workSeparate;
+    SPRWorkSeparate workSeparateCurrent;
+    SPRWorkSeparate workSeparateReceive;
+
+    QVector<SPRWorkSeparateRow*> workSetarateRows;
+
+    SPRWorkGistogrammRow workGistogrammCurrent[MAX_SPR_MAIN_THREADS];
+    SPRWorkGistogrammRow workGistogrammReceive[MAX_SPR_MAIN_THREADS];
+    QVector<SPRWorkGistogrammRow> workGistogrammRows;
 
     QVector<SPRVariable<double>*> gmz;
     SPRVariable<uint> *gcol;
@@ -101,20 +233,12 @@ public:
         ISPRModelData(), gmz(), gcol(nullptr), kruch(nullptr), usl(), alg(nullptr), sep_row()
     {
     }
-    void addWorkSeparateData(QByteArray rawData){
-        uint uots = rawData.size();
-        uint inps = sizeof(SPRWorkSeparate);
 
-        if(rawData.size()-1 == sizeof(SPRWorkSeparate)){
-            SPRWorkSeparate *str = (SPRWorkSeparate*)malloc(sizeof(SPRWorkSeparate));
-            fullWorkSeparate(str, rawData);
-            workSeparate.push_front(str);
-            if(workSeparate.size() > 4){
-                delete workSeparate[workSeparate.size()-1];
-                workSeparate.pop_back();
-            }
-        }
-    }
+    QVector<QVector<QwtIntervalSample>> getGistogrammContentData(int thread = -1, int parts = -1);
+
+    void setWorkSeparateData(QByteArray rawData);
+
+    void setWorkGistogrammData(QByteArray rawData, int thread);
 
     QByteArray toByteArray(IMainModel *_mainModel);
 
@@ -124,6 +248,10 @@ public:
     virtual ~SPRSeparateModel();
 
     SPRSettintsSeparate *getSettingsSeparate();
+    bool isSeparateEmpty() const;
+    void setSeparateEmpty(bool value);
+
+private:
 };
 
 #endif // SPRSEPARATEMODEL_H

@@ -193,6 +193,10 @@ public:
     // ITCPCommand interface
 public:
     virtual bool noErrors();
+
+    // ITCPCommand interface
+public:
+    virtual bool isCommandSet();
 };
 
 #endif /* TCPCOMMANSET_H */

@@ -64,7 +64,6 @@ SOURCES += \
     models/sprsettingsrentgenmodel.cpp \
     models/sprsettingsrmtautosetmodel.cpp \
     verticallabel.cpp \
-    maintabwidget.cpp \
     sprsettingswidget.cpp \
     models/sprmainmodel.cpp \
     models/sprspectrumzonestablemodel.cpp \
@@ -122,7 +121,13 @@ SOURCES += \
     mainwindow.cpp \
     scrollbar.cpp \
     scrollzoomer.cpp \
-    sprgraphitem.cpp
+    sprgraphitem.cpp \
+    tcp/tcpexpositionoff.cpp \
+    tcp/tcpstartseparate2.cpp \
+    sprseparategistogrammwidget.cpp \
+    sprseparatedetailstable.cpp \
+    sprseparatedetailtablewidget.cpp \
+    maintabwidget.cpp
 
 HEADERS += \
     _types.h \
@@ -157,7 +162,6 @@ HEADERS += \
     models/sprsettingsrmtautosetmodel.h \
     tcp/TCPCommandSet.h \
     verticallabel.h \
-    maintabwidget.h \
     sprsettingswidget.h \
     models/sprmainmodel.h \
     models/sprspectrumzonestablemodel.h \
@@ -215,7 +219,13 @@ HEADERS += \
     mainwindow.h \
     scrollbar.h \
     scrollzoomer.h \
-    sprgraphitem.h
+    sprgraphitem.h \
+    tcp/tcpexpositionoff.h \
+    tcp/tcpstartseparate2.h \
+    sprseparategistogrammwidget.h \
+    sprseparatedetailstable.h \
+    sprseparatedetailtablewidget.h \
+    maintabwidget.h
 
 FORMS += \
     sprsettingsrentgenmainwidget.ui \
@@ -229,7 +239,6 @@ FORMS += \
     sprsettingsrentgenwidget.ui \
     sprsettingsimswidget.ui \
     sprsettingscontrolwidget.ui \
-    maintabwidget.ui \
     sprsettingswidget.ui \
     testtablewidget.ui \
     sprspectrumgraphicswidget.ui \
@@ -242,7 +251,10 @@ FORMS += \
     sprzonesrangestablewidget.ui \
     sprspectrumlisttablewidget.ui \
     sprspectrumchoisetimedialog.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    sprseparategistogrammwidget.ui \
+    sprseparatedetailtablewidget.ui \
+    maintabwidget.ui
 
 RESOURCES += \
     icons.qrc \

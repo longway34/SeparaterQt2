@@ -6,6 +6,159 @@ SPRSettintsSeparate *SPRSeparateModel::getSettingsSeparate()
     return &settingsSeparate;
 }
 
+bool SPRSeparateModel::isSeparateEmpty() const
+{
+    return separateStructupeEmpty;
+}
+
+void SPRSeparateModel::setSeparateEmpty(bool value)
+{
+    separateStructupeEmpty = value;
+}
+
+void *SPRSeparateModel::fullWorkSeparate(SPRWorkSeparate *dst, QByteArray rawData){
+    return memcpy(dst, rawData.constData(), sizeof(SPRWorkSeparate));
+}
+
+void *SPRSeparateModel::fullWorkGistogramm(SPRWorkGistogrammRow *dst, QByteArray rawData)
+{
+//    int tst[200];
+//    int size = rawData.size();
+//    memcpy(tst, rawData.constData(), rawData.size() - 1);
+    return memcpy(dst->gist, rawData.constData(), sizeof(dst->gist));
+}
+
+void SPRSeparateModel::addWorkSeparateDataRow(SPRWorkSeparateRow *row){
+    int num = 0;
+    if(workSetarateRows.size() > 0){
+        num = workSetarateRows[0]->number+1;
+    }
+    row->number = num;
+    workSetarateRows.push_front(row);
+    if(workSetarateRows.size() > 20){
+        workSetarateRows.pop_back();
+    }
+    emit modelChanget(this);
+}
+
+void SPRSeparateModel::addWorkGistogrammDataRow(SPRWorkGistogrammRow row){
+    int num = 0;
+    if(workGistogrammRows.size() >0){
+        num = workGistogrammRows[0].number+1;
+    }
+    row.number = num;
+    workGistogrammRows.push_front(row);
+    if(workGistogrammRows.size() > 20){
+        workGistogrammRows.pop_back();
+    }
+}
+
+QVector<QVector<QwtIntervalSample>> SPRSeparateModel::getGistogrammContentData(int thread, int parts)
+{
+//    if(thread < 0) thread = 0;
+    int thr_min = 0; int thr_max = MAX_SPR_MAIN_THREADS;
+    if(thread >=0 && thread < MAX_SPR_MAIN_THREADS){
+        thr_min = thread; thr_max = thread + 1;
+    }
+    QVector<QVector<QwtIntervalSample>> res;
+
+    int mgcol = DEF_SPR_SEPARATE_GCOL;
+    double ming1 = DEF_SPR_FORMULA_MIN, maxg1 = DEF_SPR_FORMULA_MAX;
+    if(!isSeparateEmpty()){
+        ming1 = settingsSeparate.ming1; maxg1 = settingsSeparate.maxg1;
+        mgcol = settingsSeparate.gcol;
+    }
+    if(parts < 0){
+        parts =mgcol;
+    }
+    if(parts == 0) parts = DEF_SPR_SEPARATE_GCOL;
+
+    double w1 = qMax(ming1, maxg1) - qMin(ming1, maxg1);
+    double step = w1 / parts;
+
+    double bInterval = qMin(ming1, maxg1);
+
+    for(int th=thr_min; th < thr_max; th++){
+
+        double w = mgcol / parts;
+        int width = (int)w; /*if((w - width) > 0.5) width++;*/
+
+        QVector<QwtIntervalSample> int_th;
+        for(int i=0; i<mgcol; i++){
+            int index = i / width;
+            while(int_th.size() <= index){
+                int_th.push_back(QwtIntervalSample(0, bInterval, bInterval+step));
+                bInterval += step;
+
+                int_th[index].interval.setBorderFlags(QwtInterval::ExcludeMaximum);
+            }
+//            int val = workGistogrammCurrent[th].gist[i];
+            int_th[index].value += workGistogrammCurrent[th].gist[i];
+        }
+        res.push_back(int_th);
+    }
+    return res;
+
+
+}
+
+void SPRSeparateModel::setWorkSeparateData(QByteArray rawData){
+    fullWorkSeparate(&workSeparateReceive, rawData);
+
+    SPRWorkSeparateRow *diff = new SPRWorkSeparateRow();
+    bool needSignal = false;
+    for(int th=0; th<MAX_SPR_MAIN_THREADS; th++){
+        diff->p_tk = workSeparateReceive.p_tk[th]/* - workSeparateCurrent.p_tk[th]*/;
+        diff->p_tkh1 = workSeparateReceive.p_tkh1[th]/* - workSeparateCurrent.p_tkh1[th]*/;
+        diff->p_tkh2 = workSeparateReceive.p_tkh2[th]/* - workSeparateCurrent.p_tkh2[th]*/;
+        diff->p_tkh3 = workSeparateReceive.p_tkh3[th]/* - workSeparateCurrent.p_tkh3[th]*/;
+        diff->wcount = workSeparateReceive.wcount[th]/* - workSeparateCurrent.wcount[th]*/;
+        for(int i=0; i<4; i++){
+            diff->i_prd[i] = workSeparateReceive.i_prd[th][i] - workSeparateCurrent.i_prd[th][i];
+            diff->p_prd[i] = workSeparateReceive.p_prd[th][i]/* - workSeparateCurrent.p_prd[th][i]*/;
+        }
+        for(int i = 0; i < 5; i++){
+            diff->s_rst[i] = workSeparateReceive.s_rst[th][i] - workSeparateCurrent.s_rst[th][i];
+        }
+        if(!diff->isNullStucture()){
+            diff->thread = th;
+            diff->dt = QDateTime::currentDateTime();
+            addWorkSeparateDataRow(diff);
+            memcpy(&workSeparateCurrent, &workSeparateReceive, sizeof(SPRWorkSeparate));
+//            workSeparateCurrent.p
+            needSignal = true;
+        }
+    }
+
+
+    if(needSignal){
+        emit modelChanget(this);
+    }
+}
+
+void SPRSeparateModel::setWorkGistogrammData(QByteArray rawData, int thread)
+{
+    fullWorkGistogramm(&workGistogrammReceive[thread], rawData);
+
+    bool needSignal = false;
+    SPRWorkGistogrammRow diff(gcol->getData(), thread);
+    for(int i=0; i<gcol->getData(); i++){
+        diff.gist[i] = workGistogrammReceive[thread].gist[i] - workGistogrammCurrent[thread].gist[i];
+    }
+    if(!diff.isNullStructure()){
+        diff.thread = thread;
+        diff.dt = QDateTime::currentDateTime();
+
+        addWorkGistogrammDataRow(diff);
+        memcpy(workGistogrammCurrent[thread].gist, workGistogrammReceive[thread].gist, sizeof(workGistogrammCurrent[thread].gist));
+        needSignal = true;
+    }
+    if(needSignal){
+        qDebug() << diff.toString();
+        emit modelChanget(this);
+    }
+}
+
 QByteArray SPRSeparateModel::toByteArray(IMainModel *_mainModel)
 {
     memset(&settingsSeparate, 0, sizeof(settingsSeparate));
@@ -109,16 +262,23 @@ QByteArray SPRSeparateModel::toByteArray(IMainModel *_mainModel)
     settingsSeparate.sep_row = sep_row->getData();
 
     QByteArray ret = QByteArray::fromRawData((char*)&settingsSeparate, sizeof(settingsSeparate));
+    setSeparateEmpty(true);
+
     return ret;
 }
 
 SPRSeparateModel::SPRSeparateModel(QDomDocument *_doc, ISPRModelData *parent):
-    ISPRModelData(_doc, parent), gmz(), gcol(nullptr), kruch(nullptr), usl(), alg(nullptr), sep_row(nullptr)
+    ISPRModelData(_doc, parent), separateStructupeEmpty(true), gmz(), gcol(nullptr), kruch(nullptr), usl(), alg(nullptr), sep_row(nullptr)
 {
     //    mainModel = new SPRMainModel(doc);
 //    setProperty("delete_main", QVariant(true));
 
     for(int i=0; i< MAX_SPR_MAIN_THREADS; i++){
+
+//        memset(workGistogrammCurrent[i].gist, 0, sizeof(workGistogrammCurrent[i].gist));
+
+//        qDebug() << "path " << SPR_SEPARATE_GMZ_PATH_PREFIX;
+
         QString path = SPR_SEPARATE_GMZ_PATH_PREFIX + QString::number(i)+"]";
         SPRVariable<double> *var = new SPRVariable<double>(doc, path, DEF_SPR_SEPARATE_GMZ, this);
         gmz.push_back(var);
@@ -158,4 +318,14 @@ SPRSeparateModel::~SPRSeparateModel(){
     if(kruch) delete kruch; kruch = nullptr;
     if(alg) delete alg; alg = nullptr;
     if(sep_row) delete sep_row; sep_row = nullptr;
+}
+
+int sgist::getGcol() const
+{
+    return gcol;
+}
+
+void sgist::setGcol(int value)
+{
+    gcol = value;
 }

@@ -19,3 +19,9 @@ TCPCommand::TCPCommand() :ITCPCommand(){
 
 TCPCommand::~TCPCommand(){
 }
+
+
+bool TCPCommand::isCommandSet()
+{
+    return false;
+}

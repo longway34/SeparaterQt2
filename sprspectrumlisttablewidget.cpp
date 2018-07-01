@@ -4,6 +4,7 @@
 #include <QFileDialog>
 #include <QDir>
 #include <QMessageBox>
+#include "tcp/tcpexpositionoff.h"
 
 SPRSpectrumListTableWidget::SPRSpectrumListTableWidget(QWidget *parent) :
     QWidget(parent), ISPRWidget(),
@@ -105,7 +106,7 @@ void SPRSpectrumListTableWidget::onClickedBooton(bool){
         if(sender() == ui.bSpectrumFNameSelect){
             QString fName = model->getSettingsMainModel()->getSpectrumFileName()->getData();
             QString nfName = QFileDialog::getSaveFileName(nullptr,
-                                QString(tr("Выберите файл для записи")),
+                                QString(tr("Выберите файл для записи спектров")),
                                 QDir::currentPath(),
                                 QString(tr("файлы спектров (*.spc)")));
 
@@ -134,7 +135,6 @@ void SPRSpectrumListTableWidget::onGetSpectrums(bool){
 
                 if(!commands){
                     commands = new TCPCommandSet(model->getServer(), toWidget, {});
-                    commands->setLogWidget(getLogWidget());
                 }
 
                 commands->clear();
@@ -147,18 +147,32 @@ void SPRSpectrumListTableWidget::onGetSpectrums(bool){
 
                 commands->addCommand(gettingSpectrumsCommand);
 
-    //            if(choiseTimeDialog->isRentgenOff()){
-    //                commands->addCommand(rentgenOffCommand);
-    //            }
+                if(choiseTimeDialog->isRentgenOff()){
+                    commands->addCommand(new TCPExpositionOff(getLogWidget()));
+                }
 
+                commands->setLogWidget(getLogWidget());
                 commands->send(model->getServer());
             }
         }
     }
     if(sender() == ui.bGetBaseSpectrum){
+        if(!commands){
+            commands = new TCPCommandSet(model->getServer(), toWidget, {});
+        }
         gettingBaseSpectrumsCommand->setThreadTimer(model->getThreads()->getData(), 30);
+        commands->addCommand(gettingBaseSpectrumsCommand);
+        if(choiseTimeDialog){
+            if(choiseTimeDialog->isRentgenOff()){
+                commands->addCommand(new TCPExpositionOff(getLogWidget()));
+                commands->addCommand(offren);
+                commands->addCommand(offosw);
+            }
+        }
+        commands->setLogWidget(getLogWidget());
 
-        gettingBaseSpectrumsCommand->send(model->getServer());
+        commands->send(model->getServer());
+//        gettingBaseSpectrumsCommand->send(model->getServer());
     }
 }
 
