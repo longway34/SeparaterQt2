@@ -427,6 +427,9 @@
             </property>
             <item>
              <widget class="QPushButton" name="bRARestart">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="text">
                <string>Перезапуск РА</string>
               </property>
@@ -503,15 +506,15 @@
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="lTimeMoveGRU">
-              <property name="minimumSize">
-               <size>
-                <width>18</width>
-                <height>0</height>
-               </size>
+             <widget class="QSpinBox" name="lTimeMoveGRU">
+              <property name="enabled">
+               <bool>false</bool>
               </property>
-              <property name="text">
-               <string>00</string>
+              <property name="frame">
+               <bool>true</bool>
+              </property>
+              <property name="keyboardTracking">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
@@ -554,5 +557,22 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>slTimeMoveRGU</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>lTimeMoveGRU</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>337</x>
+     <y>378</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>408</x>
+     <y>379</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

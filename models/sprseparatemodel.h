@@ -216,7 +216,7 @@ public:
     SPRWorkSeparate workSeparateCurrent;
     SPRWorkSeparate workSeparateReceive;
 
-    QVector<SPRWorkSeparateRow*> workSetarateRows;
+    QVector<SPRWorkSeparateRow*> workSeparateRows;
 
     SPRWorkGistogrammRow workGistogrammCurrent[MAX_SPR_MAIN_THREADS];
     SPRWorkGistogrammRow workGistogrammReceive[MAX_SPR_MAIN_THREADS];
@@ -230,17 +230,18 @@ public:
     SPRVariable<uint> *sep_row;
 
     SPRSeparateModel():
-        ISPRModelData(), gmz(), gcol(nullptr), kruch(nullptr), usl(), alg(nullptr), sep_row()
+        ISPRModelData(), gmz(), gcol(nullptr), kruch(nullptr), usl(), alg(nullptr), sep_row(), separateStructupeEmpty(true)
     {
     }
 
     QVector<QVector<QwtIntervalSample>> getGistogrammContentData(int thread = -1, int parts = -1);
+    QVector<QPointF> getGistogrammContentData2(int thread = -1);
 
     void setWorkSeparateData(QByteArray rawData);
 
     void setWorkGistogrammData(QByteArray rawData, int thread);
 
-    QByteArray toByteArray(IMainModel *_mainModel);
+    QByteArray toByteArray(IMainModel *_mainModel, int *errors);
 
     SPRSeparateModel(QDomDocument *_doc, ISPRModelData *parent=nullptr);
 //    SPRMainModel *getModelData() const;

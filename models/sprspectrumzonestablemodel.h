@@ -34,6 +34,14 @@ public:
     QMapElementsRanges getElementsRanges(uint _tIndex=-1){
         return getItem(_tIndex)->getZones();
     }
+    SpectorRange* getElementsRanges(int _tIndex, EnumElements _el){
+        SpectorRange* ranges = nullptr;
+        QMapElementsRanges mranges = getItem(_tIndex)->getZones();
+        if(mranges.contains(_el)){
+            ranges = mranges[_el];
+        }
+        return ranges;
+    }
     SPRElementsModel *getElementsProperty(){
         return elementsProperty;
     }

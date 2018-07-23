@@ -19,7 +19,7 @@ public:
 
     SPRSpectrumChoiseTimeDialog(SPRMainModel *_model, QWidget *parent = 0);
     QList<uint8_t> getThreads();
-    double getTime();
+    uint32_t getTime();
     void setModelData(SPRMainModel *_model = 0);
     bool isRentgenOn();
     bool isRentgenOff();

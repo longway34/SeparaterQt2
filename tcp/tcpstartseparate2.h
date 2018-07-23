@@ -19,6 +19,7 @@ class TCPStartSeparate2 : public TCPCommandSet
     TCPGetSpectrumsGistogramms *getBaseSpectrum;
     TCPSeparateGo *separateGo;
 
+    int errorSeparateState;
 
 public:
 

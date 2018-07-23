@@ -434,7 +434,7 @@ void SPRTestIMSWidget::onCommandComplite(TCPCommand *_comm){
             ((SPRSpectrumListItemsModel*)(ui.wSpectrumWidget->getModelData()))->clearGraphicsItemModel();
             for(int ch=0; ch<MAX_SPR_MAIN_THREADS; ch++){
                 QByteArray sp = getSpectrumsCommand->getSpectrumData(ch);
-                ((SPRSpectrumListItemsModel*)(ui.wSpectrumWidget->getModelData()))->addSpectrum(sp);
+                ((SPRSpectrumListItemsModel*)(ui.wSpectrumWidget->getModelData()))->addSpectrum(sp, 5000, ch);
 //                QColor col = colors[ch % colors.size()];
 //                ui.wSpectrumWidget->getModel()->getSpectrumItem(ch)->setSpectrumColor(col);
             }

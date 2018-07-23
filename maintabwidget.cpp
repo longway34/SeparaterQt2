@@ -3,7 +3,7 @@
 #include <QFileInfo>
 
 MainTabWidget::MainTabWidget(QWidget *parent) :
-    QTabWidget(parent), ISPRWidget(), model(nullptr)
+    QTabWidget(parent), ISPRWidget(), model(nullptr), errorSeparateState(SPR_SEPARATE_STATE_OK)
 {
     ui.setupUi(this);
 //    setDoc(DEF_SPR_MAIN_SETTINGS_FNAME+DEF_SPR_MAIN_SETTINGS_FNAME_SUFFIX);
@@ -16,7 +16,7 @@ MainTabWidget::MainTabWidget(QWidget *parent) :
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(widgetsShow()));
 }
 
-MainTabWidget::MainTabWidget(QDomDocument *_doc, QWidget *parent): QTabWidget(parent), model(nullptr)
+MainTabWidget::MainTabWidget(QDomDocument *_doc, QWidget *parent): QTabWidget(parent), model(nullptr), errorSeparateState(SPR_SEPARATE_STATE_OK)
 {
     ui.setupUi(this);
     ISPRWidget::setDoc(doc);
@@ -35,7 +35,7 @@ MainTabWidget::MainTabWidget(QDomDocument *_doc, QWidget *parent): QTabWidget(pa
 //    connect(ui.bSetSeparate, SIGNAL(clicked(bool)), SLOT(onClickSetSeparateButton(bool)));
 }
 
-MainTabWidget::MainTabWidget(QString _fName, QWidget *parent): QTabWidget(parent), ISPRWidget(), model(nullptr)
+MainTabWidget::MainTabWidget(QString _fName, QWidget *parent): QTabWidget(parent), ISPRWidget(), model(nullptr), errorSeparateState(SPR_SEPARATE_STATE_OK)
 {
     ui.setupUi(this);
 
@@ -51,32 +51,37 @@ void MainTabWidget::setLogWidget(TCPLogsWigtets *value)
     ui.tabTest->setLogWidget(value);
     ui.wTest->setLogWidget(value);
     ui.tabSpectrum->setLogWidget(value);
+    ui.wSeparateWigget->setLogWidget(value);
+
 //    ui.wTest->setl
 }
 
 ISPRModelData *MainTabWidget::setModelData(SPRMainModel *_model)
 {
-    if(model){
-        disconnect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
-    }
-    model = _model;
-    connect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
-    ui.tabSettings->setModelData(model);
+    if(_model){
+        if(model){
+            disconnect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
+        }
+        model = _model;
+        separateModel = model->getSeparateModel();
 
-    ui.tabSpectrum->setModelData(model);
-    ui.wTest->setModelData(model);
+        connect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
+        ui.tabSettings->setModelData(model);
 
-    ui.tabTest->setModelData(model);
-    ui.tabTestSeparateDetail->setModelData(model);
+        ui.tabSpectrum->setModelData(model);
+        ui.wTest->setModelData(model);
+
+        ui.tabTest->setModelData(model);
+        ui.tabTestSeparateDetail->setModelData(model);
+        ui.wSeparateWigget->setModelData(model);
 //    ui.testSeparateDetail->setModelData(model);
-
-    separateModel = new SPRSeparateModel(model->getDoc());
+    }
 
 }
 
 void MainTabWidget::onClickSetSeparateButton(bool value){
 //    ui.teResult->clear();
-    QByteArray result = separateModel->toByteArray(model);
+    QByteArray result = separateModel->toByteArray(model, &errorSeparateState);
     QString str;
     for(int ch=0; ch<result.size(); ch++){
         char buf[20];

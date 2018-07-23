@@ -15,6 +15,7 @@ protected:
     uint row;
 public:
     SPRVariable<double> ***porogs;
+    QList<IModelVariable*> allPorogs;
 
     SPRPorogsModel(QObject *parent);
     SPRPorogsModel(QDomDocument *_doc, uint _row, ISPRModelData *parent = nullptr);
@@ -23,6 +24,7 @@ public:
     void setConditions(SPREnumVariable<TypeConditions> *value);
     SPREnumVariable<TypeConditions> *getConditions() const;
     SPRVariable<uint> *getThreads() const;
+    QList<IModelVariable *> getAllPorogs() const;
 };
 
 #endif // SPRPOROGSMODEL_H

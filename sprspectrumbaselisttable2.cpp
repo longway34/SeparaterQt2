@@ -4,8 +4,8 @@ SPRSpectrumBaseListTable2::SPRSpectrumBaseListTable2(QWidget *parent): SPRSpectr
 {
 //    hideColumn(0); // fc
 //    hideColumn(1); // thread
-//    hideColumn(2); // name
-    hideColumn(3); // summ (I)
+    hideColumn(2); // name
+//    hideColumn(3); // summ (I)
     hideColumn(4); // H1
     hideColumn(5); // H2
     hideColumn(6); // H3
@@ -22,7 +22,28 @@ SPRSpectrumBaseListTable2::SPRSpectrumBaseListTable2(QWidget *parent): SPRSpectr
     hideColumn(17); // Mg
 
 
-    QStringList hHeaders; hHeaders << tr("№") << tr("Ручей") << tr("Центр") << tr("X-Ray");
+    hHeaders << tr("№") << tr("Ручей") << tr("Имя") << tr("I") << tr("H1") << tr("H2") << tr("H3")
+             << tr("Центр") << tr("Пик") << tr("X-Ray") << tr("Время") << tr("Дата и время")
+             << tr("Ns") << tr("Fe") << tr("Cu") << tr("Mo") << tr("Zn") << tr("Mg");
 
-    setVerticalHeaderLabels(hHeaders);
+
+    setHorizontalHeaderLabels(hHeaders);
+}
+
+void SPRSpectrumBaseListTable2::widgetsShow()
+{
+    SPRSpectrumListTable::widgetsShow();
+
+    blockSignals(true);
+    QVector<SPRSpectrumItemModel*> *vect = model->getSpectrumsModel(spectrumBase);
+    for(int row=0; row<rowCount() && row<vect->size(); row++){
+        QLabel *la = (QLabel*)cellWidget(row, 9);
+        if(la){
+            double xray = vect->at(row)->getXRay();
+            QString txt = QString::number(xray, 'f', 2);
+            la->setText(txt);
+        }
+    }
+    setHorizontalHeaderLabels(hHeaders);
+    blockSignals(false);
 }

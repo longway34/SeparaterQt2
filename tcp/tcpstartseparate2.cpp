@@ -3,7 +3,7 @@
 
 
 TCPStartSeparate2::TCPStartSeparate2(SPRMainModel *_model, TCPTimeOutWigget *_toWidget, TCPLogsWigtets *_logWidget):
-    TCPCommandSet(nullptr, _toWidget, {}), model(_model)
+    TCPCommandSet(nullptr, _toWidget, {}), model(_model), errorSeparateState(SPR_SEPARATE_STATE_OK)
 {
     setLogWidget(_logWidget);
 }
@@ -26,7 +26,7 @@ void TCPStartSeparate2::go(TCPCommand *_command)
             connect(getBaseSpectrum, SIGNAL(rentgenNotReady(TCPCommand*)), this, SLOT(onGetRenNotComplite(TCPCommand*)));
 
             addCommand(new TCPCommand(setsepar)); // 11
-            QByteArray separData = model->getSeparateModel()->toByteArray(model);
+            QByteArray separData = model->getSeparateModel()->toByteArray(model, &errorSeparateState);
             findCommands(setsepar).last()->setSendData(separData);
 
             addCommand(new TCPCommand(startsep)); // 12

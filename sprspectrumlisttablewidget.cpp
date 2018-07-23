@@ -6,6 +6,29 @@
 #include <QMessageBox>
 #include "tcp/tcpexpositionoff.h"
 
+SPRViewGraphicsMode SPRSpectrumListTableWidget::getGraphicsMode() const
+{
+    SPRViewGraphicsMode val = viewModeAsIs;
+    if(ui.gbViewAsIs->isChecked()){
+        if(ui.rbAsOneSecond){
+            val = viewModeOneSecond;
+        }
+        if(ui.rbScales){
+            val = viewModeScales;
+        }
+    }
+//    if(val != graphicsMode){
+//        graphicsMode = val;
+//    }
+    return val;
+}
+
+//void SPRSpectrumListTableWidget::setGraphicsMode(const SPRViewGraphicsMode &value)
+//{
+//    graphicsMode = value;
+//    ui.graphic->setGraphicsMode(value);
+//}
+
 SPRSpectrumListTableWidget::SPRSpectrumListTableWidget(QWidget *parent) :
     QWidget(parent), ISPRWidget(),
     model(nullptr),
@@ -17,14 +40,15 @@ SPRSpectrumListTableWidget::SPRSpectrumListTableWidget(QWidget *parent) :
     rguUpDownCommand(nullptr),
     rentgenOffCommand(nullptr),
     commands(nullptr),
-    toWidget(nullptr)
+    toWidget(nullptr)/*,
+    graphicsMode(viewModeAsIs)*/
 {
     ui.setupUi(this);
 //    ui.graphic->setCanvasBackground(QBrush(Qt::black));
 
 
     connect(ui.tListSpectrumItem, SIGNAL(cellClicked(int,int)), this, SLOT(onSpectSpectrumTableClick(int,int)));
-    connect(ui.tListSpectrumItem, SIGNAL(rowSelectedChecked(QList<int>,int)), this, SLOT(onChangeCheckedSpectrum(QList<int>,int)));
+    connect(ui.tListSpectrumItem, SIGNAL(rowSelectedChecked2(int, SPRSpectrumListTable*)), this, SLOT(onSpectSpectrumTableClick2(int, SPRSpectrumListTable*)));
 
     connect(ui.tListBasedSpectrumItem, SIGNAL(cellClicked(int,int)), this, SLOT(onSpectSpectrumTableClick(int,int)));
     connect(ui.tListBasedSpectrumItem, SIGNAL(rowSelectedChecked(QList<int>,int)), this, SLOT(onChangeCheckedSpectrum(QList<int>,int)));
@@ -41,12 +65,15 @@ SPRSpectrumListTableWidget::SPRSpectrumListTableWidget(QWidget *parent) :
     connect(ui.bSaveSpectrums, SIGNAL(clicked(bool)), this, SLOT(onClickedBooton(bool)));
     connect(ui.bSpectrumFNameSelect, SIGNAL(clicked(bool)), this, SLOT(onClickedBooton(bool)));
 
+    connect(ui.gbViewAsIs, SIGNAL(toggled(bool)), this, SLOT(onClickedBooton(bool)));
+    connect(ui.rbAsOneSecond, SIGNAL(toggled(bool)), this, SLOT(onClickedBooton(bool)));
+    connect(ui.rbScales, SIGNAL(toggled(bool)), this, SLOT(onClickedBooton(bool)));
+
     connect(ui.leSpectrumsFName, SIGNAL(editingFinished()), this, SLOT(onChangeSpectrumsFileName()));
 
     ui.gbBasetSpectrums->setVisible(ui.cbBasetSpectrumVisible->isChecked());
 
     ui.tRangesChannel->setSelectBottonRowVisible(false);
-
 }
 
 void SPRSpectrumListTableWidget::onChangeSpectrumsFileName(){
@@ -59,8 +86,48 @@ void SPRSpectrumListTableWidget::onChangeSpectrumsFileName(){
     }
 }
 
-void SPRSpectrumListTableWidget::onClickedBooton(bool){
+void SPRSpectrumListTableWidget::changeGraphicViewMode(){
+    SPRViewGraphicsMode mode = viewModeAsIs;
+    if(ui.gbViewAsIs->isChecked()){
+        if(ui.rbAsOneSecond->isChecked()){
+            mode = viewModeOneSecond;
+        }
+        if(ui.rbScales->isChecked()){
+            mode = viewModeScales;
+        }
+    } else {
+
+    }
+
+    ui.graphic->setGraphicsMode(mode);
+
+    switch(mode){
+    case viewModeAsIs:
+        ui.gbViewAsIs->setTitle(tr("Отображение (как есть)"));
+        break;
+    case viewModeOneSecond:
+        ui.gbViewAsIs->setTitle(tr("Отображение (1 секунда)"));
+        break;
+    case viewModeScales:
+        ui.gbViewAsIs->setTitle(tr("Отображение (масштаб)"));
+        break;
+    }
+}
+
+void SPRSpectrumListTableWidget::onClickedBooton(bool value){
     if(model){
+        if(sender() == ui.gbViewAsIs){
+//            if(!value)
+            changeGraphicViewMode();
+        }
+        if(sender() == ui.rbAsOneSecond){
+            if(value)
+                changeGraphicViewMode();
+        }
+        if(sender() == ui.rbScales){
+            if(value)
+                changeGraphicViewMode();
+        }
         if(sender() == ui.bSeparatorOff){
             if(separateOffCommand){
                 separateOffCommand->send(model->getServer());
@@ -160,6 +227,7 @@ void SPRSpectrumListTableWidget::onGetSpectrums(bool){
         if(!commands){
             commands = new TCPCommandSet(model->getServer(), toWidget, {});
         }
+        commands->clear();
         gettingBaseSpectrumsCommand->setThreadTimer(model->getThreads()->getData(), 30);
         commands->addCommand(gettingBaseSpectrumsCommand);
         if(choiseTimeDialog){
@@ -186,7 +254,7 @@ void SPRSpectrumListTableWidget::onCompliteCommand(TCPCommand *command)
 
         for(uint8_t th=0; th<lth.size(); th++) {
             SPRSpectrumItemModel *item =
-            model->getSpectrumListItemsModel()->addSpectrum(gettingSpectrumsCommand->getSpectrumData(th), lth[th], choiseTimeDialog->getPrefix());
+            model->getSpectrumListItemsModel()->addSpectrum(gettingSpectrumsCommand->getSpectrumData(th), choiseTimeDialog->getTime(), lth[th], choiseTimeDialog->getPrefix());
             item->setTimeScope(choiseTimeDialog->getTime());
         }
         widgetsShow();
@@ -200,6 +268,7 @@ void SPRSpectrumListTableWidget::onCompliteCommand(TCPCommand *command)
         }
         widgetsShow();
     }
+    ui.graphic->setGraphicsMode(getGraphicsMode());
 }
 
 void SPRSpectrumListTableWidget::onErrorsCommand(TCPCommand *command)
@@ -321,6 +390,21 @@ void SPRSpectrumListTableWidget::viewChange(int row, int col)
     blockSignals(false);
 }
 
+void SPRSpectrumListTableWidget::onSpectSpectrumTableClick2(int row, SPRSpectrumListTable *_sender){
+    blockSignals(true);
+    SPRSpectrumItemModel* toGraphCurrent = nullptr;
+    if(_sender)
+        toGraphCurrent = model->getSpectrumListItemsModel()->getSpectrumItem(row, _sender->getTypeData());
+
+    QList<SPRSpectrumItemModel*> toGraphSelected;
+    toGraphSelected = ui.tListBasedSpectrumItem->getSelectedItems() + ui.tListSpectrumItem->getSelectedItems();
+
+    ui.graphic->onChangeSelectedCheckedItems(toGraphSelected, toGraphCurrent);
+
+    blockSignals(false);
+}
+
+
 void SPRSpectrumListTableWidget::onSpectSpectrumTableClick(int row, int col, SPRSpectrumListTable *_sender){
     blockSignals(true);
     int toGraphCurrent = -1;
@@ -341,10 +425,10 @@ void SPRSpectrumListTableWidget::onSpectSpectrumTableClick(int row, int col, SPR
 
     }
     QList<int> toGraphSelected;
-    foreach(int num, ui.tListBasedSpectrumItem->getSelectedItems()){
+    foreach(int num, ui.tListBasedSpectrumItem->getSelectedItemsNumbers()){
         toGraphSelected.push_back(num);
     }
-    foreach(int num, ui.tListSpectrumItem->getSelectedItems()){
+    foreach(int num, ui.tListSpectrumItem->getSelectedItemsNumbers()){
         toGraphSelected.push_back(ui.tListBasedSpectrumItem->rowCount() + num);
     }
 

@@ -20,6 +20,7 @@ class TCPTestStartSeparate : public TCPCommandSet
     int countTry;
     int numTry;
 
+    int errorSeparateState;
 
     TCPSeparateGo *separateGoCommand;
     TCPGetSpectrumsGistogramms *getBaseSpectrumCommand;

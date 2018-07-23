@@ -127,7 +127,12 @@ SOURCES += \
     sprseparategistogrammwidget.cpp \
     sprseparatedetailstable.cpp \
     sprseparatedetailtablewidget.cpp \
-    maintabwidget.cpp
+    maintabwidget.cpp \
+    sprseparatedetailssummarytable.cpp \
+    itcpseparatorcommander.cpp \
+    tcp/itcpseparatorcommander.cpp \
+    sprporogsmoved.cpp \
+    sprsettingsrentgenautosetdialog.cpp
 
 HEADERS += \
     _types.h \
@@ -225,7 +230,11 @@ HEADERS += \
     sprseparategistogrammwidget.h \
     sprseparatedetailstable.h \
     sprseparatedetailtablewidget.h \
-    maintabwidget.h
+    maintabwidget.h \
+    sprseparatedetailssummarytable.h \
+    tcp/itcpseparatorcommander.h \
+    sprporogsmoved.h \
+    sprsettingsrentgenautosetdialog.h
 
 FORMS += \
     sprsettingsrentgenmainwidget.ui \
@@ -254,7 +263,8 @@ FORMS += \
     mainwindow.ui \
     sprseparategistogrammwidget.ui \
     sprseparatedetailtablewidget.ui \
-    maintabwidget.ui
+    maintabwidget.ui \
+    sprsettingrentgenautosetdialog.ui
 
 RESOURCES += \
     icons.qrc \

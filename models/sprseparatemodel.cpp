@@ -30,13 +30,17 @@ void *SPRSeparateModel::fullWorkGistogramm(SPRWorkGistogrammRow *dst, QByteArray
 
 void SPRSeparateModel::addWorkSeparateDataRow(SPRWorkSeparateRow *row){
     int num = 0;
-    if(workSetarateRows.size() > 0){
-        num = workSetarateRows[0]->number+1;
+    if(workSeparateRows.size() > 0){
+        num = workSeparateRows[0]->number+1;
     }
     row->number = num;
-    workSetarateRows.push_front(row);
-    if(workSetarateRows.size() > 20){
-        workSetarateRows.pop_back();
+    workSeparateRows.push_front(row);
+    if(workSeparateRows.size() > 20){
+        SPRWorkSeparateRow *old = workSeparateRows.last();
+        workSeparateRows.pop_back();
+        if(old){
+            delete old;
+        }
     }
     emit modelChanget(this);
 }
@@ -102,12 +106,33 @@ QVector<QVector<QwtIntervalSample>> SPRSeparateModel::getGistogrammContentData(i
 
 }
 
+QVector<QPointF> SPRSeparateModel::getGistogrammContentData2(int thread)
+{
+    QVector<QVector<QwtIntervalSample>> intRes = getGistogrammContentData(thread, -1);
+
+    QVector<QPointF> res;
+//    res.resize(intRes[0].size());
+
+    if(intRes.size() > 0){
+        for(int sample=0; sample<intRes[0].size(); sample++){
+            double value = 0;
+            for(int th=0; th<intRes.size(); th++){
+                value += intRes[th][sample].value;
+            }
+            QPointF pf(intRes[0][sample].interval.minValue(), value);
+            res.push_back(pf);
+        }
+    }
+    return res;
+}
+
 void SPRSeparateModel::setWorkSeparateData(QByteArray rawData){
     fullWorkSeparate(&workSeparateReceive, rawData);
 
-    SPRWorkSeparateRow *diff = new SPRWorkSeparateRow();
     bool needSignal = false;
     for(int th=0; th<MAX_SPR_MAIN_THREADS; th++){
+        SPRWorkSeparateRow *diff = new SPRWorkSeparateRow();
+
         diff->p_tk = workSeparateReceive.p_tk[th]/* - workSeparateCurrent.p_tk[th]*/;
         diff->p_tkh1 = workSeparateReceive.p_tkh1[th]/* - workSeparateCurrent.p_tkh1[th]*/;
         diff->p_tkh2 = workSeparateReceive.p_tkh2[th]/* - workSeparateCurrent.p_tkh2[th]*/;
@@ -127,6 +152,8 @@ void SPRSeparateModel::setWorkSeparateData(QByteArray rawData){
             memcpy(&workSeparateCurrent, &workSeparateReceive, sizeof(SPRWorkSeparate));
 //            workSeparateCurrent.p
             needSignal = true;
+        } else {
+            delete diff;
         }
     }
 
@@ -159,9 +186,13 @@ void SPRSeparateModel::setWorkGistogrammData(QByteArray rawData, int thread)
     }
 }
 
-QByteArray SPRSeparateModel::toByteArray(IMainModel *_mainModel)
+QByteArray SPRSeparateModel::toByteArray(IMainModel *_mainModel, int *errors)
 {
     memset(&settingsSeparate, 0, sizeof(settingsSeparate));
+
+    if(errors){
+        *errors = SPR_SEPARATE_STATE_OK;
+    }
 
     for(int th=0; th<MAX_SPR_MAIN_THREADS; th++){
         QMapElementsRanges elements = _mainModel->getSpectrumZonesTableModel()->getElementsRanges(th);
@@ -192,7 +223,19 @@ QByteArray SPRSeparateModel::toByteArray(IMainModel *_mainModel)
         settingsSeparate.k_zd[0][th] = _mainModel->getSettingsIMSModel()->kKoeffDelay[th]->getData();
         settingsSeparate.b_zd[0][th] = _mainModel->getSettingsIMSModel()->bKoeffDelay[th]->getData();
 
-        settingsSeparate.gmz[th] = gmz[th]->getData();
+        SPRSpectrumItemModel *item = _mainModel->getSpectrumListItemsModel()->getSpectrumBaseItem(th);
+        double _gmz;
+        if(item && *item->getSpectrumData()->summ > 0){
+           _gmz = item->getXRay();
+        } else {
+           _gmz = gmz[th]->getData();
+           if(errors){
+               *errors += SPR_SEPARATE_STATE_ERROR_BASE_SPACTRUE;
+           }
+        }
+        _gmz += _mainModel->getSettingsPorogsModel()->xRayCorrection->getData();
+        settingsSeparate.gmz[th] = _gmz;
+
         settingsSeparate.usl[th] = usl[th]->getData();
 
     }
@@ -262,7 +305,7 @@ QByteArray SPRSeparateModel::toByteArray(IMainModel *_mainModel)
     settingsSeparate.sep_row = sep_row->getData();
 
     QByteArray ret = QByteArray::fromRawData((char*)&settingsSeparate, sizeof(settingsSeparate));
-    setSeparateEmpty(true);
+    setSeparateEmpty(false);
 
     return ret;
 }

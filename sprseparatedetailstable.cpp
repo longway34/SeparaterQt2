@@ -3,7 +3,7 @@
 
 int SPRSeparateDetailModel::rowCount(const QModelIndex &parent) const
 {
-    return lestValidRows.size();
+    return lastValidRows.size();
 }
 
 int SPRSeparateDetailModel::columnCount(const QModelIndex &parent) const
@@ -20,8 +20,8 @@ void SPRSeparateDetailModel::beginEndScopeData(bool value)
 {
     if(separateModel){
         if(value){
-            if(separateModel->workSetarateRows.size() > 0){
-                setScopeData(separateModel->workSetarateRows[0]->id);
+            if(separateModel->workSeparateRows.size() > 0){
+                setScopeData(separateModel->workSeparateRows[0]->id);
             } else {
                 setScopeData(0);
             }
@@ -34,9 +34,9 @@ void SPRSeparateDetailModel::beginEndScopeData(bool value)
 void SPRSeparateDetailModel::setScopeData(int value)
 {
     if(value == 0){
-        QVector<SPRWorkSeparateRow*> sw = separateModel->workSetarateRows;
+        QVector<SPRWorkSeparateRow*> sw = separateModel->workSeparateRows;
         if(sw.size() > 0){
-            scopeDataRowEnd = separateModel->workSetarateRows[0]->id;
+            scopeDataRowEnd = separateModel->workSeparateRows[0]->id;
         } else {
             scopeDataRowEnd = 0;
         }
@@ -106,29 +106,29 @@ SPRSeparateModel *SPRSeparateDetailModel::getModelData()
 QVector<SPRWorkSeparateRow *> SPRSeparateDetailModel::getValidRows(bool now)
 {
     if(!now){
-        return lestValidRows;
+        return lastValidRows;
     }
 //    QVector<SPRWorkSeparateRow*> res;
     if(separateModel){
         if(getScopeData() >= 0){
-            lestValidRows.clear();
+            lastValidRows.clear();
             beginResetModel();
-            for(int row=0; row < separateModel->workSetarateRows.size(); row++){
-                if(separateModel->workSetarateRows[row]->id == getScopeData()){
+            for(int row=0; row < separateModel->workSeparateRows.size(); row++){
+                if(separateModel->workSeparateRows[row]->id == getScopeData()){
                     break;
                 }
-                if(separateModel->workSetarateRows[row]->wcount < getMinTimeScope()){
+                if(separateModel->workSeparateRows[row]->wcount < getMinTimeScope()){
                     continue;
                 }
-                SPRWorkSeparateRow *modelRow = separateModel->workSetarateRows[row];
+                SPRWorkSeparateRow *modelRow = separateModel->workSeparateRows[row];
                 if(visibleThreads.contains(modelRow->thread)){
-                    lestValidRows.push_back(modelRow);
+                    lastValidRows.push_back(modelRow);
                 }
             }
             endResetModel();
         }
     }
-    return lestValidRows;
+    return lastValidRows;
 }
 
 void SPRSeparateDetailModel::resetNow()
@@ -138,8 +138,8 @@ void SPRSeparateDetailModel::resetNow()
 
 void SPRSeparateDetailModel::clear()
 {
-    if(separateModel->workSetarateRows.size() > 0){
-        setScopeData(separateModel->workSetarateRows[0]->id);
+    if(separateModel->workSeparateRows.size() > 0){
+        setScopeData(separateModel->workSeparateRows[0]->id);
     }
 }
 
@@ -150,9 +150,9 @@ QVariant SPRSeparateDetailModel::data(const QModelIndex &index, int role) const
     if(role == Qt::BackgroundColorRole){
 //        QVector<SPRWorkSeparateRow*> rows;
 //        rows = getValidRows();
-        if(index.row() < lestValidRows.size()){
-            if(lestValidRows[index.row()]->i_prd[0] >0){
-                if(lestValidRows[index.row()]->i_prd[2] >0){
+        if(index.row() < lastValidRows.size()){
+            if(lastValidRows[index.row()]->i_prd[0] >0){
+                if(lastValidRows[index.row()]->i_prd[2] >0){
                    return QVariant(QColor(Qt::lightGray));
                 } else {
                     return QVariant(QColor(Qt::gray));
@@ -163,7 +163,7 @@ QVariant SPRSeparateDetailModel::data(const QModelIndex &index, int role) const
     }
     if(role == Qt::DisplayRole){
 //        QVector<SPRWorkSeparateRow*> rows = getValidRows();
-        if(index.row() < lestValidRows.size()){
+        if(index.row() < lastValidRows.size()){
             int col = index.column();
             int row = index.row();
             QString ret;
@@ -172,42 +172,42 @@ QVariant SPRSeparateDetailModel::data(const QModelIndex &index, int role) const
                 ret = QString::number(row+1);
                 break;
             case 1:
-                ret = lestValidRows[row]->dt.toString("dd.MM hh:mm:ss");
+                ret = lastValidRows[row]->dt.toString("dd.MM hh:mm:ss");
                 break;
             case 2:
-                ret = QString::number(lestValidRows[row]->thread);
+                ret = QString::number(lastValidRows[row]->thread);
                 break;
             case 3:
-                ret = QString::number(lestValidRows[row]->p_tkh1);
+                ret = QString::number(lastValidRows[row]->p_tkh1);
                 break;
             case 4:
-                ret = QString::number(lestValidRows[row]->p_tkh2);
+                ret = QString::number(lastValidRows[row]->p_tkh2);
                 break;
             case 5:
-                ret = QString::number(lestValidRows[row]->p_tkh3);
+                ret = QString::number(lastValidRows[row]->p_tkh3);
                 break;
             case 6:
-                ret = QString::number(lestValidRows[row]->wcount);
+                ret = QString::number(lastValidRows[row]->wcount);
                 break;
             case 7:
                 {
                     bool needSpace = false;
-                    if(lestValidRows[row]->i_prd[3] > 1){
-                        if(lestValidRows[row]->i_prd[0] > 0){
-                            ret = QString(tr("концентрат - %1;")).arg(lestValidRows[row]->i_prd[0]);
+                    if(lastValidRows[row]->i_prd[3] > 1){
+                        if(lastValidRows[row]->i_prd[0] > 0){
+                            ret = QString(tr("концентрат - %1;")).arg(lastValidRows[row]->i_prd[0]);
                             needSpace = true;
                         }
-                        if(lestValidRows[row]->i_prd[0] > 0){
+                        if(lastValidRows[row]->i_prd[2] > 0){
                             if(needSpace){
                                 ret += " ";
                             }
-                            ret += QString(tr("хвост - %1;")).arg(lestValidRows[row]->i_prd[2]);
+                            ret += QString(tr("хвост - %1;")).arg(lastValidRows[row]->i_prd[2]);
                         }
                     } else {
-                        if(lestValidRows[row]->i_prd[0] > 0){
+                        if(lastValidRows[row]->i_prd[0] > 0){
                             ret = QString(tr("концентрат"));
                         }
-                        if(lestValidRows[row]->i_prd[2] > 0){
+                        if(lastValidRows[row]->i_prd[2] > 0){
                             ret = QString(tr("хвост"));
                         }
                     }

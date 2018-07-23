@@ -19,6 +19,7 @@ public:
     Ui::MainTabWidget ui;
 
     SPRSeparateModel *separateModel;
+    int errorSeparateState;
 
 signals:
     void doStore();
@@ -40,6 +41,7 @@ public slots:
 //        ui.tabHistory->wid
         ui.tabTest->widgetsShow();
         ui.tabTestSeparateDetail->widgetsShow();
+        ui.wSeparateWigget->widgetsShow();
     }
 
     void onChangeFileSettings(QString fName);

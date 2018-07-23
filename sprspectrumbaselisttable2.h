@@ -7,9 +7,10 @@
 
 class SPRSpectrumBaseListTable2 : public SPRSpectrumListTable
 {
+    QStringList hHeaders;
 public:
     explicit SPRSpectrumBaseListTable2(QWidget *parent = 0);
-//    virtual void widgetsShow();
+    virtual void widgetsShow();
 };
 
 #endif // SPRSPECTRUMBASELISTTABLE2_H

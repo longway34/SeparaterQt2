@@ -11,7 +11,7 @@ ISPRModelData *SPRSettingsRentgenAutosetWidget::setModelData(SPRSettingsRentgenM
         connect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
 
         QVector<QCheckBox*> byConnectBool = {ui.cbChannel1, ui.cbChannel2, ui.cbChannel3, ui.cbChannel4, ui.cbAllChannels,
-                                            ui.cbEnhansedRgime, ui.cbWithRGU};
+                                            ui.cbWithRGU};
         QVector<QSpinBox*> byConnectInt = {ui.leCodeBegin, ui.leCodeStep, ui.lePeakPosition};
 
         ui.cbChannel1->setChecked(model->withChannel[0]->getData());
@@ -42,6 +42,9 @@ ISPRModelData *SPRSettingsRentgenAutosetWidget::setModelData(SPRSettingsRentgenM
         bgTypeSetting->addButton(ui.rbSettsOnCP, 0);
         bgTypeSetting->addButton(ui.rbSettsOnDEUCP, 1);
         connect(bgTypeSetting, SIGNAL(buttonClicked(int)), this, SLOT(viewChange(int)));
+
+        ui.bStart->setEnabled(true);
+
         widgetsShow();
     }
     return model;
@@ -51,6 +54,8 @@ SPRSettingsRentgenAutosetWidget::SPRSettingsRentgenAutosetWidget(QWidget *parent
     QWidget(parent), model(nullptr)
 {
     ui.setupUi(this);
+
+    connect(ui.bStart, SIGNAL(clicked(bool)), this, SLOT(viewChange(bool)));
 }
 
 
@@ -112,9 +117,13 @@ void SPRSettingsRentgenAutosetWidget::viewChange(bool value)
     if(sender() == ui.cbWithRGU){
         model->withRGU->setData(value);
     }
-    QVector<QWidget*> enh = {ui.rbSettsOnCP, ui.rbSettsOnDEUCP, ui.leCodeBegin, ui.leCodeStep};
+    QVector<QWidget*> enh = {ui.leCodeBegin, ui.leCodeStep};
     for(int i=0;i<enh.size(); i++){
         enh[i]->setEnabled(!value);
+    }
+
+    if(sender() == ui.bStart){
+
     }
 }
 

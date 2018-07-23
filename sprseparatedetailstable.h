@@ -18,7 +18,7 @@ class SPRSeparateDetailModel : public QAbstractTableModel{
     Q_OBJECT
 
     SPRSeparateModel *separateModel;
-    QVector<SPRWorkSeparateRow*> lestValidRows;
+    QVector<SPRWorkSeparateRow*> lastValidRows;
     QList<int> visibleThreads;
     int scopeDataRowEnd;
     int minTimeScope;
@@ -60,6 +60,7 @@ class SPRSeparateDetailsTable : public QTableView, public ISPRWidget
 {
     Q_OBJECT
     SPRSeparateDetailModel *myModel;
+
 public:
     SPRSeparateDetailsTable(QWidget *parent);
 

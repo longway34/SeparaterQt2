@@ -18,136 +18,155 @@ SPRSeparateGistogrammWidget::SPRSeparateGistogrammWidget(QWidget *parent) :
     ui.qwtPlot->setPalette( Qt::white );
     ui.qwtPlot->canvas()->setPalette( QColor( Qt::lightGray ) );
 
-    ui.qwtPlot->setTitle(tr("Гистограмма (все каналы)"));
+    threadCurrent = 0;
+
+
+//    ui.qwtPlot->setTitle(tr("Гистограмма (все каналы)"));
 
     ui.qwtPlot->setAxisTitle( QwtPlot::yLeft, tr("Кол-во камней") );
     ui.qwtPlot->setAxisTitle( QwtPlot::xBottom, tr("Диапазоны рабочего параметра") );
 
-    gistogramms = new QwtPlotMultiBarChart( "Bar Chart " );
-    gistogramms->setLayoutPolicy( QwtPlotMultiBarChart::AutoAdjustSamples );
-    gistogramms->setSpacing( 3 );
-    gistogramms->setMargin( 3 );
+//    gistogramms = new QwtPlotMultiBarChart( "Bar Chart " );
+//    gistogramms->setLayoutPolicy( QwtPlotMultiBarChart::AutoAdjustSamples );
+//    gistogramms->setSpacing( 3 );
+//    gistogramms->setMargin( 3 );
 
-    gistogramms->attach( ui.qwtPlot );
+//    gistogramms->attach( ui.qwtPlot );
 
-    ui.qwtPlot->insertLegend( new QwtLegend() );
+//    ui.qwtPlot->insertLegend( new QwtLegend() );
 
 //    populate();
 //    ui.qwtPlot->setOrientation( 0 );
 
+    graphic = new QwtPlotCurve();
+    graphic->attach(ui.qwtPlot);
+
+    porogHX = new QwtPlotCurve(QString(tr("Действующий порог параметра")));
+    porogHX->setPen(QColor(Qt::black), 2, Qt::DashLine);
+//    porogHX->setStyle(QwtPlotCurve::Steps);
+    porogHX->attach(ui.qwtPlot);
+
+    porogHXCurrent = new QwtPlotCurve(QString(tr("Желательный порог параметра")));
+    porogHXCurrent->setPen(QColor(Qt::red), 2, Qt::DashLine);
+    porogHXCurrent->attach(ui.qwtPlot);
+
     ui.qwtPlot->setAutoReplot( true );
 
-    QList<QwtText> titles;
-    for ( int i = 0; i < MAX_SPR_MAIN_THREADS; i++ )
-    {
-        QString title(tr("Ручей %1"));
-        titles += title.arg( i );
-    }
-    gistogramms->setBarTitles( titles );
-    gistogramms->setLegendIconSize( QSize( 10, 14 ) );
+    pm = new SPRPorogsMoved(ui.qwtPlot, porogHXCurrent);
+    connect(pm, SIGNAL(dblClickMouseEvent()), this, SLOT(onDblClickMouseEvent()));
+    connect(pm, SIGNAL(changeArgumentValue(QwtPlotItem*,double,MovedItemPosition)), this, SLOT(onChangeArgument(QwtPlotItem*, double, MovedItemPosition)));
+    connect(pm, SIGNAL(setSelectItem(QwtPlotItem*,MovedItemPosition)), this, SLOT(onSetSecectedItem(QwtPlotItem*, MovedItemPosition)));
 
-    QVector< QVector<double> > series;
-    for ( int i = 0; i < MAX_SPR_MAIN_THREADS; i++ )
-    {
-        QVector<double> values;
-        for ( int j = 0; j < 10; j++ )
-            values += 0;
-
-        series += values;
-    }
-
-    gistogramms->setSamples( series );
-    gistogramms->setStyle( QwtPlotMultiBarChart::Grouped );
-
-    ui.qwtPlot->setAxisScale( QwtPlot::yLeft, 0, 100 );
-
+    ui.qwtPlot->setAxisAutoScale(QwtPlot::xBottom);
+    ui.qwtPlot->setAxisAutoScale(QwtPlot::yLeft);
 
     ui.qwtPlot->plotLayout()->setAlignCanvasToScale( QwtPlot::xBottom, true );
+    ui.qwtPlot->plotLayout()->setAlignCanvasToScale( QwtPlot::yLeft, true );
 
     ui.qwtPlot->plotLayout()->setCanvasMargin( 0 );
     ui.qwtPlot->updateCanvasMargins();
 
+    ui.bComplite->setEnabled(false);
+    connect(ui.bComplite, SIGNAL(clicked(bool)), this, SLOT(onCompliteButtomClick(bool)));
+
+}
+
+void SPRSeparateGistogrammWidget::onSetSecectedItem(QwtPlotItem* item, MovedItemPosition){
+    if(item){
+        porogHXCurrent->setPen(QColor(Qt::red), 4, Qt::DashLine);
+    } else {
+        porogHXCurrent->setPen(QColor(Qt::red), 2, Qt::DashLine);
+    }
+}
+
+void SPRSeparateGistogrammWidget::onCompliteButtomClick(bool){
+    ui.bComplite->setEnabled(false);
+
+    emit changePorogsCompite();
+}
+
+
+void SPRSeparateGistogrammWidget::onDblClickMouseEvent(){
+    if(model){
+        threadCurrent++; if(threadCurrent >= model->getThreads()->getData()) threadCurrent = -1;
+        widgetsShow();
+    }
+}
+
+void SPRSeparateGistogrammWidget::onChangeArgument(QwtPlotItem*, double value, MovedItemPosition){
+    if(model){
+        if(threadCurrent >=0 && threadCurrent < model->getThreads()->getData()){
+            SPRVariable<double> *porog = model->getSettingsPorogsModel()->getPorog(threadCurrent, model->getSettingsFormulaModel()->getConditions()->getIndex());
+            if(porog){
+                double old = porog->getData();
+                porog->setData(old + value);
+                ui.bComplite->setEnabled(true);
+            }
+        }
+    }
 }
 
 SPRSeparateGistogrammWidget::~SPRSeparateGistogrammWidget()
 {
-//    for(int i=0; i< gistogramms.size(); i++){
-//        delete gistogramms[i];
-//    }
 }
 
 
 void SPRSeparateGistogrammWidget::widgetsShow()
 {
-    if(model){
+    if(separateModel){
         QList<QwtText> titles;
-        QVector<QVector<QwtIntervalSample>> data = model->getGistogrammContentData(-1, 10);
-        QVector<QColor> col = {Qt::red, Qt::green, Qt::blue, Qt::cyan};
+//        QVector<QVector<QwtIntervalSample>> data = model->getGistogrammContentData(-1, 10);
+        QVector<QPointF> data = separateModel->getGistogrammContentData2(threadCurrent);
+        QVector<QColor> col = {Qt::gray, Qt::red, Qt::green, Qt::blue, Qt::cyan};
 
         if(data.size() > 0){
-            for ( int i = 0; i < data.size(); i++ )
+            double maxValue = 0;
+            double minValue = 0;
+            for ( int samples = 0; samples < data.size(); samples++ )
             {
-                QString title(tr("Ручей %1"));
-                titles += title.arg( i );
-                QwtColumnSymbol *symbol = new QwtColumnSymbol( QwtColumnSymbol::Box );
-                QList<QwtText> xTitles;
-
-//                if(data[0].size() <= 10){
-                    QString btitle("%1-%2");
-                    xTitles += btitle.arg(QString::number(data[0][i].interval.minValue(),'f',0))
-                            .arg(QString::number(data[0][i].interval.maxValue(),'f',0));
-                    symbol->setLineWidth( 2 );
-                    symbol->setFrameStyle( QwtColumnSymbol::Raised );
-//                } else {
-//                    QString title("%1");
-//                    xTitles += title.arg(QString::number(data[0][i].interval.maxValue(),'f',0));
-//                    symbol->setLineWidth( 1 );
-//                    symbol->setFrameStyle( QwtColumnSymbol::Plain );
-//                }
-
-                symbol->setPalette( QPalette( col[i % col.size()] ) );
-
-                gistogramms->setSymbol( i, symbol );
-            }
-            gistogramms->setBarTitles( titles );
-
-            gistogramms;
-
-            int samplesNumber = data[0].size();
-            for(int i = 0; i < data.size(); i++){
+                if(data[samples].ry() > maxValue) maxValue = data[samples].ry();
             }
 
+            QString title;
+            if(threadCurrent < 0) {
+                title = QString(tr("Гистограмма (все каналы)"));
+            } else {
+                title = QString(tr("Гистограмма (Ручей %1)")).arg( threadCurrent + 1 );
+//                titles += title;
+            }
+            ui.qwtPlot->setTitle(title);
 
-//            QVector<QVector<double>> samples;
+                graphic->setPen(col[(threadCurrent+1)  % col.size()], 2, Qt::SolidLine);
+                graphic->setSamples(data);
 
-            QVector<QwtSetSample> samples;
+                if(threadCurrent < 0){
+                    porogHX->setVisible(false);
+                    porogHXCurrent->setVisible(false);
+                } else {
+                    if(maxValue < 1){
+                        maxValue = 1;
+                    }
+                    int indHX = model == nullptr ? static_cast<int>(DEF_SPR_FORMULA_CONDITION) :
+                                                    model->getSettingsFormulaModel()->getConditions()->getIndex();
+                    double porog = model == nullptr ? 1 : model->getSettingsPorogsModel()->getPorog(threadCurrent, indHX)->getData();
 
-            for(int i=0; i<samplesNumber; i++){
-//                QVector<double> vth;
-                QwtSetSample vth;
-                vth.value = (data[0][i].interval.maxValue() - data[0][i].interval.minValue()) / 2 + data[0][i].interval.minValue();
-                for(int th=0; th < data.size(); th++){
-//                   vth += data[th][i].value;
-                   vth.set += data[th][i].value;
-    //            if(gistogramms.size() <= th){
-    //                QwtPlotHistogram *plGist = new QwtPlotHistogram(QString(tr("Ручей %1")).arg(th));
-    //                gistogramms.push_back(plGist);
-    //                gistogramms[th]->setPen(col[th % col.size()]);
-    //                gistogramms[th]->attach(ui.qwtPlot);
-    //            }
+                    QVector<QPointF> dataHX = {
+                        QPointF(separateModel->getSettingsSeparate()->prg[threadCurrent][indHX], minValue),
+                        QPointF(separateModel->getSettingsSeparate()->prg[threadCurrent][indHX], maxValue)
+
+                    };
+                    QVector<QPointF> dataHXCurrent = {
+                        QPointF(porog, minValue),
+                        QPointF(porog, maxValue)
+                    };
+
+                    porogHX->setSamples(dataHX);
+                    porogHX->setVisible(true);
+
+                    porogHXCurrent->setSamples(dataHXCurrent);
+                    porogHXCurrent->setVisible(true);
                 }
-                samples += vth;
-            }
-            gistogramms->setSamples(samples);
 
-            ui.qwtPlot->setAxisAutoScale(QwtPlot::xBottom);
-            ui.qwtPlot->setAxisAutoScale(QwtPlot::yLeft);
-
-            ui.qwtPlot->plotLayout()->setAlignCanvasToScale( QwtPlot::xBottom, true );
-            ui.qwtPlot->plotLayout()->setAlignCanvasToScale( QwtPlot::yLeft, true );
-
-            ui.qwtPlot->plotLayout()->setCanvasMargin( 0 );
-            ui.qwtPlot->updateCanvasMargins();
 
             ui.qwtPlot->replot();
         }
@@ -156,17 +175,38 @@ void SPRSeparateGistogrammWidget::widgetsShow()
 
 ISPRModelData *SPRSeparateGistogrammWidget::setModelData(ISPRModelData *data)
 {
-    model = (SPRSeparateModel*)data;
+    model = (SPRMainModel*)data;
     if(model){
         connect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
+        separateModel = model->getSeparateModel();
+
+//        rentgenOn = new TCPCommandSeparatorOnFull(model->getServer(), model, toWidget);
+        if(separateModel){
+            connect(separateModel, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
+        }
     }
 }
 
 ISPRModelData *SPRSeparateGistogrammWidget::getModelData()
 {
-    return model;
+    return separateModel;
 }
 
-void SPRSeparateGistogrammWidget::onModelChanget(IModelVariable *)
+void SPRSeparateGistogrammWidget::onModelChanget(IModelVariable *source)
 {
+    if(model){
+        if(sender() == separateModel){
+            widgetsShow();
+            return;
+        }
+        if(source == model->getThreads()){
+            widgetsShow();
+            return;
+        }
+        QList<IModelVariable *> lporogs = model->getSettingsPorogsModel()->getPorogs()->getAllPorogs();
+        if(lporogs.contains(source)){
+            widgetsShow();
+            return;
+        }
+    }
 }

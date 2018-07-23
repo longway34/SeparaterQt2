@@ -42,6 +42,7 @@ class SPRSpectrumListTableWidget : public QWidget, public ISPRWidget
 
     TCPTimeOutWigget *toWidget;
 
+//    SPRViewGraphicsMode graphicsMode;
 
 public:
     explicit SPRSpectrumListTableWidget(QWidget *parent = 0);
@@ -71,6 +72,7 @@ public slots:
     void onCompliteCommand(TCPCommand *command);
     void onErrorsCommand(TCPCommand *command);
     void onSpectSpectrumTableClick(int row, int col, SPRSpectrumListTable *_sender=nullptr);
+    void onSpectSpectrumTableClick2(int row, SPRSpectrumListTable *_sender);
     void onChangeSpectrumsFileName();
 private:
     Ui::SPRSpectrumListTableWidget ui;
@@ -95,6 +97,9 @@ protected:
     // ISPRWidget interface
 public:
     virtual void setLogWidget(TCPLogsWigtets *value);
+    SPRViewGraphicsMode getGraphicsMode() const;
+//    void setGraphicsMode(const SPRViewGraphicsMode &value);
+    void changeGraphicViewMode();
 };
 
 #endif // SPRSPECTRUMLISTTABLEWIDGET_H

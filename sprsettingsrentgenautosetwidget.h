@@ -3,6 +3,8 @@
 
 #include "ui_sprsettingsrentgenautosetwidget.h"
 #include "models/sprsettingsrentgenmodel.h"
+
+#include "sprsettingsrentgenautosetdialog.h"
 #include "isprwidget.h"
 
 class SPRSettingsRentgenAutosetWidget : public QWidget, public ISPRWidget
@@ -12,6 +14,8 @@ class SPRSettingsRentgenAutosetWidget : public QWidget, public ISPRWidget
     SPRSettingsRentgenModel *model;
 
     QButtonGroup *bgTypeSetting;
+
+    SPRSettingsRentgenAutoSetDialog *autoSettingDialog;
 
 public:
     explicit SPRSettingsRentgenAutosetWidget(QWidget *parent = 0);

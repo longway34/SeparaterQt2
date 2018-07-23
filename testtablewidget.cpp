@@ -5,7 +5,7 @@
 #include <QList>
 
 testTableWidget::testTableWidget(QWidget *parent) :
-    QWidget(parent), mainModel(nullptr), separateModel(nullptr)
+    QWidget(parent), mainModel(nullptr), separateModel(nullptr), separate_error(SPR_SEPARATE_STATE_OK)
 {
     ui.setupUi(this);
 
@@ -61,7 +61,7 @@ ISPRModelData *testTableWidget::setModelData(SPRMainModel *_model){
 //        separateModel->setModelData(_model);
         separateModel = mainModel->getSeparateModel();
 
-        startSeparate = new TCPStartSeparate2(_model, towidget, getLogWidget());
+        startSeparate = new TCPStartSeparate2(mainModel, towidget, getLogWidget());
 //        startSeparate = new TCPTestStartSeparate(nullptr, mainModel, towidget, getLogWidget());
 //        getRen = startSeparate->findCommands(getren).last();
 //        connect(getRen, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
@@ -74,7 +74,7 @@ ISPRModelData *testTableWidget::setModelData(SPRMainModel *_model){
 
         ui.separateDetailsTable->setModelData(mainModel);
 //        ui.baseGrapthics->setModelData(kSpectrumsModel, spectrumBase, true);
-        ui.testGistogramm->setModelData(mainModel->getSeparateModel());
+        ui.testGistogramm->setModelData(mainModel);
 
 
 
@@ -136,33 +136,33 @@ void testTableWidget::widgetsShow(){
         while(ui.workSeparTable->rowCount()>0){
             ui.workSeparTable->removeRow(0);
         }
-        ui.workSeparTable->setRowCount(separateModel->workSetarateRows.size());
-        qDebug() << "ws_model rows:" << separateModel->workSetarateRows.size() << " workspase table rows:" << ui.workSeparTable->rowCount();
+        ui.workSeparTable->setRowCount(separateModel->workSeparateRows.size());
+        qDebug() << "ws_model rows:" << separateModel->workSeparateRows.size() << " workspase table rows:" << ui.workSeparTable->rowCount();
 
         uint row = 0;
-        for(int i=0; i<separateModel->workSetarateRows.size(); i++){
+        for(int i=0; i<separateModel->workSeparateRows.size(); i++){
 
                 QVector<double> data = {
-                    separateModel->workSetarateRows[i]->i_prd[0],separateModel->workSetarateRows[i]->i_prd[1],separateModel->workSetarateRows[i]->i_prd[2],separateModel->workSetarateRows[i]->i_prd[3],
-                    separateModel->workSetarateRows[i]->p_prd[0],separateModel->workSetarateRows[i]->p_prd[1],separateModel->workSetarateRows[i]->p_prd[2],separateModel->workSetarateRows[i]->p_prd[3],
+                    separateModel->workSeparateRows[i]->i_prd[0],separateModel->workSeparateRows[i]->i_prd[1],separateModel->workSeparateRows[i]->i_prd[2],separateModel->workSeparateRows[i]->i_prd[3],
+                    separateModel->workSeparateRows[i]->p_prd[0],separateModel->workSeparateRows[i]->p_prd[1],separateModel->workSeparateRows[i]->p_prd[2],separateModel->workSeparateRows[i]->p_prd[3],
 
-                    separateModel->workSetarateRows[i]->p_tk,
-                    separateModel->workSetarateRows[i]->p_tkh1,
-                    separateModel->workSetarateRows[i]->p_tkh2,
-                    separateModel->workSetarateRows[i]->p_tkh3,
+                    separateModel->workSeparateRows[i]->p_tk,
+                    separateModel->workSeparateRows[i]->p_tkh1,
+                    separateModel->workSeparateRows[i]->p_tkh2,
+                    separateModel->workSeparateRows[i]->p_tkh3,
 
-                    separateModel->workSetarateRows[i]->wcount,
-                    separateModel->workSetarateRows[i]->s_rst[0],separateModel->workSetarateRows[i]->s_rst[1],separateModel->workSetarateRows[i]->s_rst[2],separateModel->workSetarateRows[i]->s_rst[3],separateModel->workSetarateRows[i]->s_rst[4],
+                    separateModel->workSeparateRows[i]->wcount,
+                    separateModel->workSeparateRows[i]->s_rst[0],separateModel->workSeparateRows[i]->s_rst[1],separateModel->workSeparateRows[i]->s_rst[2],separateModel->workSeparateRows[i]->s_rst[3],separateModel->workSeparateRows[i]->s_rst[4],
                 };
 //                data.push_back(separateModel->workSeparateCurrent[i].error);
 
-                QLabel *lb = new QLabel(QString::number(separateModel->workSetarateRows[i]->number));
+                QLabel *lb = new QLabel(QString::number(separateModel->workSeparateRows[i]->number));
                 ui.workSeparTable->setCellWidget(i, 0, lb);
 
-                lb = new QLabel(separateModel->workSetarateRows[i]->dt.toString("dd.MM hh:mm:ss"));
+                lb = new QLabel(separateModel->workSeparateRows[i]->dt.toString("dd.MM hh:mm:ss"));
                 ui.workSeparTable->setCellWidget(i, 1, lb);
 
-                lb = new QLabel(QString::number(separateModel->workSetarateRows[i]->thread));
+                lb = new QLabel(QString::number(separateModel->workSeparateRows[i]->thread));
                 ui.workSeparTable->setCellWidget(i, 2, lb);
 
 
@@ -274,7 +274,7 @@ void testTableWidget::onGetButtomsClick(bool)
 //            return;
 //        }
         if(sender() == ui.bSetSepar){
-            setSeparate->setSendData(separateModel->toByteArray(mainModel));
+            setSeparate->setSendData(separateModel->toByteArray(mainModel, &separate_error));
             setSeparate->send(mainModel->getServer());
         }
         if(sender() == ui.bStartSepar){
@@ -293,7 +293,7 @@ void testTableWidget::onKSpectrumReady(TCPGetSpectrumsGistogramms *_command){
         QByteArray res = _command->getKSpectrumData(th);
         uint8_t *spec = (uint8_t*)(res.left(DEF_SPECTRUM_DATA_LENGTH_BYTE).constData());
 
-        SPRSpectrumItemModel *item = kSpectrumsModel->addSpectrum(spec, DEF_SPECTRUM_DATA_LENGTH_BYTE);
+        SPRSpectrumItemModel *item = kSpectrumsModel->addSpectrum(spec, DEF_SPECTRUM_DATA_LENGTH_BYTE,_command->getKSpectrumTime(th));
         uint32_t t = _command->getKSpectrumTime(th);
         item->setTimeScope(t);
         if(kSpectrumsModel){

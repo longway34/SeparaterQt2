@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 //    w.show();
 
     MainWindow w;
-    w.show();
+    w.showMaximized();
 
     return a.exec();
 }

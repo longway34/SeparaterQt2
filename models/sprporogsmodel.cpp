@@ -33,6 +33,11 @@ SPRVariable<uint> *SPRPorogsModel::getThreads() const
     return threads;
 }
 
+QList<IModelVariable *> SPRPorogsModel::getAllPorogs() const
+{
+    return allPorogs;
+}
+
 SPRPorogsModel::SPRPorogsModel(QObject *parent)
 {
     porogs = nullptr;
@@ -64,6 +69,7 @@ SPRPorogsModel::SPRPorogsModel(QDomDocument *_doc, uint _row, ISPRModelData *par
                 defValue = 99;
             }
             porogs[th][cond] = new SPRVariable<double>(doc, xxpath, defValue, this);
+            allPorogs.push_back(porogs[th][cond]);
         }
     }
     conditions = new SPREnumVariable<TypeConditions>(doc, SPR_POROGS_CONDITION_XPATH, DEF_SPR_FORMULA_CONDITION, this);

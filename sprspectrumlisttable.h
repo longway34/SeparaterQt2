@@ -16,9 +16,9 @@ class SPRSpectrumListTable : public QTableWidget, public ISPRWidget
 {
     Q_OBJECT
 
-    SPRSpectrumListItemsModel* model;
 
 protected:
+    SPRSpectrumListItemsModel* model;
 
     QVector<SPRSpectrumItemModel*> *spectrums;
 
@@ -57,13 +57,27 @@ public:
 //    SPRSpectrumItemModel *addSpectrum(uint8_t *_inp, int _bufSize = DEF_SPECTRUM_DATA_BUF_LENGTH, int _thread = -1);
 //    ISPRModelData *setZonesTableModel(SPRSpectrumZonesTableModel *ranges);
 
-    QList<int> getSelectedItems(){
+    QList<int> getSelectedItemsNumbers(){
         QList<int> res;
         for(int row=0; row<rowCount(); row++){
             FirstCollumn2 *fc = (FirstCollumn2*)cellWidget(row, 0);
             if(fc->isSelect()){
                 res.push_back(row);
             }
+        }
+        return res;
+    }
+
+    QList<SPRSpectrumItemModel*> getSelectedItems(){
+        QList<SPRSpectrumItemModel*> res;
+        for(int row=0; row<rowCount();row++){
+            FirstCollumn2 *fc = (FirstCollumn2*)cellWidget(row, 0);
+            if(fc->isSelect()){
+                SPRSpectrumItemModel* item = model->getSpectrumItem(row, typeData);
+                if(item)
+                    res.push_back(item);
+            }
+
         }
         return res;
     }
@@ -113,6 +127,7 @@ public slots:
 signals:
     void doShow();
     void rowSelectedChecked(QList<int>, int);
+    void rowSelectedChecked2(int, SPRSpectrumListTable*);
     void rowChangeColor(int num);
     void rowDeleted(int row);
 
@@ -120,6 +135,8 @@ signals:
 public:
 
     // ISPRWidget interface
+    SPRTypeSpectrumSet getTypeData() const;
+
 protected:
 };
 

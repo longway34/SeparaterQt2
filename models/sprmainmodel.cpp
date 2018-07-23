@@ -101,6 +101,7 @@ SPRMainModel::SPRMainModel(QDomDocument *_doc, ISPRModelData *parent): ISPRModel
 //    server(nullptr),
     separateModel(nullptr)
 {
+    setObjectName("MainModel");
     setDoc(_doc);
 }
 
@@ -117,6 +118,7 @@ SPRMainModel::SPRMainModel(QString docFName, ISPRModelData *parent): ISPRModelDa
 //    server(nullptr),
     separateModel(nullptr)
 {
+    setObjectName("MainModel");
     filePath = "";
     if(docFName.contains(QDir::separator())){
         QStringList fPathl = docFName.split(QDir::separator());

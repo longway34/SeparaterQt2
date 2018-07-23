@@ -37,7 +37,7 @@
    <enum>QTabWidget::Rounded</enum>
   </property>
   <property name="currentIndex">
-   <number>0</number>
+   <number>3</number>
   </property>
   <property name="iconSize">
    <size>
@@ -87,7 +87,7 @@
    </attribute>
    <layout class="QVBoxLayout" name="verticalLayout_2"/>
   </widget>
-  <widget class="SPRSeparateWidget" name="tabSeparate">
+  <widget class="QWidget" name="tabSeparate">
    <attribute name="icon">
     <iconset resource="icons.qrc">
      <normaloff>:/icons/icons/Separate_tab_bo_colors_icon_90.png</normaloff>:/icons/icons/Separate_tab_bo_colors_icon_90.png</iconset>
@@ -95,6 +95,11 @@
    <attribute name="title">
     <string>Сепарация</string>
    </attribute>
+   <layout class="QVBoxLayout" name="verticalLayout_4">
+    <item>
+     <widget class="SPRSeparateWidget" name="wSeparateWigget" native="true"/>
+    </item>
+   </layout>
   </widget>
   <widget class="SPRTestIMSWidget" name="tabTest">
    <attribute name="icon">
@@ -117,6 +122,12 @@
   </widget>
  </widget>
  <customwidgets>
+  <customwidget>
+   <class>SPRSeparateDetailTableWidget</class>
+   <extends>QWidget</extends>
+   <header>sprseparatedetailtablewidget.h</header>
+   <container>1</container>
+  </customwidget>
   <customwidget>
    <class>SPRSpectrumListTableWidget</class>
    <extends>QWidget</extends>
@@ -145,12 +156,6 @@
    <class>SPRSeparateWidget</class>
    <extends>QWidget</extends>
    <header>sprseparatewidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>SPRSeparateDetailTableWidget</class>
-   <extends>QWidget</extends>
-   <header>sprseparatedetailtablewidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

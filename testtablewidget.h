@@ -31,6 +31,8 @@ public:
     TCPTimeOutWigget *towidget;
 
     SPRMainModel *mainModel;
+
+    int separate_error;
 //    SPRSpectrumListItemsModel *spectrumsBaseModel;
     SPRSpectrumListItemsModel *kSpectrumsModel;
     SPRSeparateModel *separateModel;

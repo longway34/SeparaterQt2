@@ -30,12 +30,12 @@ SPRSpectrumChoiseTimeDialog::SPRSpectrumChoiseTimeDialog(SPRMainModel *_model, Q
         QString title; double value;
     };
     QVector<struct a> timesSpec = {
-        {tr("0.2 сек."), 0.2},
-        {tr("1 сек."), 1},
-        {tr("3 сек."), 3},
-        {tr("5 сек."), 5},
-        {tr("10 сек."), 10},
-        {tr("15 сек."), 15}
+        {tr("0.2 сек."), 200},
+        {tr("1 сек."), 1000},
+        {tr("3 сек."), 3000},
+        {tr("5 сек."), 5000},
+        {tr("10 сек."), 10000},
+        {tr("15 сек."), 15000}
     };
 
     for(int i=0; i<timesSpec.size(); i++){
@@ -116,13 +116,13 @@ QList<uint8_t> SPRSpectrumChoiseTimeDialog::getThreads(){
     return res;
 }
 
-double SPRSpectrumChoiseTimeDialog::getTime()
+uint32_t SPRSpectrumChoiseTimeDialog::getTime()
 {
-    double res = -1;
+    uint32_t res = 0;
     QList<QRadioButton*> times = ui.gbTimes->findChildren<QRadioButton*>();
     foreach(QRadioButton *rb, times){
         if(rb && rb->isChecked()){
-            res = rb->property("value").value<double>();
+            res = rb->property("value").value<uint32_t>();
             break;
         }
     }

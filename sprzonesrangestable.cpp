@@ -97,6 +97,7 @@ void SPRZonesRangesTable::widgetsShow()
 {
 //    qDebug() << "SPRZonesRanges::widgetsShow(): name: "<< this->objectName();
     if(ztModel){
+        blockSignals(true);
         this->clear();
         lastCurrentTable = nullptr;
         lastCurrentElement = Ns;
@@ -147,6 +148,7 @@ void SPRZonesRangesTable::widgetsShow()
         resizeColumnsToContents();
         resizeRowsToContents();
 //        setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+        blockSignals(false);
     }
 }
 

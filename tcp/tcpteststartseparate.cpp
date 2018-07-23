@@ -74,7 +74,7 @@ void TCPTestStartSeparate::go(TCPCommand *_command)
     if(!_command){
         if(separateModel && mainModel){
             countTry = 0; numTry = 5;
-            findCommands(setsepar).first()->setSendData(separateModel->toByteArray(mainModel));
+            findCommands(setsepar).first()->setSendData(separateModel->toByteArray(mainModel, &errorSeparateState));
 //            TCPCommandRentgerOn *reng = ((TCPCommandRentgerOn*)findCommands(setRentgenOn).last());
 //            reng->setModel(separateModel->getModelData()->getSettingsRentgenModel());
         }

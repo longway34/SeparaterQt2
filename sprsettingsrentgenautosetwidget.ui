@@ -41,6 +41,9 @@
        </property>
        <item>
         <widget class="QGroupBox" name="gbCodeOn">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="title">
           <string>Настроить код по</string>
          </property>
@@ -103,13 +106,6 @@
            </widget>
           </item>
          </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="cbEnhansedRgime">
-         <property name="text">
-          <string>Расширенный режим</string>
-         </property>
         </widget>
        </item>
        <item>
@@ -255,6 +251,9 @@
        </item>
        <item>
         <widget class="QPushButton" name="bStart">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string>Старт автоустановки</string>
          </property>

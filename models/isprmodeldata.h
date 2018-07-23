@@ -24,6 +24,7 @@ protected:
 //    QDomDocument *doc;
 //    QDomElement root;
 
+    ISPRModelData *modelParent;
 
 
 public:
@@ -37,6 +38,7 @@ public:
 
     QString getFileName() const;
 
+    ISPRModelData *getMainModel();
 //    QList<IModelVariable *> getVariables() const;
 //    void setVariables(const QList<IModelVariable *> &value);
 

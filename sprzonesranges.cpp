@@ -70,6 +70,7 @@ void SPRZonesRanges::widgetsShow()
 //        while(rowCount() > 0){
 //            removeRow(0);
 //        }
+        blockSignals(true);
         clear();
         setRowCount(zoneModel->getElementsProperty()->getElements().size());
 
@@ -123,6 +124,10 @@ void SPRZonesRanges::widgetsShow()
                 colCount++;
             }
 
+            QString s = zoneModel->getElementsProperty()->getFName(el);
+            uint valMin = zoneModel->getZones()[el]->min->getData();
+            uint valMax = zoneModel->getZones()[el]->max->getData();
+
             QLineEdit *le = setNumberCell(this, row, colCount, zoneModel->getZones()[el]->min->getData(), 0, 256, QString(tr("Минимальное значение для ") + zoneModel->getElementsProperty()->getFName(el)));
             le->setProperty("element", static_cast<QVariant>(el));
             le->setProperty("variable", QVariant("min"));
@@ -151,6 +156,7 @@ void SPRZonesRanges::widgetsShow()
         }
         this->show();
         setMinimumSize(size());
+        blockSignals(false);
     }
 }
 

@@ -32,6 +32,7 @@ public slots:
     void onChangeThreadList(bool value);
     void onClickButtomCommand(bool);
     void onChangeIntValue(int);
+    void onChandeServerState(uint32_t);
 };
 
 #endif // SPRSEPARATEDETAILTABLEWIDGET_H

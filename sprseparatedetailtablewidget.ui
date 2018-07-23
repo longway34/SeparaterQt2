@@ -251,15 +251,15 @@
     </widget>
    </item>
    <item>
-    <widget class="QTableView" name="tSeparateDetailSummary">
+    <widget class="SPRSeparateDetailsSummaryTable" name="tSeparateDetailSummary">
      <property name="selectionMode">
       <enum>QAbstractItemView::SingleSelection</enum>
      </property>
      <property name="selectionBehavior">
       <enum>QAbstractItemView::SelectRows</enum>
      </property>
-     <attribute name="verticalHeaderVisible">
-      <bool>false</bool>
+     <attribute name="horizontalHeaderStretchLastSection">
+      <bool>true</bool>
      </attribute>
     </widget>
    </item>
@@ -335,6 +335,11 @@
    <class>SPRSeparateDetailsTable</class>
    <extends>QTableView</extends>
    <header>sprseparatedetailstable.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SPRSeparateDetailsSummaryTable</class>
+   <extends>QTableView</extends>
+   <header>sprseparatedetailssummarytable.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -11,7 +11,7 @@ void SPRSpectrumListTable::connectFirstTable(FirstCollumn2 *fc){
 }
 
 void SPRSpectrumListTable::onRowSelect(bool select, int row){
-    emit rowSelectedChecked(getSelectedItems(), row);
+    emit rowSelectedChecked(getSelectedItemsNumbers(), row);
 }
 void SPRSpectrumListTable::onDeleteRow(int row){
 //    if(typeData == spectrumsOnly){
@@ -22,7 +22,7 @@ void SPRSpectrumListTable::onDeleteRow(int row){
     if(row >= 0 && row < vectorSize){
         model->removeSpectrum(row, typeData);
         removeRow(row);
-        storeCheckedRows = getSelectedItems();
+        storeCheckedRows = getSelectedItemsNumbers();
         storeCurrentRow = currentRow();
     }
 //    while(rowCount()>0) removeRow(0);
@@ -69,6 +69,11 @@ void SPRSpectrumListTable::insertContentColumns(SpectrumItemData *data, int row)
     setCellMyWidget(this, row, 15, QString::number(*data->Mo), false, tr("Значения спектра в зоне молибдена"));
     setCellMyWidget(this, row, 16, QString::number(*data->Zn), false, tr("Значения спектра в зоне цинка"));
     setCellMyWidget(this, row, 17, QString::number(*data->Mg), false, tr("Значения спектра в зоне марганца"));
+}
+
+SPRTypeSpectrumSet SPRSpectrumListTable::getTypeData() const
+{
+    return typeData;
 }
 
 void SPRSpectrumListTable::addRowTable(SpectrumItemData *data, int pastRow)
@@ -151,7 +156,10 @@ SPRSpectrumListTable::SPRSpectrumListTable(QWidget *parent):
 }
 
 void SPRSpectrumListTable::onCurrentPosChanged(int row, int col){
-    emit rowSelectedChecked(getSelectedItems(), row);
+//    SPRSpectrumItemModel *curr = model->getSpectrumItem(row, typeData);
+//    if(curr){
+        emit rowSelectedChecked2(row, this);
+//    }
 }
 
 ISPRModelData *SPRSpectrumListTable::setModelData(SPRSpectrumListItemsModel *_model, SPRTypeSpectrumSet _type)
@@ -230,6 +238,10 @@ void SPRSpectrumListTable::widgetsShow()
 {
 
     if(model){
+
+        storeCheckedRows = getSelectedItemsNumbers();
+        storeCurrentRow = currentRow();
+
         while(rowCount() > 0) this->removeRow(0);
 
         for(int row=0; row<spectrums->size(); row++){
@@ -321,7 +333,7 @@ void SPRSpectrumListTable::showCols(bool)
 
 void SPRSpectrumListTable::viewChange(int num)
 {
-    emit rowSelectedChecked(getSelectedItems(), this->currentRow());
+    emit rowSelectedChecked(getSelectedItemsNumbers(), this->currentRow());
 }
 
 

@@ -426,5 +426,10 @@ typedef struct{
 #define DEF_SPR_SEPARATE_ALG        0
 #define DEF_SPR_SEPARATE_SEP_ROW    0
 
+#define SPR_SEPARATE_STATE_OK                   0
+#define SPR_SEPARATE_STATE_ERROR_BASE_SPACTRUE  1
+#define SPR_SEPARATE_STATE_ERROR_CORREL         2
+#define SPR_SEPARATE_STATE_ERROR_IMS            4
+
 #endif // TYPES_H
 

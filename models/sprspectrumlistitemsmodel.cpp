@@ -110,14 +110,21 @@ void SPRSpectrumListItemsModel::saveAs(QString fname)
     }
 }
 
-SPRSpectrumItemModel *SPRSpectrumListItemsModel::addSpect(uint8_t *buf, int bufLentgh, SPRTypeSpectrumSet typeData, int numTh, QString pref){
-    SPRSpectrumItemModel *item = new SPRSpectrumItemModel(zonesTableModel, formulas, this);
+SPRSpectrumItemModel *SPRSpectrumListItemsModel::addSpect(uint8_t *buf, int bufLentgh, uint32_t _timeScope_in_ms, SPRTypeSpectrumSet typeData, int numTh, QString pref){
+    SPRSpectrumItemModel *item = new SPRSpectrumItemModel(zonesTableModel, formulas, numTh, this);
     item->setSpectrumData(buf, bufLentgh);
+    if(_timeScope_in_ms == 0){
+        if(typeData == spectrumsAll || typeData == spectrumsOnly){
+            _timeScope_in_ms = 5000;
+        } else {
+            _timeScope_in_ms = 30000;
+        }
+    }
 
     QVector<SPRSpectrumItemModel*> *model = getSpectrumsModel(typeData);
 
     if(bufLentgh == DEF_SPECTRUM_DATA_LENGTH_BYTE){
-        item->setSpectrumThread(model->size());
+//        item->setSpectrumThread(model->size());
         if(pref.isEmpty()){
             if(model == &spectrumsModelBase){
                 pref = "bspec_";
@@ -128,8 +135,18 @@ SPRSpectrumItemModel *SPRSpectrumListItemsModel::addSpect(uint8_t *buf, int bufL
         item->setSpectrumName(pref+QString::number(model->size()));
         item->setSpectrumColor(mainColors[model->size() % mainColors.size()]);
         item->setSpectrumDateTime(QDateTime::currentDateTime());
-        if(numTh >= 0){
+        if(numTh >= 0 && numTh < zonesTableModel->getThreads()->getData()){
             item->setSpectrumThread(numTh);
+        } else {
+            item->setSpectrumThread(0);
+        }
+        item->setTimeScope(_timeScope_in_ms);
+    } else {
+        uint32_t th = *(item->getSpectrumData()->thread);
+        if(th >= 0 && th < zonesTableModel->getThreads()->getData()){
+            item->setSpectrumThread(th);
+        } else {
+            item->setSpectrumThread(0);
         }
     }
     model->push_back(item);
@@ -137,6 +154,13 @@ SPRSpectrumItemModel *SPRSpectrumListItemsModel::addSpect(uint8_t *buf, int bufL
 
     if(typeData == spectrumsOnly){
         recomplite(item, spectrumsOnly);
+        if(fabs(item->getTimeScope()) < 1e-10){
+            item->setTimeScope(5000);
+        }
+    } else if(typeData == spectrumBase){
+        if(fabs(item->getTimeScope()) < 1e-10){
+            item->setTimeScope(10000);
+        }
     }
 
     emit modelChanget(this);
@@ -150,7 +174,7 @@ SPRSettingsFormulaModel *SPRSpectrumListItemsModel::getFormulas() const
 }
 
 void SPRSpectrumListItemsModel::addSpectrums(QString fName){
-    qDebug()<<"addSpectrums: cur dir: " << QDir::current() << "; qcurrpath: "<<QDir::currentPath();
+//    qDebug()<<"addSpectrums: cur dir: " << QDir::current() << "; qcurrpath: "<<QDir::currentPath();
 
     QFile in(fName.toUtf8());
     int specCount = spectrumsModelBase.size();
@@ -160,9 +184,9 @@ void SPRSpectrumListItemsModel::addSpectrums(QString fName){
        QByteArray b2 = in.read(2);
        while(in.read((char*)buf, DEF_SPECTRUM_DATA_BUF_LENGTH) == DEF_SPECTRUM_DATA_BUF_LENGTH){
            if(specCount < threads->getData()){
-               addSpect(buf, DEF_SPECTRUM_DATA_BUF_LENGTH, spectrumBase);
+               addSpect(buf, DEF_SPECTRUM_DATA_BUF_LENGTH, 0, spectrumBase);
            } else {
-               addSpect(buf, DEF_SPECTRUM_DATA_BUF_LENGTH, spectrumsOnly);
+               addSpect(buf, DEF_SPECTRUM_DATA_BUF_LENGTH, 0, spectrumsOnly);
            }
            specCount++;
        }
@@ -170,7 +194,7 @@ void SPRSpectrumListItemsModel::addSpectrums(QString fName){
    }
    memset(buf, 0, DEF_SPECTRUM_DATA_LENGTH_BYTE);
    while (specCount < threads->getData()) {
-       addSpect(buf, DEF_SPECTRUM_DATA_LENGTH_BYTE, spectrumBase);
+       addSpect(buf, DEF_SPECTRUM_DATA_LENGTH_BYTE, 0, spectrumBase);
 //       SPRSpectrumItemModel *item = new SPRSpectrumItemModel(zonesTableModel, formulas, this);
 //       item->setSpectrumName(QString("bspect_%1").arg(specCount));
 //       item->setSpectrumThread(specCount);

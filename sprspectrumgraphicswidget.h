@@ -13,6 +13,7 @@
 
 #include "sprgraphitem.h"
 #include "scrollzoomer.h"
+#include "sprporogsmoved.h"
 
 class SPRSpectrumGraphicsWidget : public QWidget, public ISPRWidget
 {
@@ -134,9 +135,24 @@ public:
     QVector<SPRSpectrumItemModel*> *spectrums;
     QVector<SPRGraphItem*> graphItems;
 
+    SPRViewGraphicsMode graphicsMode;
+
 //    MyZoomer *zoomer;
 
     ScrollZoomer *zoomer;
+    SPRPorogsMoved *pm;
+
+    int getGraphItemNumber(SPRSpectrumItemModel* _mod){
+        int ret = -1;
+        for(int index=0; index<spectrums->size(); index++){
+            if(_mod == spectrums->at(index)){
+                ret = index;
+                break;
+            }
+        }
+        return ret;
+    }
+
 
     QList<int> visibleItems;
     int currentItem;
@@ -168,6 +184,9 @@ public:
         return ui.canvas;
     }
 
+    SPRViewGraphicsMode getGraphicsMode() const;
+    void setGraphicsMode(const SPRViewGraphicsMode &value);
+
 public slots:
     virtual void widgetsShow();
     void onChangeSelectedCheckedItems(QList<int> checked, int current);
@@ -177,7 +196,12 @@ public slots:
 
     // ISPRWidget interface
 
+    void onChangeSelectedCheckedItems(QList<SPRSpectrumItemModel *> checked, SPRSpectrumItemModel *current);
 protected:
+    void setPorogsMovedItems();
+protected slots:
+    void onCusorOverSelectItem(QwtPlotItem *item, MovedItemPosition);
+    void onChangeSelectedItemValue(QwtPlotItem *item, double distance, MovedItemPosition position);
 };
 
 #endif // SPRSPECTRUMGRAPHICSWIDGET_H
