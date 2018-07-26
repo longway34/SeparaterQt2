@@ -27,7 +27,7 @@ TCPCommandRGUUpDown::TCPCommandRGUUpDown(ServerConnect *_server, TCPTimeOutWigge
         rguUpDown.append(&chDown, sizeof(chDown));
         result = 2;
     }
-//    addCommand(new TCPCommand(getrgu2));
+    addCommand(new TCPCommand(getrgu2));
     TCPCommand *crgu = new TCPCommand(setrgu2); crgu->setSendData(rguUpDown);
     addCommand(crgu); // 0
     if(upDown){
@@ -55,7 +55,7 @@ void TCPCommandRGUUpDown::go(TCPCommand *_command)
           }
           int num = _command->getNum();
 
-          if(num == 3){ // getrgu
+          if(num == 3 || num == 0){ // getrgu
              QByteArray res = commandSet[3]->getResult();
              if(res.size() > 0){
                  if(res[0] == result){ // complite command

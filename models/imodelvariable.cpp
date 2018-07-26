@@ -151,7 +151,22 @@ void IModelVariable::Init(QDomDocument *parent, QString xpath, QString defValue,
     }
     fromXml();
     delete fd;
-//    toDebug();
+    //    toDebug();
+}
+
+IModelVariable *IModelVariable::getMainModel()
+{
+    IModelVariable *res = nullptr;
+    if(objectName() == "MainModel"){
+        return this;
+    } else {
+        if(mvparent){
+            res = mvparent->getMainModel();
+        } else {
+            return nullptr;
+        }
+    }
+    return res;
 }
 
 

@@ -74,6 +74,7 @@ SPRSpectrumListTableWidget::SPRSpectrumListTableWidget(QWidget *parent) :
     ui.gbBasetSpectrums->setVisible(ui.cbBasetSpectrumVisible->isChecked());
 
     ui.tRangesChannel->setSelectBottonRowVisible(false);
+    ui.graphic->setWithLegend(false);
 }
 
 void SPRSpectrumListTableWidget::onChangeSpectrumsFileName(){

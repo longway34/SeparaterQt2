@@ -96,7 +96,10 @@ protected:
     }
     void Init(QDomDocument *parent, QString xpath, QString defValue, IModelVariable *mvparent=nullptr);
 
+
 public:
+    IModelVariable *getMainModel();
+
     void setMVParent(IModelVariable *_mvparent){
         mconnect(_mvparent);
     }

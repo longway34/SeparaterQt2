@@ -22,9 +22,9 @@ public:
     QPen defZonesPen;
     QPen selZonesPen;
 
-    SPRGraphItem(): spect(nullptr){}
-    SPRGraphItem(QwtPlotCurve *_spect, QwtPlot *_plot): spect(_spect), plot(_plot){}
-    SPRGraphItem(SPRSpectrumItemModel *_model, QwtPlot *_plot): spect(nullptr), plot(_plot){
+    SPRGraphItem(): plot(nullptr), spect(nullptr){}
+    SPRGraphItem(QwtPlotCurve *_spect, QwtPlot *_plot): plot(_plot), spect(_spect) {}
+    SPRGraphItem(SPRSpectrumItemModel *_model, QwtPlot *_plot): plot(_plot), spect(nullptr) {
         setModelData(_model);
         thread = _model->getThread();
         defZonesPen.setWidth(1);
@@ -89,18 +89,21 @@ public:
     }
 
     ~SPRGraphItem(){
-        foreach (EnumElements el, model->getZones()->getZones().keys()) {
-            zones[el]->detach();
-            delete zones[el];
+        if(plot){
+            foreach (EnumElements el, model->getZones()->getZones().keys()) {
+//                plot->removeItem(zones[el]);
+                zones[el]->detach();
+                delete zones[el];
+            }
+            spect->detach();
+            delete spect;
         }
-        spect->detach();
-        delete spect;
     }
 protected:
     virtual void setModelData(SPRSpectrumItemModel *_model){
         model = _model;
         if(model){
-            spect = new QwtPlotCurve(QString(model->getSpectrumData()->name));
+            spect = new QwtPlotCurve(QString(model->getSpectrumName()));
             spect->setSamples(model->getSpectrumGraphics());
             spect->setPen(QPen(model->getSpectrumColor(), 0.5));
             foreach (EnumElements el, model->getZones()->getZones().keys()) {
@@ -109,6 +112,8 @@ protected:
                 }
                 zones[el] = new QwtPlotHistogram(model->getZones()->getZones()[el]->element->fName->getData());
                 zones[el]->setSamples(model->getZonesGaphics()[el]);
+//                zones[el]->setLegendIconSize(QSize(0,0));
+//                zones[el]->setTitle("");
                 if(plot){
                     zones[el]->attach(plot);
                 }

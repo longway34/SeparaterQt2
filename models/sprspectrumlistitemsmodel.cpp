@@ -1,8 +1,8 @@
 #include "sprspectrumlistitemsmodel.h"
 #include "QDebug"
 
-static const QVector<QColor> mainColors = {Qt::red, Qt::green, Qt::blue, Qt::cyan, Qt::magenta, Qt::yellow,
-                                    Qt::darkRed, Qt::darkBlue, Qt::darkGreen, Qt::darkCyan, Qt::darkMagenta, Qt::darkYellow,
+static const QVector<QColor> mainColors = {Qt::red, Qt::green, Qt::blue, Qt::yellow, Qt::cyan, Qt::magenta,
+                                    Qt::darkRed, Qt::darkBlue, Qt::darkGreen, Qt::darkYellow, Qt::darkCyan, Qt::darkMagenta,
                                     Qt::gray, Qt::lightGray, Qt::white, Qt::darkGray};
 
 QVector<SPRSpectrumItemModel *> *SPRSpectrumListItemsModel::getSpectrumsModel(SPRTypeSpectrumSet type)
@@ -13,6 +13,23 @@ QVector<SPRSpectrumItemModel *> *SPRSpectrumListItemsModel::getSpectrumsModel(SP
         return &spectrumsModelBase;
     else
         return unionModels();
+}
+
+QVector<SPRSpectrumItemModel *> SPRSpectrumListItemsModel::getSpectrumsItemByThread(int thread, SPRTypeSpectrumSet type)
+{
+    QVector<SPRSpectrumItemModel*> res = {};
+    if(type == spectrumsMixed){
+        type = spectrumsAll;
+    }
+
+    QVector<SPRSpectrumItemModel*> *source = getSpectrumsModel(type);
+    for(int index=0; index< source->size(); index++){
+        if(source->at(index)->getThread() == thread || thread < 0){
+            res.push_back(source->at(index));
+        }
+    }
+
+    return res;
 }
 
 SPRSpectrumZonesTableModel *SPRSpectrumListItemsModel::getZonesTableModel()
@@ -110,7 +127,7 @@ void SPRSpectrumListItemsModel::saveAs(QString fname)
     }
 }
 
-SPRSpectrumItemModel *SPRSpectrumListItemsModel::addSpect(uint8_t *buf, int bufLentgh, uint32_t _timeScope_in_ms, SPRTypeSpectrumSet typeData, int numTh, QString pref){
+SPRSpectrumItemModel *SPRSpectrumListItemsModel::addSpect(uint8_t *buf, int bufLentgh, uint32_t _timeScope_in_ms, SPRTypeSpectrumSet typeData, int numTh, QString _formatName){
     SPRSpectrumItemModel *item = new SPRSpectrumItemModel(zonesTableModel, formulas, numTh, this);
     item->setSpectrumData(buf, bufLentgh);
     if(_timeScope_in_ms == 0){
@@ -125,14 +142,14 @@ SPRSpectrumItemModel *SPRSpectrumListItemsModel::addSpect(uint8_t *buf, int bufL
 
     if(bufLentgh == DEF_SPECTRUM_DATA_LENGTH_BYTE){
 //        item->setSpectrumThread(model->size());
-        if(pref.isEmpty()){
+        if(_formatName.isEmpty()){
             if(model == &spectrumsModelBase){
-                pref = "bspec_";
+                _formatName = "base %1";
             } else {
-                pref = "spec_";
+                _formatName = "spec %1";
             }
         }
-        item->setSpectrumName(pref+QString::number(model->size()));
+        item->setSpectrumName(QString(_formatName).arg(model->size()));
         item->setSpectrumColor(mainColors[model->size() % mainColors.size()]);
         item->setSpectrumDateTime(QDateTime::currentDateTime());
         if(numTh >= 0 && numTh < zonesTableModel->getThreads()->getData()){
@@ -386,6 +403,39 @@ ISPRModelData *SPRSpectrumListItemsModel::setModel(SPRSpectrumZonesTableModel *_
     return this;
 }
 
+//SPRSpectrumItemModel *SPRSpectrumListItemsModel::setSpectrumItem(SPRSpectrumItemModel *item, int th, SPRTypeSpectrumSet type)
+//{
+//    QVector<SPRSpectrumItemModel*> source = getSpectrumsItemByThread(th, type);
+//    SPRSpectrumItemModel* spc;
+//    if(source.size() > 0){
+//        spc = source.first();
+//    } else {
+//        QVector<SPRSpectrumItemModel*> *models = nullptr;
+//        if(type == spectrumBase || type == spectrumsOnly) {
+//            models = getSpectrumsModel(type);
+//        } else {
+//            return nullptr;
+//        }
+//        if(!models){
+//            return nullptr;
+//        }
+//        spc = new SPRSpectrumItemModel(this->getZonesTableModel(), this->getFormulas(), th, this);
+//        models->push_back(spc);
+//    }
+//    memcpy(spc, item, sizeof(SPRSpectrumItemModel));
+//    spc->recomplite();
+
+//    if(!spc->getSpectrumColor().isValid()){
+//        spc->setSpectrumColor(th % mainColors.size());
+//    }
+//    if(spc->getSpectrumName().isEmpty()){
+//        spc->setSpectrumName(QString(tr("Ручей %1")).arg(th));
+//    }
+
+//    emit modelChanget(this);
+//    return spc;
+//}
+
 
 
 void SPRSpectrumListItemsModel::recomplite(SPRSpectrumItemModel *item, typeSpectrumsData type)
@@ -421,22 +471,37 @@ void SPRSpectrumListItemsModel::recomplite(){
     }
 }
 
-SPRSpectrumItemModel *SPRSpectrumListItemsModel::setSpectrumData(int num, uint8_t *buf, int bufLen, SPRTypeSpectrumSet _type)
+SPRSpectrumItemModel *SPRSpectrumListItemsModel::setSpectrumData(int num, uint8_t *buf, int bufLen, SPRTypeSpectrumSet _type, uint32_t _timeScope_in_msec, QString _formatName/*** "xxx %1" */)
 {
-    SPRSpectrumItemModel *spec;
+    SPRSpectrumItemModel *spec = nullptr;
     if(_type == spectrumBase){
         spec = getSpectrumBaseItem(num);
-        if(spec){
-            QColor col;
-            if(bufLen == DEF_SPECTRUM_DATA_LENGTH_BYTE){
-                col = spec->getSpectrumColor();
-            }
-            spec->setSpectrumData(buf, bufLen);
-            if(bufLen == DEF_SPECTRUM_DATA_LENGTH_BYTE){
-                spec->setSpectrumColor(col);
-            }
-            emit modelChanget(this);
+    } else if(_type == spectrumsOnly){
+        QVector<SPRSpectrumItemModel*> vect = getSpectrumsItemByThread(num);
+        if(vect.size() > 0){
+            spec = vect.first();
         }
     }
+    QColor col = _type == spectrumBase ? QColor(Qt::white) : mainColors[num % mainColors.size()];
+    if(_formatName == ""){
+        _formatName = _type == spectrumBase ? "base %1" : "spect %1";
+    }
+    if(_timeScope_in_msec == 0){
+        _timeScope_in_msec = _type == spectrumBase ? 30000 : 5000;
+    }
+    if(spec){
+        spec->setSpectrumData(buf, bufLen);
+
+        if(bufLen == DEF_SPECTRUM_DATA_LENGTH_BYTE){
+            spec->setSpectrumColor(col);
+            spec->setSpectrumName(QString(_formatName).arg(num));
+            spec->setTimeScope(_timeScope_in_msec);
+            spec->setSpectrumDateTime(QDateTime::currentDateTime());
+        }
+    } else {
+        spec = addSpectrum(buf, bufLen, _timeScope_in_msec, num, _formatName);
+        spec->setSpectrumColor(col);
+    }
+    emit modelChanget(this);
     return spec;
 }

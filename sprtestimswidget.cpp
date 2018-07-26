@@ -517,6 +517,10 @@ ISPRModelData *SPRTestIMSWidget::setModelData(SPRMainModel *_model)
         uint16_t code = model->getSettingsControlModel()->VEMSBeginCode->getData();
         commandChangePersentPitatel->setSendData(&code, sizeof(code));
 
+
+        ui.wSpectrumWidget->setWithLegend(true);
+        ui.wSpectrumWidget->setEnableChangeTypeSet(true);
+
     //    commandRaskladStart
 
         widgetsShow();

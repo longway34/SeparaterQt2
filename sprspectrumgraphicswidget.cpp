@@ -1,6 +1,6 @@
 #include "sprspectrumgraphicswidget.h"
 
-void SPRSpectrumGraphicsWidget::setModelData(SPRSpectrumListItemsModel *value, SPRTypeSpectrumSet _typeSpectrumSet, bool _zonesShow)
+void SPRSpectrumGraphicsWidget::setModelData(SPRSpectrumListItemsModel *value, SPRTypeSpectrumSet _typeSpectrumSet, bool _zonesShow, bool _enableChangeTypeSet)
 {
     if(value){
         if(model){
@@ -10,8 +10,11 @@ void SPRSpectrumGraphicsWidget::setModelData(SPRSpectrumListItemsModel *value, S
         connect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
 
         this->typeSpectrumSet = _typeSpectrumSet;
+        this->typeSpectrumSetDef = _typeSpectrumSet;
+        this->enableChangeTypeSet = _enableChangeTypeSet;
 
-        spectrums = model->getSpectrumsModel(typeSpectrumSet);
+        spectSource = model->getSpectrumsItemByThread(currentThread, typeSpectrumSet);
+        spectrums = &spectSource;
 
 //        if(_typeSpectrumSet == spectrumBase){
 //            spectrums = model->getSpectrumsModelBase();
@@ -73,15 +76,26 @@ void SPRSpectrumGraphicsWidget::onChangeSelectedCheckedItems(QList<int> checked,
     }
 }
 
-void SPRSpectrumGraphicsWidget::setPorogsMovedItems(){
-    if(currentItem < 0){
-        pm->setMovedItems({});
-    } else {
-        QVector<QwtPlotItem*> lpl;
-        foreach(QwtPlotItem* pi, graphItems[currentItem]->zones.values()){
-            lpl.push_back(pi);
+void SPRSpectrumGraphicsWidget::clearPorogsMovedItems(){
+    if(porogsMoved){
+        for(int index=0; index<graphItems.size(); index++){
+            foreach(QwtPlotItem *pi, graphItems[index]->zones.values()){
+                porogsMoved->remoteItem(pi);
+            }
         }
-        pm->setMovedItems(lpl);
+    }
+}
+
+void SPRSpectrumGraphicsWidget::setPorogsMovedItems(){
+    if(porogsMoved){
+        clearPorogsMovedItems();
+        if(currentItem >= 0){
+            QVector<QwtPlotItem*> lpl;
+            foreach(QwtPlotItem* pi, graphItems[currentItem]->zones.values()){
+                lpl.push_back(pi);
+            }
+            porogsMoved->addMovedItems(lpl);
+        }
     }
 }
 
@@ -133,13 +147,65 @@ void SPRSpectrumGraphicsWidget::setGraphicsMode(const SPRViewGraphicsMode &value
     }
 }
 
+SPRPorogsMoved *SPRSpectrumGraphicsWidget::getPorogsMoved() const
+{
+    return porogsMoved;
+}
+
+void SPRSpectrumGraphicsWidget::setPorogsMoved(SPRPorogsMoved *value)
+{
+    porogsMoved = value;
+}
+
+bool SPRSpectrumGraphicsWidget::getEnableChangeTypeSet() const
+{
+    return enableChangeTypeSet;
+}
+
+void SPRSpectrumGraphicsWidget::setEnableChangeTypeSet(bool value)
+{
+    enableChangeTypeSet = value;
+}
+
+bool SPRSpectrumGraphicsWidget::getWithLegend() const
+{
+    return withLegend;
+}
+
+void SPRSpectrumGraphicsWidget::setWithLegend(bool value)
+{
+    withLegend = value;
+
+    if(legend) delete legend;
+    if(withLegend){
+        legend = new QwtLegend();
+    }
+    ui.canvas->insertLegend(legend, QwtPlot::BottomLegend);
+}
+
+QList<int> SPRSpectrumGraphicsWidget::getVisibleThreads() const
+{
+    return visibleThreads;
+}
+
+void SPRSpectrumGraphicsWidget::setVisibleThreads(const QList<int> &value)
+{
+    visibleThreads = value;
+}
+
 SPRSpectrumGraphicsWidget::SPRSpectrumGraphicsWidget(QWidget *parent) :
-    QWidget(parent), model(nullptr)
+    QWidget(parent), model(nullptr), legend(nullptr)
 {
     ui.setupUi(this);
     currentItem = -1;
     allCurrent = false;
     zonesShow = true;
+    currentThreadIndex = -1;
+    currentThread = -1;
+    enableChangeTypeSet = false;
+    withLegend = false;
+    typeSpectrumSet = spectrumsOnly;
+    typeSpectrumSetDef = spectrumsOnly;
 
     ui.canvas->setAxisScale(QwtPlot::Axis::xBottom, 0, 256, 10);
     QPalette pal = ui.canvas->palette();
@@ -153,9 +219,15 @@ SPRSpectrumGraphicsWidget::SPRSpectrumGraphicsWidget(QWidget *parent) :
     zoomer->setRubberBandPen( c );
     zoomer->setTrackerPen( c );
 
-    pm = new SPRPorogsMoved(ui.canvas);
-    connect(pm, SIGNAL(setSelectItem(QwtPlotItem*,MovedItemPosition)), this, SLOT(onCusorOverSelectItem(QwtPlotItem*, MovedItemPosition)));
-    connect(pm, SIGNAL(changeArgumentValue(QwtPlotItem*,double,MovedItemPosition)), this, SLOT(onChangeSelectedItemValue(QwtPlotItem*,double,MovedItemPosition)));
+    porogsMoved = new SPRPorogsMoved(ui.canvas);
+    connect(porogsMoved, SIGNAL(setSelectItem(QwtPlotItem*,MovedItemPosition)), this, SLOT(onCusorOverSelectItem(QwtPlotItem*, MovedItemPosition)));
+    connect(porogsMoved, SIGNAL(changeArgumentValue(QwtPlotItem*,double,MovedItemPosition)), this, SLOT(onChangeSelectedItemValue(QwtPlotItem*,double,MovedItemPosition)));
+    connect(porogsMoved, SIGNAL(dblClickMouseEvent()), this, SLOT(onDblClickMouse()));
+
+    for(int th=0; th<MAX_SPR_MAIN_THREADS; th++){
+        visibleThreads.push_back(th);
+    }
+
 }
 
 void SPRSpectrumGraphicsWidget::onCusorOverSelectItem(QwtPlotItem *item, MovedItemPosition){
@@ -167,23 +239,57 @@ void SPRSpectrumGraphicsWidget::onCusorOverSelectItem(QwtPlotItem *item, MovedIt
 void SPRSpectrumGraphicsWidget::onChangeSelectedItemValue(QwtPlotItem *item, double distance, MovedItemPosition position)
 {
     EnumElements el;
-    if(graphItems[currentItem]->findItemKey(item, &el)){
-        int th = graphItems[currentItem]->thread;
-        SpectorRange *ranges = model->getZonesTableModel()->getElementsRanges(th, el);
-        if(ranges){
-            if(position == movedLeftSide || position == movedAllSides){
-                SPRVariable<uint> *min = ranges->min;
-                uint value = ranges->min->getData() + distance;
-                min->setData(value);
-            }
-            if(position == movedRigthSize || position == movedAllSides){
-                SPRVariable<uint> *max = ranges->max;
-                uint value = ranges->max->getData() + distance;
-                max->setData(value);
+    if(currentItem >=0){
+        if(graphItems[currentItem]->findItemKey(item, &el)){
+            int th = graphItems[currentItem]->thread;
+            SpectorRange *ranges = model->getZonesTableModel()->getElementsRanges(th, el);
+            if(ranges){
+                if(position == movedLeftSide || position == movedAllSides){
+                    SPRVariable<uint> *min = ranges->min;
+                    uint value = ranges->min->getData() + distance;
+                    min->setData(value);
+                }
+                if(position == movedRigthSize || position == movedAllSides){
+                    SPRVariable<uint> *max = ranges->max;
+                    uint value = ranges->max->getData() + distance;
+                    max->setData(value);
+                }
             }
         }
+    } else {
     }
 
+}
+
+void SPRSpectrumGraphicsWidget::onDblClickMouse()
+{
+    if(model){
+        if(enableChangeTypeSet){
+            currentThreadIndex++;
+            if(currentThreadIndex >= visibleItems.size()){
+                currentThreadIndex = -1;
+                currentThread = -1;
+                typeSpectrumSet = typeSpectrumSetDef;
+            } else {
+                currentThread = visibleThreads[currentThreadIndex];
+                typeSpectrumSet = spectrumsMixed;
+            }
+            widgetsShow();
+        }
+    }
+}
+
+void SPRSpectrumGraphicsWidget::clearGraphics(){
+    for(int i=0; i<graphItems.size(); i++){
+        SPRGraphItem *item = graphItems[i];
+        if(porogsMoved){
+            foreach(QwtPlotItem* item, graphItems[i]->zones.values()){
+                porogsMoved->remoteItem(item);
+            }
+        }
+        if(item) delete item;
+    }
+    graphItems.clear();
 }
 
 void SPRSpectrumGraphicsWidget::widgetsShow()
@@ -193,9 +299,10 @@ void SPRSpectrumGraphicsWidget::widgetsShow()
         QList<int> oldVisible = visibleItems;
         int oldCurrent = currentItem;
         onChangeSelectedCheckedItems({}, -1);
-        ui.canvas->detachItems();
-        graphItems.clear();
-        spectrums = model->getSpectrumsModel(typeSpectrumSet);
+//        ui.canvas->detachItems();
+        clearGraphics();
+        spectSource = model->getSpectrumsItemByThread(currentThread, typeSpectrumSet);
+//        spectrums = &spectSource;
         for(int i=0; i<spectrums->size(); i++){
     //        if(i >= graphItems.size()){ // add new sectrum
 //                GraphItem *gi = new GraphItem(spectrums->at(i), ui.canvas);

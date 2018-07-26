@@ -13,7 +13,7 @@
 
 #include "ServerConnect.h"
 
-TCPLogsWigtets *ServerConnect::getLogWidget() const
+TCPLogsWigtets *ServerConnect::getLogWidget()
 {
     return logWidget;
 }
@@ -191,6 +191,8 @@ void ServerConnect::queueComplite(){
                    clearState(spr_state_rentgen_on);
                    clearState(spr_state_separator_on);
                    clearState(spr_state_exposition_on);
+                   clearState(spr_state_rentgen_on_correct);
+//                   clearState(spr_state_rentgen_not_regime);
                 }
                 addState(spr_state_error_connect);
                return;
@@ -211,6 +213,8 @@ void ServerConnect::queueComplite(){
                 clearState(spr_state_rentgen_on);
                 clearState(spr_state_separator_on);
                 clearState(spr_state_exposition_on);
+                clearState(spr_state_rentgen_on_correct);
+//                clearState(spr_state_rentgen_not_regime);
             }
 //            clearState(SPR_STATE_SERVER_CONNECT | SPR_STATE_RENTGEN_ON | SPR_STATE_SEPATOR_ON | SPR_STATE_EXPOSITION_ON);
             addState(spr_state_error_connect);
@@ -257,12 +261,33 @@ void ServerConnect::onReadyRead(){
         } else {
             clearState(spr_state_exposition_on);
         }
+    } else if(com == getren){
+        if(current->noErrors()){
+            QByteArray res = current->getReplayData().right(4);
+            uint mka=0, mkv=0;
+            memcpy(&mkv, res.constData(), 2);
+            memcpy(&mka, res.constData()+2, 2);
+            if(mkv >= 0x0600 && mka >= 0x0600 && mkv < 0x0700 && mka < 0x0700){
+                addState(spr_state_rentgen_on_correct);
+                clearState(spr_state_rentgen_not_regime);
+            } else {
+                clearState(spr_state_rentgen_on_correct);
+                addState(spr_state_rentgen_not_regime);
+            }
+        } else {
+            clearState(spr_state_rentgen_on_correct);
+        }
     } else if(com == offren){
         clearState(spr_state_rentgen_on);
+        clearState(spr_state_rentgen_on_correct);
     } else if(com == offsep){
         clearState(spr_state_separator_on);
+        clearState(spr_state_rentgen_on);
+        clearState((spr_state_exposition_on));
+        clearState(spr_state_rentgen_on_correct);
     } else if(com == expoff){
         clearState((spr_state_exposition_on));
+        clearState(spr_state_rentgen_on_correct);
     }
 
     current->setReplayData(replay);
@@ -332,6 +357,13 @@ void ServerConnect::onServerStateChange(uint32_t _state)
         if((offBits & SPR_STATE_EXPOSITION_ON) == SPR_STATE_EXPOSITION_ON){
             logWidget->onLogsCommand(nullptr, QString(tr("Экспозиция выключена...")));
         }
+        if((onBits & SPR_STATE_RENTGEN_ON_CORRECT) == SPR_STATE_RENTGEN_ON_CORRECT){
+            logWidget->onLogsCommand(nullptr, QString(tr("Рентген в нормальном режиме...")));
+        }
+        if((offBits & SPR_STATE_RENTGEN_ON_CORRECT) == SPR_STATE_RENTGEN_ON_CORRECT){
+            logWidget->onErrorLogsCommand(nullptr, QString(tr("Рентген не вышел на нормальный режим или выключен...")));
+        }
+
     }
     currentState = _state;
 }

@@ -16,7 +16,7 @@ SPRPorogsMoved::SPRPorogsMoved(QwtPlot *plot, QwtPlotItem *_item) : QObject(plot
 
 void SPRPorogsMoved::init(QwtPlot *plot, QVector<QwtPlotItem *> _items)
 {
-    setMovedItems(_items);
+    addMovedItems(_items);
     currentMovedItem = nullptr;
 
 
@@ -29,6 +29,7 @@ void SPRPorogsMoved::init(QwtPlot *plot, QVector<QwtPlotItem *> _items)
     movedCursor.setShape(Qt::SizeAllCursor);
 
     moved_begin = false;
+
     // We want the focus, but no focus rect. The
     // selected point will be highlighted instead.
 
@@ -40,9 +41,28 @@ QVector<QwtPlotItem *> SPRPorogsMoved::getMovedItems() const
     return movedItems;
 }
 
-void SPRPorogsMoved::setMovedItems(const QVector<QwtPlotItem *> &value)
+void SPRPorogsMoved::addMovedItems(const QVector<QwtPlotItem *> &value)
 {
-    movedItems = value;
+    movedItems.append(value);
+}
+
+void SPRPorogsMoved::addMovedItems(QwtPlotItem *value)
+{
+    if(!movedItems.contains(value)){
+        movedItems.push_back(value);
+    }
+}
+
+void SPRPorogsMoved::remoteItem(QwtPlotItem *value)
+{
+    if(movedItems.contains(value)){
+        for(int i=0; i<movedItems.size();i++){
+            if(movedItems[i] == value){
+                movedItems.remove(i);
+                break;
+            }
+        }
+    }
 }
 
 
@@ -265,6 +285,10 @@ void SPRPorogsMoved::toMovedMouse(QPoint pos)
                     } else if(distance.position == movedAllSides){
                         setCursor(movedCursor);
                     }
+                } else {
+                    currentMovedItem = nullptr;
+                    setCursor(defCursor);
+                    currentMovedItemSide = noMovedSides;
                 }
             } else {
                 currentMovedItem = nullptr;

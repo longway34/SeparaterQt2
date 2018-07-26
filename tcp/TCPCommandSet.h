@@ -31,6 +31,9 @@ public:
         replayData = QByteArray(1, '\0');
         addCommand(_vcomm);
     }
+    TCPTimeOutWigget *getTimeOutWidget(){
+        return widget;
+    }
     virtual ~TCPCommandSet();
     
     TCPCommandSet *addCommand(TCPCommand* _comm){

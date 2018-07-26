@@ -41,6 +41,7 @@ protected slots:
 
     // ISPRWidget interface
 protected:
+    QList<int> getSelectedThreads();
 };
 
 #endif // SPRSETTINGSRENTGENAUTOSETWIDGET_H

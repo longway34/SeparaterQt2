@@ -15,7 +15,7 @@
 
 
 typedef enum typeSpectrumsData{
-    spectrumsOnly, spectrumBase, spectrumsAll
+    spectrumsOnly, spectrumBase, spectrumsAll, spectrumsMixed
 } SPRTypeSpectrumSet;
 
 class SPRSpectrumListItemsModel : public ISPRModelData
@@ -42,7 +42,7 @@ protected:
     }
 
     void clearSpectrums(QVector<SPRSpectrumItemModel *> *model);
-    SPRSpectrumItemModel *addSpect(uint8_t *buf, int bufLentgh, uint32_t _timeScope_in_ms, SPRTypeSpectrumSet typeData = spectrumsOnly, int numTh = -1, QString pref="");
+    SPRSpectrumItemModel *addSpect(uint8_t *buf, int bufLentgh, uint32_t _timeScope_in_ms, SPRTypeSpectrumSet typeData = spectrumsOnly, int numTh = -1, QString _formatName="");
     void setSpectrums();
 
     QVector<SPRSpectrumItemModel*> *unionModels(){
@@ -94,12 +94,13 @@ public:
         }
     }
 
+//    SPRSpectrumItemModel *setSpectrumItem(SPRSpectrumItemModel* item, int th, SPRTypeSpectrumSet type = spectrumBase);
 
     SPRSpectrumItemModel *setSpectrumData(int num, QByteArray data, SPRTypeSpectrumSet _type = spectrumBase){
         return setSpectrumData(num, (uint8_t*)data.constData(), data.size(), _type);
     }
 
-    SPRSpectrumItemModel *setSpectrumData(int num, uint8_t *buf, int bufLen, SPRTypeSpectrumSet _type=spectrumBase);
+    SPRSpectrumItemModel *setSpectrumData(int num, uint8_t *buf, int bufLen, SPRTypeSpectrumSet _type=spectrumBase, uint32_t _timeScope_in_msec = 0, QString _formatName = "");
 
     QVector<SPRSpectrumItemModel *> *getSpectrumsModel(SPRTypeSpectrumSet type=spectrumsOnly);
 
@@ -116,6 +117,9 @@ public:
         }
     }
 
+
+    QVector<SPRSpectrumItemModel*> getSpectrumsItemByThread(int thread=-1, SPRTypeSpectrumSet type = spectrumsOnly);
+
     SPRSpectrumItemModel *getSpectrumItem(int index){
         return getItem(index, &spectrumsModel);
     }
@@ -127,17 +131,17 @@ public:
     SPRSpectrumZonesTableModel *getZonesTableModel();
     
     void addSpectrums(QString fName);
-    SPRSpectrumItemModel *addSpectrum(uint8_t *buf, int bufLentgh, double _timeScope, int numTh = -1, QString pref = ""){
-        return addSpect(buf, bufLentgh, _timeScope, spectrumsOnly, numTh, pref);
+    SPRSpectrumItemModel *addSpectrum(uint8_t *buf, int bufLentgh, uint32_t _timeScope_in_msec, int numTh = -1, QString _formatName = ""){
+        return addSpect(buf, bufLentgh, _timeScope_in_msec, spectrumsOnly, numTh, _formatName);
     }
-    SPRSpectrumItemModel *addSpectrum(QByteArray buf, uint32_t _timeScope_in_ms, int numTh = -1, QString pref=""){
-        return addSpect((uint8_t*)buf.constData(), buf.size(), _timeScope_in_ms, spectrumsOnly, numTh, pref);
+    SPRSpectrumItemModel *addSpectrum(QByteArray buf, uint32_t _timeScope_in_ms, int numTh = -1, QString _formatName=""){
+        return addSpect((uint8_t*)buf.constData(), buf.size(), _timeScope_in_ms, spectrumsOnly, numTh, _formatName);
     }
-    SPRSpectrumItemModel *addSpectrumBase(uint8_t *buf, int bufLentgh, double _timeScope, int numTh = -1, QString pref=""){
-        return addSpect(buf, bufLentgh, _timeScope, spectrumBase, numTh, pref);
+    SPRSpectrumItemModel *addSpectrumBase(uint8_t *buf, int bufLentgh, uint32_t  _timeScope, int numTh = -1, QString _formatName=""){
+        return addSpect(buf, bufLentgh, _timeScope, spectrumBase, numTh, _formatName);
     }
-    SPRSpectrumItemModel *addSpectrumBase(QByteArray buf, double _timeScope, int numTh = -1, QString pref=""){
-        return addSpectrumBase((uint8_t*)buf.constData(), buf.size(), _timeScope, numTh, pref);
+    SPRSpectrumItemModel *addSpectrumBase(QByteArray buf, uint32_t  _timeScope, int numTh = -1, QString _formatName=""){
+        return addSpectrumBase((uint8_t*)buf.constData(), buf.size(), _timeScope, numTh, _formatName);
     }
 
     SPRSettingsFormulaModel *getFormulas() const;

@@ -132,7 +132,9 @@ SOURCES += \
     itcpseparatorcommander.cpp \
     tcp/itcpseparatorcommander.cpp \
     sprporogsmoved.cpp \
-    sprsettingsrentgenautosetdialog.cpp
+    sprsettingsrentgenautosetdialog.cpp \
+    tcp/tcpautosetrentgen.cpp \
+    tcp/tcpcommandrguupdown2.cpp
 
 HEADERS += \
     _types.h \
@@ -234,7 +236,9 @@ HEADERS += \
     sprseparatedetailssummarytable.h \
     tcp/itcpseparatorcommander.h \
     sprporogsmoved.h \
-    sprsettingsrentgenautosetdialog.h
+    sprsettingsrentgenautosetdialog.h \
+    tcp/tcpautosetrentgen.h \
+    tcp/tcpcommandrguupdown2.h
 
 FORMS += \
     sprsettingsrentgenmainwidget.ui \

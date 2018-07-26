@@ -41,11 +41,6 @@ QString ISPRModelData::getFileName() const
     return fileName;
 }
 
-ISPRModelData *ISPRModelData::getMainModel()
-{
-    ISPRModelData *res = nullptr;
-    if()
-}
 
 //QList<IModelVariable *> ISPRModelData::getMyVariables() const
 //{

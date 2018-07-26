@@ -10,6 +10,7 @@
 #include <qwt_plot_histogram.h>
 #include <qwt_plot_grid.h>
 #include <qwt_plot_zoomer.h>
+#include <qwt_legend.h>
 
 #include "sprgraphitem.h"
 #include "scrollzoomer.h"
@@ -20,127 +21,22 @@ class SPRSpectrumGraphicsWidget : public QWidget, public ISPRWidget
     Q_OBJECT
 
 public:
-//    typedef struct graphItem{
-//        QwtPlot *plot;
-
-//        QwtPlotCurve *spect;
-//        QMap<EnumElements, QwtPlotHistogram*> zones;
-//        int thread;
-//        SPRSpectrumItemModel *model;
-
-//        graphItem(): spect(nullptr){}
-//        graphItem(QwtPlotCurve *_spect, QwtPlot *_plot): spect(_spect), plot(_plot){}
-//        graphItem(SPRSpectrumItemModel *_model, QwtPlot *_plot): spect(nullptr), plot(_plot){
-//            setModelData(_model);
-//        }
-
-//        void setVisible(bool visible, bool current, bool showZones = true){
-//            foreach(EnumElements el, zones.keys()){
-//                QColor color = model->getZones()->getElementsProperty()->getColor(el);
-//                QString zName = model->getZones()->getElementsProperty()->getSName(el);
-//                color.setAlpha(128);
-//                zones[el]->setBrush(QBrush(color));
-//                zones[el]->setVisible(current && showZones);
-//                zones[el]->setTitle(zName);
-//            }
-//            if(spect){
-//                QColor cpen = model->getSpectrumColor();
-//                if(current){
-//                    QPen pen(cpen, 2);
-//                    spect->setPen(pen);
-//                    cpen.setAlpha(64);
-//                    QBrush brush(cpen);
-//                    spect->setBrush(brush);
-//                } else {
-//                    QPen pen(cpen,0.5);
-//                    spect->setPen(pen);
-//                    cpen.setAlpha(0);
-//                    spect->setBrush(QBrush(cpen));
-//                }
-//                spect->setVisible(visible);
-//            }
-//        }
-
-//        ~graphItem(){
-//            foreach (EnumElements el, model->getZones()->getZones().keys()) {
-//                zones[el]->detach();
-//                delete zones[el];
-//            }
-//            spect->detach();
-//            delete spect;
-//        }
-//    protected:
-//        virtual void setModelData(SPRSpectrumItemModel *_model){
-//            model = _model;
-//            if(model){
-//                spect = new QwtPlotCurve(QString(model->getSpectrumData()->name));
-//                spect->setSamples(model->getSpectrumGraphics());
-//                spect->setPen(QPen(model->getSpectrumColor(), 0.5));
-//                foreach (EnumElements el, model->getZones()->getZones().keys()) {
-//                    zones[el] = new QwtPlotHistogram(model->getZones()->getZones()[el]->element->fName->getData());
-//                    zones[el]->setSamples(model->getZonesGaphics()[el]);
-//                    if(plot){
-//                        zones[el]->attach(plot);
-//                    }
-//                }
-//                if(plot){
-//                    spect->attach(plot);
-//                }
-//            }
-
-//        }
-////        void clear(){
-////            QPolygonF nullPolygon();
-////            spect
-////        }
-//    } GraphItem;
-
-//    class MyZoomer: public QwtPlotZoomer
-//    {
-
-//        GraphItem *current;
-//    public:
-//        MyZoomer( QWidget *canvas ):
-//            QwtPlotZoomer( canvas ), current(nullptr)
-//        {
-//            setTrackerMode( AlwaysOn );
-//        }
-
-//        virtual QwtText trackerTextF( const QPointF &pos ) const
-//        {
-//            QColor bg( Qt::white );
-//            bg.setAlpha( 200 );
-//            QwtText nText;
-//            if(current){
-//                int x = pos.toPoint().rx(); int y=pos.toPoint().ry();
-//                size_t size = current->spect->dataSize();
-//                if(x>=0 && x<current->spect->dataSize()){
-//                    nText = QString(tr("%1 (%2ch : %3)")).
-//                                  arg(current->model->getSpectrumName()).
-//                                  arg(QString::number(x)).
-//                                  arg(QString::number(current->spect->sample(x).toPoint().ry()));
-//                }
-//            } else {
-//                nText = QwtPlotZoomer::trackerTextF( pos );
-//            }
-////            QwtText text = QwtPlotZoomer::trackerTextF( pos );
-////            text.setBackgroundBrush( QBrush( bg ) );
-//            nText.setBackgroundBrush(QBrush(bg));
-//            return nText;
-//        }
-//        void setCurrent(GraphItem *value){current = value;}
-//    };
 
     SPRSpectrumListItemsModel *model;
     QVector<SPRSpectrumItemModel*> *spectrums;
+    QVector<SPRSpectrumItemModel*> spectSource;
     QVector<SPRGraphItem*> graphItems;
 
     SPRViewGraphicsMode graphicsMode;
 
+    int currentThreadIndex;
+    int currentThread;
 //    MyZoomer *zoomer;
 
     ScrollZoomer *zoomer;
-    SPRPorogsMoved *pm;
+    SPRPorogsMoved *porogsMoved;
+
+    QwtLegend *legend;
 
     int getGraphItemNumber(SPRSpectrumItemModel* _mod){
         int ret = -1;
@@ -155,24 +51,30 @@ public:
 
 
     QList<int> visibleItems;
+    QList<int> visibleThreads;
+
     int currentItem;
     bool allCurrent;
     bool zonesShow;
+    bool enableChangeTypeSet;
+    bool withLegend;
+
 
     SPRTypeSpectrumSet typeSpectrumSet;
+    SPRTypeSpectrumSet typeSpectrumSetDef;
 
 public:
     explicit SPRSpectrumGraphicsWidget(QWidget *parent = 0);
+    Ui::SPRSpectrumGraphicsWidget ui;
 
 private:
-    Ui::SPRSpectrumGraphicsWidget ui;
 
     // ISPRWidget interface
 public:
 
 
     virtual ISPRModelData *getModelData(){return model;}
-    void setModelData(SPRSpectrumListItemsModel *value, SPRTypeSpectrumSet typeSpectrumSet, bool _zonesShow);
+    void setModelData(SPRSpectrumListItemsModel *value, SPRTypeSpectrumSet typeSpectrumSet, bool _zonesShow, bool _enableChangeTypeSet = false);
     void setVisibleAll(){
         visibleItems.clear();
         for(int i=0; i<spectrums->size(); i++){
@@ -187,6 +89,18 @@ public:
     SPRViewGraphicsMode getGraphicsMode() const;
     void setGraphicsMode(const SPRViewGraphicsMode &value);
 
+    SPRPorogsMoved *getPorogsMoved() const;
+    void setPorogsMoved(SPRPorogsMoved *value);
+
+    bool getEnableChangeTypeSet() const;
+    void setEnableChangeTypeSet(bool value);
+
+    bool getWithLegend() const;
+    void setWithLegend(bool value);
+
+    QList<int> getVisibleThreads() const;
+    void setVisibleThreads(const QList<int> &value);
+
 public slots:
     virtual void widgetsShow();
     void onChangeSelectedCheckedItems(QList<int> checked, int current);
@@ -199,9 +113,12 @@ public slots:
     void onChangeSelectedCheckedItems(QList<SPRSpectrumItemModel *> checked, SPRSpectrumItemModel *current);
 protected:
     void setPorogsMovedItems();
+    void clearGraphics();
+    void clearPorogsMovedItems();
 protected slots:
     void onCusorOverSelectItem(QwtPlotItem *item, MovedItemPosition);
     void onChangeSelectedItemValue(QwtPlotItem *item, double distance, MovedItemPosition position);
+    void onDblClickMouse();
 };
 
 #endif // SPRSPECTRUMGRAPHICSWIDGET_H

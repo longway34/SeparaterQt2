@@ -42,7 +42,9 @@ public:
     virtual bool eventFilter(QObject *object, QEvent * event);
 
     QVector<QwtPlotItem *> getMovedItems() const;
-    void setMovedItems(const QVector<QwtPlotItem *> &value);
+    void addMovedItems(const QVector<QwtPlotItem *> &value);
+    void addMovedItems(QwtPlotItem *value);
+    void remoteItem(QwtPlotItem *value);
 
 private:
     //    virtual void select( const QPoint & );
