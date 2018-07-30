@@ -134,7 +134,7 @@ public:
     }
     virtual void setReplayData(QByteArray replayData)=0;
     virtual QByteArray getReplayData() = 0;
-    virtual void setSendData(QByteArray sendData)=0;
+//    virtual void addSendData(QByteArray sendData, EnumCommands)=0;
     virtual QByteArray getSendData()=0;
     virtual int getErrors()=0;
     virtual bool noErrors() = 0;

@@ -25,7 +25,7 @@ class TCPSeparateGo : public TCPCommandSet
     TCPCommand *getseparCommand;
 public:
     TCPSeparateGo();
-    TCPSeparateGo(TCPLogsWigtets *log=nullptr);
+    TCPSeparateGo(SPRMainModel *_model, TCPLogsWigtets *log=nullptr);
 
     SPRMainModel *getModel() const;
     void setModel(SPRMainModel *value);

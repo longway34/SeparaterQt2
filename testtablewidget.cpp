@@ -56,7 +56,7 @@ ISPRModelData *testTableWidget::setModelData(SPRMainModel *_model){
 //        spectrumsBaseModel = new SPRSpectrumListItemsModel(_model->getSpectrumZonesTableModel(), _model->getSettingsFormulaModel(),_model->getSettingsMainModel()->getThreads(), _model->getSettingsMainModel()->getSpectrumFileName());
 //        kSpectrumsModel = new SPRSpectrumListItemsModel(_model->getSpectrumZonesTableModel(), _model->getSettingsFormulaModel(),_model->getSettingsMainModel()->getThreads(), _model->getSettingsMainModel()->getSpectrumFileName(), _model->getSettingsControlModel()->controlArea);
         kSpectrumsModel = new SPRSpectrumListItemsModel(_model->getSpectrumZonesTableModel(), _model->getSettingsFormulaModel(),_model->getSettingsMainModel()->getThreads(), nullptr, _model->getSettingsControlModel()->controlArea);
-        connect(kSpectrumsModel, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanged(IModelVariable*)));
+        connect(kSpectrumsModel, SIGNAL(modelChanget(IModelVariable*)), ui.kSpertGraphic, SLOT(onModelChanged(IModelVariable*)));
 //        separateModel = new SPRSeparateModel(mainModel->getDoc());
 //        separateModel->setModelData(_model);
         separateModel = mainModel->getSeparateModel();
@@ -86,10 +86,12 @@ ISPRModelData *testTableWidget::setModelData(SPRMainModel *_model){
 //        getSpectrumsSetCommand = new TCPCommandGetSpectrums(mainModel->getServer(), ui.towidget, mainModel, 5);
 //        connect(getSpectrumsSetCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
 //        connect(getSpectrumsSetCommand, SIGNAL(rentgenNotReady(TCPCommand*)), this, SLOT(onCommandError(TCPCommand*)));
+        QList<uint8_t> lth;
+        for(uint8_t th=0; th<mainModel->getThreads()->getData(); th++) lth << th;
 
 
-        getGistogramm = new TCPGetSpectrumsGistogramms(mainModel->getServer(), getgist, mainModel, towidget, getLogWidget());
-        getKSpectrums = new TCPGetSpectrumsGistogramms(mainModel->getServer(), getkspk, mainModel, towidget, getLogWidget());
+        getGistogramm = new TCPGetSpectrumsGistogramms(mainModel->getServer(), getgist, mainModel, 5, lth, towidget, getLogWidget());
+        getKSpectrums = new TCPGetSpectrumsGistogramms(mainModel->getServer(), getkspk, mainModel, 5, lth, towidget, getLogWidget());
 
 
         connect(getGistogramm, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
@@ -99,8 +101,8 @@ ISPRModelData *testTableWidget::setModelData(SPRMainModel *_model){
 //        connect(startSeparate, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
 //        connect(startSeparate, SIGNAL(errorCommand(TCPCommand*)), this, SLOT(onCommandError(TCPCommand*)));
 
-          getBaseSpectrumCommand = new TCPGetSpectrumsGistogramms(mainModel->getServer(), getspk, mainModel, towidget, getLogWidget());
-          getBaseSpectrumCommand->setThreadTimer(MAX_SPR_MAIN_THREADS, 5);
+          getBaseSpectrumCommand = new TCPGetSpectrumsGistogramms(mainModel->getServer(), getspk, mainModel, 5, lth, towidget, getLogWidget());
+          getBaseSpectrumCommand->setThreadTimer(5, lth);
 
 //        getBaseSpectrumCommand = startSeparate->getGetBaseSpectrumCommand();
         connect(getBaseSpectrumCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
@@ -274,7 +276,7 @@ void testTableWidget::onGetButtomsClick(bool)
 //            return;
 //        }
         if(sender() == ui.bSetSepar){
-            setSeparate->setSendData(separateModel->toByteArray(mainModel, &separate_error));
+            setSeparate->addSendData(separateModel->toByteArray(mainModel, &separate_error));
             setSeparate->send(mainModel->getServer());
         }
         if(sender() == ui.bStartSepar){
@@ -293,7 +295,7 @@ void testTableWidget::onKSpectrumReady(TCPGetSpectrumsGistogramms *_command){
         QByteArray res = _command->getKSpectrumData(th);
         uint8_t *spec = (uint8_t*)(res.left(DEF_SPECTRUM_DATA_LENGTH_BYTE).constData());
 
-        SPRSpectrumItemModel *item = kSpectrumsModel->addSpectrum(spec, DEF_SPECTRUM_DATA_LENGTH_BYTE,_command->getKSpectrumTime(th));
+        SPRSpectrumItemModel *item = kSpectrumsModel->addSpectrum(spec, DEF_SPECTRUM_DATA_LENGTH_BYTE,_command->getKSpectrumTime(th), th, QString("kspect %1"));
         uint32_t t = _command->getKSpectrumTime(th);
         item->setTimeScope(t);
         if(kSpectrumsModel){

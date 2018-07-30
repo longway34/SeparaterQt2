@@ -45,7 +45,7 @@ void TCPStartSopTestIMSCommand::go(TCPCommand *_command)
         param.append(QByteArray::fromRawData((char*)&ch, sizeof(ch)));
         param.append(QByteArray::fromRawData((char*)&freq, sizeof(freq)));
         param.append(QByteArray::fromRawData((char*)&delay, sizeof(delay)));
-        findCommands(testim).first()->setSendData(param);
+        findCommands(testim).first()->addSendData(param);
 
         TCPTimeOutCommand* to = (TCPTimeOutCommand*)findCommands(timeoutcommand).first();
         to->setTimeOut(timeWork * 1000);

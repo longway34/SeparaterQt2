@@ -5,6 +5,8 @@
 
 #include "models/sprmainmodel.h"
 #include "tcp/tcpautosetrentgen.h"
+#include "firstcollumn2.h"
+
 #include "isprwidget.h"
 
 #include "qwt_legend.h"
@@ -45,11 +47,13 @@ public:
     virtual ISPRModelData *getModelData();
     virtual ISPRModelData *setModelData(ISPRModelData *value);
 
+    int currentViewThread;
 
     QPen defPen, selPen;
 
     QList<int> getThreads();
     void setThreads(QList<int> &value);
+    void setGraphicTitle();
 
 
 public slots:
@@ -64,6 +68,7 @@ private:
     QByteArray codesToByteArray(uint16_t *table);
 protected slots:
     virtual void onModelChanget(IModelVariable *source);
+    void onDblClickMouseEvent();
 };
 
 #endif // SPRSETTINGSRENTGENAUTOSETDIALOG_H

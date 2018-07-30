@@ -55,24 +55,25 @@ public:
 public slots:
     void widgetsShow();
     void onChangeSpectColor(int row);
-    void onChangeCheckedSpectrum(QList<int> checked, int current){
-        if(sender() == ui.tListSpectrumItem){
-            if((current >= 0 && current < ui.tListSpectrumItem->rowCount()) || checked.size() > 0)
-                onSpectSpectrumTableClick(current, 0, ui.tListSpectrumItem);
-            return;
-        } else if(sender() == ui.tListBasedSpectrumItem){
-            if((current >= 0 && current < ui.tListBasedSpectrumItem->rowCount()) || checked.size() > 0)
-                onSpectSpectrumTableClick(current, 0, ui.tListBasedSpectrumItem);
-            return;
-        }
-    }
+//    void onChangeCheckedSpectrum(QList<int> checked, int current){
+//        if(sender() == ui.tListSpectrumItem){
+//            if((current >= 0 && current < ui.tListSpectrumItem->rowCount()) || checked.size() > 0)
+//                onSpectSpectrumTableClick(current, 0, ui.tListSpectrumItem);
+//            return;
+//        } else if(sender() == ui.tListBasedSpectrumItem){
+//            if((current >= 0 && current < ui.tListBasedSpectrumItem->rowCount()) || checked.size() > 0)
+//                onSpectSpectrumTableClick(current, 0, ui.tListBasedSpectrumItem);
+//            return;
+//        }
+//    }
 
     void onClickedBooton(bool value);
     void onGetSpectrums(bool);
     void onCompliteCommand(TCPCommand *command);
     void onErrorsCommand(TCPCommand *command);
-    void onSpectSpectrumTableClick(int row, int col, SPRSpectrumListTable *_sender=nullptr);
-    void onSpectSpectrumTableClick2(int row, SPRSpectrumListTable *_sender);
+    void onSpectSpectrumTableClick(QList<SPRSpectrumItemModel *>, SPRSpectrumItemModel *_current);
+    void onSpectSpectrumTableClick(int row, int);
+//    void onSpectSpectrumTableClick2(int row, SPRSpectrumListTable *_sender);
     void onChangeSpectrumsFileName();
 private:
     Ui::SPRSpectrumListTableWidget ui;

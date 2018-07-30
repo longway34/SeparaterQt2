@@ -34,13 +34,12 @@ public:
     }
     virtual ~TCPCommand();
     
-    virtual void clear(){
-        for(int i=0; i<commandSet.size(); i++){
-            commandSet[i]->clear();
-            delete commandSet[i];
-        }
-        commandSet.clear();
-    }
+    virtual TCPCommand *setSendData(QByteArray _sendData, EnumCommands _command=lastcommand);
+    virtual TCPCommand *setSendData(void *data, uint len, EnumCommands _command=lastcommand);
+    virtual TCPCommand *addSendData(QByteArray sendData, EnumCommands _command=lastcommand);
+    virtual TCPCommand *addSendData(void *data, uint len, EnumCommands _command=lastcommand);
+
+    virtual void clear();
 
     virtual void setReplayData(QByteArray replayData){
         this->replayData = replayData;
@@ -61,15 +60,6 @@ public:
         return replayData.size();
     }
 
-    virtual void setSendData(QByteArray sendData) {
-        this->sendData = sendData;
-    }
-
-    virtual void setSendData(void *data, uint len){
-        QByteArray ba;
-        ba.append((char*)data, len);
-        setSendData(ba);
-    }
 
     QByteArray getSendData() {
         return sendData;
@@ -153,6 +143,7 @@ signals:
     // ITCPCommand interface
 public:
     virtual bool isCommandSet();
+    virtual bool isRentgenReady(QByteArray result, uint16_t *mkv=nullptr, uint16_t *mka=nullptr, uint8_t *err=nullptr);
 };
 
 #endif /* TCPCOMMAND_H */

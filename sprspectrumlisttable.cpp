@@ -7,11 +7,16 @@ void SPRSpectrumListTable::connectFirstTable(FirstCollumn2 *fc){
     connect(fc, SIGNAL(selectedRow(bool,int)), this, SLOT(onRowSelect(bool,int)));
     connect(fc, SIGNAL(deleteRow(int)), this, SLOT(onDeleteRow(int)));
     connect(this, SIGNAL(doShow()), fc, SLOT(widgetsShow()));
-
 }
 
-void SPRSpectrumListTable::onRowSelect(bool select, int row){
-    emit rowSelectedChecked(getSelectedItemsNumbers(), row);
+void SPRSpectrumListTable::onRowSelect(bool checked, int row){
+    if(checked){
+        storeCurrentItem = spectrums->at(row);
+
+        setCurrentCell(row, columnCount()-1);
+        currentItem()->setSelected(true);
+    }
+    emit rowSelectedChecked3(getSelectedItems(), spectrums->at(row));
 }
 void SPRSpectrumListTable::onDeleteRow(int row){
 //    if(typeData == spectrumsOnly){
@@ -20,10 +25,12 @@ void SPRSpectrumListTable::onDeleteRow(int row){
 //    }
     int vectorSize = model->getSpectrumsModel(typeData)->size();
     if(row >= 0 && row < vectorSize){
-        model->removeSpectrum(row, typeData);
+        model->removeSpectrum(spectrums->at(row));
+        if(spectrums->at(row) == storeCurrentItem){
+            storeCurrentItem = nullptr;
+        }
         removeRow(row);
-        storeCheckedRows = getSelectedItemsNumbers();
-        storeCurrentRow = currentRow();
+        storeCheckedItems = getSelectedItems();
     }
 //    while(rowCount()>0) removeRow(0);
 //    widgetsShow();
@@ -156,10 +163,8 @@ SPRSpectrumListTable::SPRSpectrumListTable(QWidget *parent):
 }
 
 void SPRSpectrumListTable::onCurrentPosChanged(int row, int col){
-//    SPRSpectrumItemModel *curr = model->getSpectrumItem(row, typeData);
-//    if(curr){
-        emit rowSelectedChecked2(row, this);
-//    }
+    storeCurrentItem = model->getSpectrumItem(row, typeData);
+    emit rowSelectedChecked3(getSelectedItems(), spectrums->at(row));
 }
 
 ISPRModelData *SPRSpectrumListTable::setModelData(SPRSpectrumListItemsModel *_model, SPRTypeSpectrumSet _type)
@@ -239,8 +244,9 @@ void SPRSpectrumListTable::widgetsShow()
 
     if(model){
 
-        storeCheckedRows = getSelectedItemsNumbers();
-        storeCurrentRow = currentRow();
+        spectrums = model->getSpectrumsModel(typeData);
+        storeCheckedItems = getSelectedItems();
+//        storeCurrentItem = model->getSpectrumItem(currentRow(), typeData);
 
         while(rowCount() > 0) this->removeRow(0);
 
@@ -254,7 +260,7 @@ void SPRSpectrumListTable::widgetsShow()
             FirstCollumn2 *fc = ((FirstCollumn2*)cellWidget(row, 0));
             QColor col(*mod->red, *mod->green, *mod->blue);
             fc->setColor(col); fc->setText(QString::number(row));
-            if(storeCheckedRows.contains(row)){
+            if(storeCheckedItems.contains(spectrums->at(row))){
                 fc->setSelect(true);
             }
     //        fc->setData(row, col);
@@ -286,10 +292,24 @@ void SPRSpectrumListTable::widgetsShow()
     ////        fc->ui.cbSelect->setChecked(true);
     //        fc->setSelect(true);
     //    }
-        if(storeCurrentRow >= 0 && storeCurrentRow < rowCount()){
-            setCurrentCell(storeCurrentRow, 4);
+        if(storeCurrentItem){
+            int row = findRowByItemModel(storeCurrentItem);
+            if(row >= 0 && row < rowCount()){
+                setCurrentCell(row, columnCount()-1);
+                currentItem()->setSelected(true);
+            }
         }
     }
+}
+
+int SPRSpectrumListTable::findRowByItemModel(SPRSpectrumItemModel* mod){
+    int res =-1;
+    for(int row=0; row<rowCount(); row++){
+        if(model->getSpectrumItem(row, typeData) == mod){
+            return row;
+        }
+    }
+    return -1;
 }
 
 void SPRSpectrumListTable::viewChange(QColor color)
@@ -302,7 +322,7 @@ void SPRSpectrumListTable::viewChange(QColor color)
 //        *spectrums->at(row)->getSpectrumData()->red = color.red();
 //        *spectrums->at(row)->getSpectrumData()->green = color.green();
 //        *spectrums->at(row)->getSpectrumData()->blue = color.blue();
-//        emit rowChangeColor(row);
+        emit itemChangeColor(spectrums->at(row), color);
         widgetsShow();
     }
 }
@@ -333,7 +353,7 @@ void SPRSpectrumListTable::showCols(bool)
 
 void SPRSpectrumListTable::viewChange(int num)
 {
-    emit rowSelectedChecked(getSelectedItemsNumbers(), this->currentRow());
+    emit rowSelectedChecked3(getSelectedItems(), spectrums->at(num));
 }
 
 

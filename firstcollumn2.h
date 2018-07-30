@@ -17,7 +17,7 @@ class FirstCollumn2 : public QWidget
     bool textVisible;
     bool colorVisible;
 
-    QString text;
+    QString textValue;
     QColor color;
 
     SPRQColorVariable *vcolor;
@@ -27,39 +27,17 @@ class FirstCollumn2 : public QWidget
 
 public:
 
-    explicit FirstCollumn2(QWidget *parent = 0) :
-        QWidget(parent), vcolor(nullptr), selectVisible(true), deleteVisible(true), textVisible(true), colorVisible(true), text("99"), color(QColor(Qt::black)), row(-1)
-    {
-        ui.setupUi(this);
+    explicit FirstCollumn2(QWidget *parent = 0);
+    explicit FirstCollumn2(QString _textTitle, bool _colorVisible = true, QColor _color = QColor(Qt::white), bool _selectVisible = true, bool _deleteVisible = true, QWidget *parent = nullptr);
 
-        connect(ui.bColor, SIGNAL(clicked(bool)), this, SLOT(onColorButtomClick(bool)));
-        connect(ui.bDelete, SIGNAL(clicked(bool)), this, SLOT(onDeleteButtomClick(bool)));
-        connect(ui.cbSelect, SIGNAL(toggled(bool)), this, SLOT(onSelectedChange(bool)));
-    }
-
-    void setColor(QColor _color){
-        if(_color.isValid()){
-            if(vcolor){
-                vcolor->setData(_color);
-            }
-            color = _color;
-        }
-    }
-    QColor getColor() {
-        if(vcolor){
-            return vcolor->getData();
-        }
-        return color;
-    }
-    QString getText() {return text;}
+    void setColor(QColor _color);
+    QColor getColor();
+    QString getText() {return textValue;}
 
     bool isSelect(){return ui.cbSelect->isChecked();}
     void setSelect(bool _value){ui.cbSelect->setChecked(_value);}
 
-    void setText(QString _text){
-        text = _text;
-        widgetsShow();
-    }
+    void setText(QString _textTitle);
     void setSelectVisible(bool value);
 
     void setDeleteVisible(bool value);
@@ -69,19 +47,18 @@ public:
 
     void setColorVariable(SPRQColorVariable *value);
 
+    bool getColorVisible() const;
+    void setColorVisible(bool value);
+
 private:
     Ui::FirstCollumn2 ui;
 
 public slots:
+
+    virtual QSize sizeHint() const;
+
     void widgetsShow();
-    void onColorButtomClick(bool){
-        QColor newColor = QColorDialog::getColor(color, this);
-        if(newColor.isValid() && newColor != color){
-            setColor(newColor);
-            if(!vcolor)
-                emit colorChanged(newColor);
-        }
-    }
+    void onColorButtomClick(bool);
 
     void onDeleteButtomClick(bool){
         emit deleteRow(getRow());

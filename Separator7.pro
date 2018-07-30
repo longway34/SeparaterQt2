@@ -91,7 +91,6 @@ SOURCES += \
     tcp/tcpcommandstoppitatel.cpp \
     models/sprseparatemodel.cpp \
     sprseparatewidget.cpp \
-    tcp/tcpstartstopseparate.cpp \
     tcp/tcpgetspectrumsgistogramms.cpp \
     sprspectrumsmalltable.cpp \
     tcp/tcpteststartseparate.cpp \
@@ -115,14 +114,12 @@ SOURCES += \
     sprspectrumchoisetimedialog.cpp \
     sprdeucodestable.cpp \
     tcp/tcpcommandrentgenonfull.cpp \
-    tcp/tcpcommandseparatoronoff.cpp \
     models/imainmodel.cpp \
     sprrentgenvatable.cpp \
     mainwindow.cpp \
     scrollbar.cpp \
     scrollzoomer.cpp \
     sprgraphitem.cpp \
-    tcp/tcpexpositionoff.cpp \
     tcp/tcpstartseparate2.cpp \
     sprseparategistogrammwidget.cpp \
     sprseparatedetailstable.cpp \
@@ -134,7 +131,9 @@ SOURCES += \
     sprporogsmoved.cpp \
     sprsettingsrentgenautosetdialog.cpp \
     tcp/tcpautosetrentgen.cpp \
-    tcp/tcpcommandrguupdown2.cpp
+    tcp/tcpcommandrguupdown2.cpp \
+    tcp/tcpexpositiononoff.cpp \
+    tcp/tcpcommandseparatoroff.cpp
 
 HEADERS += \
     _types.h \
@@ -195,7 +194,6 @@ HEADERS += \
     tcp/tcpcommandstoppitatel.h \
     models/sprseparatemodel.h \
     sprseparatewidget.h \
-    tcp/tcpstartstopseparate.h \
     tcp/tcpgetspectrumsgistogramms.h \
     sprspectrumsmalltable.h \
     tcp/tcpteststartseparate.h \
@@ -220,14 +218,12 @@ HEADERS += \
     sprspectrumchoisetimedialog.h \
     sprdeucodestable.h \
     tcp/tcpcommandrentgenonfull.h \
-    tcp/tcpcommandseparatoronoff.h \
     models/imainmodel.h \
     sprrentgenvatable.h \
     mainwindow.h \
     scrollbar.h \
     scrollzoomer.h \
     sprgraphitem.h \
-    tcp/tcpexpositionoff.h \
     tcp/tcpstartseparate2.h \
     sprseparategistogrammwidget.h \
     sprseparatedetailstable.h \
@@ -238,7 +234,9 @@ HEADERS += \
     sprporogsmoved.h \
     sprsettingsrentgenautosetdialog.h \
     tcp/tcpautosetrentgen.h \
-    tcp/tcpcommandrguupdown2.h
+    tcp/tcpcommandrguupdown2.h \
+    tcp/tcpexpositiononoff.h \
+    tcp/tcpcommandseparatoroff.h
 
 FORMS += \
     sprsettingsrentgenmainwidget.ui \

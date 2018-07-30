@@ -30,7 +30,7 @@ void TCPTestStopSeparate::go(TCPCommand *_command)
         char ch0 = '\0';
         addCommand(new TCPCommand(offiw));
         addCommand(new TCPCommand(stopsep));
-        TCPCommand *exp = new TCPCommand(expoff); exp->setSendData(&ch0, sizeof(ch0));
+        TCPCommand *exp = new TCPCommand(expoff); exp->addSendData(&ch0, sizeof(ch0));
         addCommand(exp);
         addCommand(new TCPCommand(offren));
         int tOffRentgen = DEF_SPR_RENTGEN_TIME_OFF_RA;

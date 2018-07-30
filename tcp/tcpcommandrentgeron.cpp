@@ -66,15 +66,10 @@ void TCPCommandRentgerOn::go(TCPCommand *_command)
             va.append((char*)&mkv, sizeof(mkv));
             va.append((char*)&mka, sizeof(mka));
 
-            addCommand(new TCPCommand(setren)); // 3
-            findCommands(setren).last()->setSendData(va);
+            addCommand(new TCPCommand(setren))->addSendData(va, lastcommand); // 3
+//            findCommands(setren).last()->addSendData(va);
 
             addCommand(new TCPTimeOutCommand(timeoutcommand, 2000, 5, widget, tr("Включение рентгена."), tr("Установка значений рентгена."))); // 4
-
-            addCommand(new TCPCommand(setudeu)); // 5
-            addCommand(new TCPTimeOutCommand(timeoutcommand, 2000, 5, widget, tr("Включение рентгена."), tr("Установка кодов ДЭУ."))); // 4
-            addCommand(new TCPCommand(setptdeu)); // 7
-            addCommand(new TCPTimeOutCommand(timeoutcommand, 2000, 5, widget, tr("Включение рентгена."), tr("Установка кодов СР."))); // 4
 
             QByteArray deuData;
             QByteArray cpData;
@@ -84,9 +79,17 @@ void TCPCommandRentgerOn::go(TCPCommand *_command)
                 deuData.append((char*)&d, sizeof(d));
                 cpData.append((char*)&cp, sizeof(cp));
             }
-            findCommands(setudeu).last()->setSendData(deuData);
-            findCommands(setptdeu).last()->setSendData(cpData);
+            addCommand(new TCPCommand(setudeu))->addSendData(deuData); // 5
+            addCommand(new TCPTimeOutCommand(timeoutcommand, 2000, 5, widget, tr("Включение рентгена."), tr("Установка кодов ДЭУ."))); // 4
+            addCommand(new TCPCommand(setptdeu))->addSendData(cpData); // 7
+            addCommand(new TCPTimeOutCommand(timeoutcommand, 2000, 5, widget, tr("Включение рентгена."), tr("Установка кодов СР."))); // 4
+
+//            findCommands(setudeu).last()->addSendData(deuData);
+//            findCommands(setptdeu).last()->addSendData(cpData);
         }
+        EnumCommands _name = nocommand;
+        if(_command)
+            _name = _command->getCommand();
         TCPCommandSet::go(_command);
     }
 }

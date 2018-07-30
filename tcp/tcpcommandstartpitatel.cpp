@@ -34,7 +34,7 @@ void TCPCommandStartPitatel::go(TCPCommand *_command)
         }
         uint16_t fq = VEMSBeginCode->getData();
         QByteArray ba; ba.append((char*)(&fq), sizeof(fq));
-        findCommands(setpuw).last()->setSendData(ba);
+        findCommands(setpuw).last()->addSendData(ba);
         commandSet[1]->send(server);
     } else if(num == 1){
         commandSet[2]->send(server);

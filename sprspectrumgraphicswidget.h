@@ -50,14 +50,16 @@ public:
     }
 
 
-    QList<int> visibleItems;
     QList<int> visibleThreads;
 
-    int currentItem;
+    QList<SPRGraphItem*> visibleItems;
+    SPRGraphItem *currentItem;
     bool allCurrent;
     bool zonesShow;
     bool enableChangeTypeSet;
     bool withLegend;
+    bool allVisible;
+
 
 
     SPRTypeSpectrumSet typeSpectrumSet;
@@ -68,18 +70,23 @@ public:
     Ui::SPRSpectrumGraphicsWidget ui;
 
 private:
+    void clearVisibleItems(){
 
+    }
     // ISPRWidget interface
 public:
 
-
     virtual ISPRModelData *getModelData(){return model;}
     void setModelData(SPRSpectrumListItemsModel *value, SPRTypeSpectrumSet typeSpectrumSet, bool _zonesShow, bool _enableChangeTypeSet = false);
-    void setVisibleAll(){
-        visibleItems.clear();
-        for(int i=0; i<spectrums->size(); i++){
-            visibleItems.push_back(i);
-        }
+    void setVisibleAll(bool _allVisible = true){
+        allVisible = _allVisible;
+//        visibleItems.clear();
+//        for(int i=0; i<spectrums->size(); i++){
+//            SPRGraphItem *gr = findGraphItemByModel(spectrums->at(i));
+//            if(gr){
+//                visibleItems.push_back(gr);
+//            }
+//        }
     }
     void setAllCurrent(bool value);
     QwtPlot *getCanvas(){
@@ -101,19 +108,28 @@ public:
     QList<int> getVisibleThreads() const;
     void setVisibleThreads(const QList<int> &value);
 
+    int getCurrentThread() const;
+
+    void setCurrentThread(int value);
+
+    SPRGraphItem *getCurrentItem() const;
+    void setCurrentItem(SPRGraphItem *value);
+    SPRGraphItem *findGraphItemByModel(SPRSpectrumItemModel *model);
+
 public slots:
     virtual void widgetsShow();
-    void onChangeSelectedCheckedItems(QList<int> checked, int current);
+    //    void onChangeSelectedCheckedItems(QList<int> checked, int current);
 
     void setZonesShow(bool value);
     virtual void onModelChanget(IModelVariable *);
+    void onChangeGraphicItemsColor(SPRSpectrumItemModel* _item, QColor _color);
 
     // ISPRWidget interface
 
     void onChangeSelectedCheckedItems(QList<SPRSpectrumItemModel *> checked, SPRSpectrumItemModel *current);
 protected:
     void setPorogsMovedItems();
-    void clearGraphics();
+    void clearGraphics(bool all=false);
     void clearPorogsMovedItems();
 protected slots:
     void onCusorOverSelectItem(QwtPlotItem *item, MovedItemPosition);

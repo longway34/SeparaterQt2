@@ -11,8 +11,8 @@ void TCPSeparateGo::setModel(SPRMainModel *value)
 {
     model = value;
 
-    kspectCommand->setModelData(value);
-    histCommand->setModelData(value);
+//    kspectCommand->setModelData(value);
+//    histCommand->setModelData(value);
 //    QVector<TCPCommand*> vcomm= findCommands(setGetSpectrumsGistorfamms);
 //    for(int i=0; i<vcomm.size();i++){
 //        ((TCPGetSpectrumsGistogramms*)vcomm[i])->setThreadTimer(model->getSettingsMainModel()->getThreads()->getData());
@@ -47,8 +47,8 @@ TCPSeparateGo::TCPSeparateGo()
 
 }
 
-TCPSeparateGo::TCPSeparateGo(TCPLogsWigtets *log):
-    TCPCommandSet(nullptr, nullptr, {}), logWidget(log), model(nullptr)
+TCPSeparateGo::TCPSeparateGo(SPRMainModel *_model, TCPLogsWigtets *log):
+    TCPCommandSet(nullptr, nullptr, {}), logWidget(log), model(_model)
 {
 
     command = setSeparateGo;
@@ -59,9 +59,12 @@ TCPSeparateGo::TCPSeparateGo(TCPLogsWigtets *log):
     getseparCommand = new TCPCommand(getsepar);
     getseparCommand->setLogWidget(getLogWidget());
     addCommand(getseparCommand);
-    kspectCommand = new TCPGetSpectrumsGistogramms(nullptr, getkspk, nullptr, nullptr, getLogWidget());
+    QList<uint8_t> lth;
+    for(uint8_t th=0; th<model->getThreads()->getData(); th++) lth << th;
+
+    kspectCommand = new TCPGetSpectrumsGistogramms(nullptr, getkspk, nullptr, 1, lth, getTimeOutWidget(), getLogWidget());
     addCommand(kspectCommand);
-    histCommand = new TCPGetSpectrumsGistogramms(nullptr, getgist, nullptr, nullptr, getLogWidget());
+    histCommand = new TCPGetSpectrumsGistogramms(nullptr, getgist, nullptr, 1, lth, getTimeOutWidget(), getLogWidget());
     addCommand(histCommand);
 //    addCommand(new TCPCommand(nocommand));
 }

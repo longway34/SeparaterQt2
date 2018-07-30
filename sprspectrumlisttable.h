@@ -22,8 +22,8 @@ protected:
 
     QVector<SPRSpectrumItemModel*> *spectrums;
 
-    QList<int> storeCheckedRows;
-    int storeCurrentRow;
+    QList<SPRSpectrumItemModel*> storeCheckedItems;
+    SPRSpectrumItemModel* storeCurrentItem;
 
 //    static uint keyCount;
 
@@ -47,7 +47,7 @@ public:
         return model;
     }
 
-    ISPRModelData *getModelData(int index){
+    SPRSpectrumItemModel *getModelData(int index){
         if(index < spectrums->size()){
             return spectrums->at(index);
         } else {
@@ -56,6 +56,7 @@ public:
     }
 //    SPRSpectrumItemModel *addSpectrum(uint8_t *_inp, int _bufSize = DEF_SPECTRUM_DATA_BUF_LENGTH, int _thread = -1);
 //    ISPRModelData *setZonesTableModel(SPRSpectrumZonesTableModel *ranges);
+
 
     QList<int> getSelectedItemsNumbers(){
         QList<int> res;
@@ -122,13 +123,15 @@ public slots:
     void showCols(bool);
     void onCurrentPosChanged(int row, int col);
     void onDeleteRow(int row);
-    void onRowSelect(bool select, int row);
+    void onRowSelect(bool checked, int row);
     virtual void onModelChanget(IModelVariable *);
 signals:
     void doShow();
     void rowSelectedChecked(QList<int>, int);
+    void rowSelectedChecked3(QList<SPRSpectrumItemModel*>, SPRSpectrumItemModel*);
     void rowSelectedChecked2(int, SPRSpectrumListTable*);
-    void rowChangeColor(int num);
+    void itemChangeColor(int num);
+    void itemChangeColor(SPRSpectrumItemModel*, QColor);
     void rowDeleted(int row);
 
     // ISPRWidget interface
@@ -138,6 +141,7 @@ public:
     SPRTypeSpectrumSet getTypeData() const;
 
 protected:
+    int findRowByItemModel(SPRSpectrumItemModel *mod);
 };
 
 

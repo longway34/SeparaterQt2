@@ -83,6 +83,7 @@ class SPRSpectrumItemModel : public ISPRModelData
     QPolygonF spectGraphData;
     QMap<EnumElements, QVector<QwtIntervalSample>> zonesGraphData;
 
+    QString hashKeyDebug;
 
     SPRViewGraphicsMode graphicMode;
     double scaleMul;
@@ -134,7 +135,8 @@ public:
     }
 
     void setSpectrumName(QString name){
-        memcpy(spectrumData.name, name.toStdString().c_str(), name.length());
+        setObjectName(name);
+        memcpy(spectrumData.name, name.toUtf8().constData(), name.toUtf8().size());
 //        emit modelChanget(this);
     }
 

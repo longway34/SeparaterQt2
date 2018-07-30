@@ -113,18 +113,41 @@ void ScrollZoomer::rescale()
     updateScrollBars();
 }
 
+QwtText ScrollZoomer::trackerTextF(const QPointF &pos) const
+{
+    QColor bg( Qt::white );
+    bg.setAlpha( 200 );
+    QwtText nText;
+    if(*current){
+        int x = pos.toPoint().rx(); int y=pos.toPoint().ry();
+        size_t size = (*current)->spect->dataSize();
+        if(x>=0 && x<(*current)->spect->dataSize()){
+            nText = QString("%1 (%2ch : %3)").
+                    arg((*current)->model->getSpectrumName()).
+                    arg(QString::number(x)).
+                    arg(QString::number((*current)->spect->sample(x).toPoint().ry()));
+        }
+    } else {
+        nText = QwtPlotZoomer::trackerTextF( pos );
+    }
+    //            QwtText text = QwtPlotZoomer::trackerTextF( pos );
+    //            text.setBackgroundBrush( QBrush( bg ) );
+    nText.setBackgroundBrush(QBrush(bg));
+    return nText;
+}
+
 ScrollBar *ScrollZoomer::scrollBar( Qt::Orientation orientation )
 {
     ScrollBar *&sb = ( orientation == Qt::Vertical )
-        ? d_vScrollData->scrollBar : d_hScrollData->scrollBar;
+            ? d_vScrollData->scrollBar : d_hScrollData->scrollBar;
 
     if ( sb == NULL )
     {
         sb = new ScrollBar( orientation, canvas() );
         sb->hide();
         connect( sb,
-            SIGNAL( valueChanged( Qt::Orientation, double, double ) ),
-            SLOT( scrollBarMoved( Qt::Orientation, double, double ) ) );
+                 SIGNAL( valueChanged( Qt::Orientation, double, double ) ),
+                 SLOT( scrollBarMoved( Qt::Orientation, double, double ) ) );
     }
     return sb;
 }

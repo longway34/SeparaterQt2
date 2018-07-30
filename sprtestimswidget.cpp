@@ -66,7 +66,7 @@ SPRTestIMSWidget::SPRTestIMSWidget(QWidget *parent) :
             new TCPCommand(offren)
                                           });
     char ch0 = '\0';
-    rentgenOffCommand->findCommands(expoff).first()->setSendData(&ch0, sizeof(ch0));
+    rentgenOffCommand->findCommands(expoff).first()->addSendData(&ch0, sizeof(ch0));
 
     connect(rentgenOffCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
     separatorOffCommand = new TCPTestStopSeparate(towidget);
@@ -86,7 +86,7 @@ SPRTestIMSWidget::SPRTestIMSWidget(QWidget *parent) :
 
     thermoReadStateCommand = new TCPCommandSet(nullptr, towidget, {});
     char ct0[] = {0, 0, 0, 0};
-    TCPCommand *stemp = new TCPCommand(settemp); stemp->setSendData(ct0, 4);
+    TCPCommand *stemp = new TCPCommand(settemp); stemp->addSendData(ct0, 4);
     thermoReadStateCommand->addCommand(stemp);
     thermoReadStateCommand->addCommand(new TCPTimeOutCommand(timeoutcommand, 2000));
     thermoReadStateCommand->addCommand(new TCPCommand(gettemp));
@@ -99,7 +99,7 @@ SPRTestIMSWidget::SPRTestIMSWidget(QWidget *parent) :
 //    QDataStream ds(&term, QIODevice::WriteOnly);
 //    ds <<  min << max;
     term.append((char*)&min, sizeof(min)); term.append((char*)&max, sizeof(max));
-    TCPCommand *sthermo = new TCPCommand(settemp); sthermo->setSendData(term);
+    TCPCommand *sthermo = new TCPCommand(settemp); sthermo->addSendData(term);
     thermoWriteStateCommand->addCommand(sthermo)->addCommand(new TCPTimeOutCommand(timeoutcommand, 2000))->addCommand(new TCPCommand(gettemp))->addCommand(new TCPCommand(getstate));
     connect(thermoWriteStateCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
 
@@ -172,7 +172,7 @@ void SPRTestIMSWidget::onChangeValue(double _val){
             uint16_t code = round(_val) * 20;
             model->getSettingsControlModel()->VEMSBeginCode->setData(code);
 
-            commandChangePersentPitatel->setSendData(&code, sizeof(code));
+            commandChangePersentPitatel->addSendData(&code, sizeof(code));
             commandChangePersentPitatel->send(model->getServer());
         }
     }
@@ -260,7 +260,9 @@ void SPRTestIMSWidget::onCommand(bool){
             return;
         }
         if(sender() == ui.bGetSpectrum){
-            getSpectrumsCommand->setThreadTimer(model->getSettingsMainModel()->getThreads()->getData(), 5);
+            QList<uint8_t> lth;
+            for(int th=0; th<model->getThreads()->getData(); th++) lth << th;
+            getSpectrumsCommand->setThreadTimer(5, lth);
             getSpectrumsCommand->send(model->getServer());
             return;
         }
@@ -500,7 +502,10 @@ ISPRModelData *SPRTestIMSWidget::setModelData(SPRMainModel *_model)
 
         ui.wSpectrumWidget->setModelData(new SPRSpectrumListItemsModel(model->getSpectrumZonesTableModel(), model->getSettingsFormulaModel(),model->getSettingsMainModel()->getThreads(), model->getSettingsMainModel()->getSpectrumFileName(), model->getSettingsControlModel()->controlArea), spectrumsOnly, true);
 
-        getSpectrumsCommand = new TCPGetSpectrumsGistogramms(nullptr, getspk, model, towidget, getLogWidget());
+        QList<uint8_t> lth;
+        for(int th=0; th<model->getThreads()->getData(); th++) lth << th;
+
+        getSpectrumsCommand = new TCPGetSpectrumsGistogramms(nullptr, getspk, model, 5, lth, towidget, getLogWidget());
         connect(getSpectrumsCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
 
 //        getSpectrumsCommand->setThreadTimer(model->getSettingsMainModel()->getThreads()->getData());
@@ -515,7 +520,7 @@ ISPRModelData *SPRTestIMSWidget::setModelData(SPRMainModel *_model)
         commandStartPitatel->setModelVariable(model->getSettingsControlModel()->VEMSBeginCode);
 
         uint16_t code = model->getSettingsControlModel()->VEMSBeginCode->getData();
-        commandChangePersentPitatel->setSendData(&code, sizeof(code));
+        commandChangePersentPitatel->addSendData(&code, sizeof(code));
 
 
         ui.wSpectrumWidget->setWithLegend(true);

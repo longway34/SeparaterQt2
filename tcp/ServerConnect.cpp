@@ -129,6 +129,17 @@ void ServerConnect::changeRemoteState(QByteArray replay){
     }
 }
 
+bool ServerConnect::noErrorsInReplay(QByteArray *_replay)
+{
+    if(!_replay) _replay = &replay;
+    if(_replay->size()>0){
+        return _replay->at(0) == '\0';
+    } else {
+        return true;
+    }
+
+}
+
 ServerConnect::~ServerConnect() {
 }
 
@@ -235,6 +246,7 @@ void ServerConnect::onReadyRead(){
         replay.append(readAll());
     }
     mutex.unlock();
+
     clearState(spr_state_error_connect);
     addState(spr_state_server_connect);
     setTimer(slowTypeServerTimer);
@@ -244,26 +256,26 @@ void ServerConnect::onReadyRead(){
     if(com == getstate){
         changeRemoteState(replay);
     } else if(com == onren){
-        if(current->noErrors()){
+        if(noErrorsInReplay()){
             addState(spr_state_rentgen_on);
         } else {
             clearState(spr_state_rentgen_on);
         }
     } else if(com == onsep){
-        if(current->noErrors()){
+        if(noErrorsInReplay()){
             addState(spr_state_separator_on);
         } else {
             clearState(spr_state_separator_on);
         }
     } else if(com == expon){
-        if(current->noErrors()){
+        if(noErrorsInReplay()){
             addState(spr_state_exposition_on);
         } else {
             clearState(spr_state_exposition_on);
         }
     } else if(com == getren){
-        if(current->noErrors()){
-            QByteArray res = current->getReplayData().right(4);
+        if(noErrorsInReplay()){
+            QByteArray res = replay.right(4);
             uint mka=0, mkv=0;
             memcpy(&mkv, res.constData(), 2);
             memcpy(&mka, res.constData()+2, 2);
@@ -278,16 +290,23 @@ void ServerConnect::onReadyRead(){
             clearState(spr_state_rentgen_on_correct);
         }
     } else if(com == offren){
-        clearState(spr_state_rentgen_on);
-        clearState(spr_state_rentgen_on_correct);
+        if(noErrorsInReplay()){
+            clearState(spr_state_rentgen_on);
+            clearState(spr_state_rentgen_on_correct);
+            clearState((spr_state_exposition_on));
+        }
     } else if(com == offsep){
-        clearState(spr_state_separator_on);
-        clearState(spr_state_rentgen_on);
-        clearState((spr_state_exposition_on));
-        clearState(spr_state_rentgen_on_correct);
+        if(noErrorsInReplay()){
+            clearState(spr_state_separator_on);
+            clearState(spr_state_rentgen_on);
+            clearState((spr_state_exposition_on));
+            clearState(spr_state_rentgen_on_correct);
+        }
     } else if(com == expoff){
-        clearState((spr_state_exposition_on));
-        clearState(spr_state_rentgen_on_correct);
+        if(noErrorsInReplay()){
+            clearState((spr_state_exposition_on));
+            clearState(spr_state_rentgen_on_correct);
+        }
     }
 
     current->setReplayData(replay);

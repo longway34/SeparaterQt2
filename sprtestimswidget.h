@@ -11,7 +11,7 @@
 #include "tcp/tcpstartsoptestimscommand.h"
 #include "tcp/tcpcommandstartpitatel.h"
 #include "tcp/tcpcommandstoppitatel.h"
-#include "tcp/tcpcommandseparatoronoff.h"
+#include "tcp/tcpcommandseparatoroff.h"
 #include "tcp/tcpcommandrentgeron.h"
 //#include "tcp/tcpcommandgetspectrums.h"
 #include "tcp/tcpgetspectrumsgistogramms.h"
@@ -68,7 +68,7 @@ public:
         uint16_t temps[2] = {ui.slThermoMin->value(), ui.slThermoMax->value()};
 
         QByteArray ba = QByteArray::fromRawData((char*)temps, sizeof(uint16_t) * 2);
-        comm->setSendData(ba);
+        comm->addSendData(ba);
         thermoWriteStateCommand->send(model->getServer());
     }
 

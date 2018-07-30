@@ -9,6 +9,7 @@
 #include "tcp/tcpseparatego.h"
 #include "tcp/tcpgetspectrumsgistogramms.h"
 #include "tcp/tcpcommandrentgenonfull.h"
+#include "tcp/tcpcommandseparatoroff.h"
 
 class TCPTestStartSeparate : public TCPCommandSet
 {
@@ -23,6 +24,7 @@ class TCPTestStartSeparate : public TCPCommandSet
     int errorSeparateState;
 
     TCPSeparateGo *separateGoCommand;
+    TCPCommandSeparatorOff *separatorStop;
     TCPGetSpectrumsGistogramms *getBaseSpectrumCommand;
 public:
     TCPTestStartSeparate(ServerConnect *_server, SPRMainModel *_model, TCPTimeOutWigget *_widget, TCPLogsWigtets *log = nullptr);

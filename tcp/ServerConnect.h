@@ -117,7 +117,7 @@ class ServerConnect: public QTcpSocket{
 
         virtual void setReplayData(QByteArray replayData){this->replayData = replayData;}
         virtual QByteArray getReplayData(){return replayData;}
-        virtual void setSendData(QByteArray sendData){}
+        virtual void addSendData(QByteArray sendData){}
         virtual QByteArray getSendData(){return sendData;}
 
         // ITCPCommand interface
@@ -182,6 +182,7 @@ protected:
     void setError(ITCPCommand *command);
 
     void changeRemoteState(QByteArray replay);
+    bool noErrorsInReplay(QByteArray *_replay = nullptr);
 public:
     ServerConnect(QString _name, uint16_t _port, SPRQStringVariable *_vName = nullptr, SPRVariable<uint> *_vPort = nullptr): QTcpSocket(){
         name = _name;

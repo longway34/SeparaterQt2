@@ -91,7 +91,7 @@ void MainTabWidget::onClickSetSeparateButton(bool value){
 //    ui.teResult->appendPlainText(str);
 
     TCPCommand *setsep = new TCPCommand(setsepar);
-    setsep->setSendData(result);
+    setsep->addSendData(result);
     setsep->send(model->getServer());
 
 }

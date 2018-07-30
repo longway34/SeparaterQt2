@@ -11,7 +11,7 @@ TCPCommandRGUUp::TCPCommandRGUUp(ServerConnect *_server, TCPTimeOutWigget *_widg
     this->command  = setRGUUp;
     QByteArray rguUp = QByteArray::fromRawData("\x01", 1);
 //    addCommand(new TCPCommand(getrgu2));
-    TCPCommand *crgu = new TCPCommand(setrgu2); crgu->setSendData(rguUp);
+    TCPCommand *crgu = new TCPCommand(setrgu2); crgu->addSendData(rguUp);
     addCommand(crgu);
     addCommand(new TCPTimeOutCommand(timeoutcommand, 1000, 5, widget,
                                       tr("Поднятие РГУ."), tr("Поднятие РГУ. \nПодождите...")));

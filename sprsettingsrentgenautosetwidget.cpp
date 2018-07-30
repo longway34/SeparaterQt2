@@ -188,6 +188,7 @@ void SPRSettingsRentgenAutosetWidget::viewChange(bool value)
             QList<int> threads = getSelectedThreads();
 
             autoSettingDialog->setThreads(threads);
+            autoSettingDialog->widgetsShow();
             autoSettingDialog->show();
         }
     }

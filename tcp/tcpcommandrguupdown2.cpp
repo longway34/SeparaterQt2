@@ -23,7 +23,7 @@ void TCPCommandRGUUpDown2::go(TCPCommand *_command)
 
         char stop = '\0';
         addCommand(setrgu2);
-        findCommands(setrgu2).last()->setSendData(&sendData, sizeof(sendData));
+        findCommands(setrgu2).last()->addSendData(&sendData, sizeof(sendData));
         if(up_down){
             addCommand(new TCPTimeOutCommand(timeoutcommand, 1000, 1, getTimeOutWidget(), tr("Движение РГУ"), tr("Поднятие РГУ. Подождите...")));
         } else {
@@ -32,7 +32,7 @@ void TCPCommandRGUUpDown2::go(TCPCommand *_command)
         addCommand(getrgu2);
 
         addCommand(setrgu2);
-        findCommands(setrgu2).last()->setSendData(&stop, 1);
+        findCommands(setrgu2).last()->addSendData(&stop, 1);
     } else {
         if(_command->getCommand() == getrgu2){
             uint8_t res;

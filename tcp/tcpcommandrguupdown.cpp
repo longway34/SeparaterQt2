@@ -28,7 +28,7 @@ TCPCommandRGUUpDown::TCPCommandRGUUpDown(ServerConnect *_server, TCPTimeOutWigge
         result = 2;
     }
     addCommand(new TCPCommand(getrgu2));
-    TCPCommand *crgu = new TCPCommand(setrgu2); crgu->setSendData(rguUpDown);
+    TCPCommand *crgu = new TCPCommand(setrgu2); crgu->addSendData(rguUpDown);
     addCommand(crgu); // 0
     if(upDown){
         addCommand(new TCPTimeOutCommand(timeoutcommand, 1000, 5, widget,
@@ -41,7 +41,7 @@ TCPCommandRGUUpDown::TCPCommandRGUUpDown(ServerConnect *_server, TCPTimeOutWigge
     addCommand(new TCPCommand(getrgu2)); // 3
     char chStop = '\0';
     QByteArray rgu0; rgu0.append(&chStop, sizeof(chStop));
-    TCPCommand *command0 = new TCPCommand(setrgu2); command0->setSendData(rgu0);
+    TCPCommand *command0 = new TCPCommand(setrgu2); command0->addSendData(rgu0);
     addCommand(command0); // 4
 
 }

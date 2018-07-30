@@ -14,6 +14,27 @@
 #ifndef TCPCOMMANSET_H
 #define TCPCOMMANSET_H
 
+#define MSG_TIME_OUT_SET_DEU               (QString(tr("Включение рентгена")))
+#define MSG_TIME_OUT_SET_DEU_MSG(X)        (QString(tr("Установка кодов ДЭУ...(%1)")).arg( (X) ))
+
+#define MSG_TIME_OUT_SET_CP                (QString(tr("Включение рентгена")))
+#define MSG_TIME_OUT_SET_CP_MSG(X)         (QString(tr("Установка кодов ЦП...(%1)")).arg( (X) ))
+
+#define MSG_TIME_OUT_REN_ON                (QString(tr("Включение рентгена")))
+#define MSG_TIME_OUT_REN_ON_MSG(X)         (QString(tr("Прогрев рентгена...(%1)")).arg( (X) ))
+
+#define MSG_TIME_OUT_EXP_ON                (QString(tr("Включение рентгена")))
+#define MSG_TIME_OUT_EXP_ON_MSG(X)         (QString(tr("Установка экспозиции ...(%1)")).arg( (X) ))
+
+#define MSG_TIME_OUT_SET_SPK               (QString(tr("Накопление спектра")))
+#define MSG_TIME_OUT_SET_SPK_MSG(X)        (QString(tr("Накопление спектра ...(%1)")).arg( (X) ))
+
+#define MSG_TIME_OUT_ON_SEPAR               (QString(tr("Старт сепарации")))
+#define MSG_TIME_OUT_ON_SEPAR_MSG(X)        (QString(tr("Старт сепарации...(%1)")).arg( (X) ))
+
+#define MSG_TIME_OUT_OFF_SEPAR               (QString(tr("Останов сепарации")))
+#define MSG_TIME_OUT_OFF_SEPAR_MSG(X)        (QString(tr("Останов сепарации...(%1)")).arg( (X) ))
+
 #include "tcp/TCPTimeOutCommand.h"
 #include <QVector>
 
@@ -26,48 +47,21 @@ protected:
 public:
     TCPCommandSet();
 //    TCPCommandSet(TCPTimeOutWigget *_widget): TCPTimeOutCommand(nocommand, 0, 1, _widget, "", ""){}
-    TCPCommandSet(ServerConnect *_server, TCPTimeOutWigget *_widget, QVector<TCPCommand*> _vcomm): TCPTimeOutCommand(timeoutcommand, 0, 1, _widget, "", ""){
-        server = _server;
-        replayData = QByteArray(1, '\0');
-        addCommand(_vcomm);
-    }
+    TCPCommandSet(ServerConnect *_server, TCPTimeOutWigget *_widget, QVector<TCPCommand*> _vcomm);
     TCPTimeOutWigget *getTimeOutWidget(){
         return widget;
     }
     virtual ~TCPCommandSet();
     
-    TCPCommandSet *addCommand(TCPCommand* _comm){
-        _comm->setNum(commandSet.size());
-        commandSet.push_back(_comm);
-        connect(_comm, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(go(TCPCommand*)));
-        return this;
-    }
-    TCPCommandSet *addCommand(QVector<TCPCommand*> _vcomm){
-        for(int i=0; i<_vcomm.size(); i++){
-            addCommand(_vcomm[i]);
-        }
-        return this;
-    }
+    TCPCommandSet *addCommand(TCPCommand* _comm);
+    TCPCommandSet *addCommand(QVector<TCPCommand*> _vcomm);
     
-    TCPCommandSet *addCommand(QVector<EnumCommands> _ecomm){
-        for(int i=0; i<_ecomm.size(); i++){
-            addCommand(_ecomm[i]);
-        }
-        return this;
-    }
+    TCPCommandSet *addCommand(QVector<EnumCommands> _ecomm);
 
-    TCPCommandSet *addCommand(EnumCommands ecommand){
-        return addCommand(new TCPCommand(ecommand));
-    }
+    TCPCommandSet *addCommand(EnumCommands ecommand);
 
 
-    virtual void send(ServerConnect *_server){
-        server = _server;
-        if(server){
-            server->timerStop();
-        }
-        go();
-    }
+    virtual void send(ServerConnect *_server);
     virtual int getErrors(){
         int ret = 0;
         for(int i=0; i<commandSet.size(); i++){
@@ -76,21 +70,12 @@ public:
         return ret;
     }
 
-    virtual void setSendData(QByteArray sendData, EnumCommands _command = nocommand){
-        setSendData((void*)sendData.constData(), sendData.size(), _command);
-    }
+    virtual TCPCommand *setSendData(QByteArray _sendData, EnumCommands _command = lastcommand);
+    virtual TCPCommand *setSendData(void *data, int len, EnumCommands _command = lastcommand);
 
-    virtual void setSendData(void *data, uint len, EnumCommands _command = nocommand){
-        TCPCommand *_comm;
-        if(_command == nocommand){
-            _comm = commandSet.last();
-        } else {
-            _comm = findCommands(_command).last();
-        }
-        if(_comm){
-            _comm->setSendData(data, len);
-        }
-    }
+    virtual TCPCommand *addSendData(QByteArray sendData, EnumCommands _command = lastcommand);
+
+    virtual TCPCommand *addSendData(void *data, uint len, EnumCommands _command = lastcommand);
 
     virtual int getState(){
         if(commandSet.size() > 0){
@@ -155,15 +140,7 @@ public:
         }
         return ret;
     }
-    int findCommand(TCPCommand *_command){
-        int res = -1;
-        for(int i=0; i< commandSet.size(); i++){
-            if(commandSet[i] == _command){
-                res = _command->getNum();
-            }
-        }
-        return res;
-    }
+    TCPCommand* findCommand(TCPCommand *_command);
 
     virtual bool isCommamdCompare(TCPCommand *_command){
         return true;

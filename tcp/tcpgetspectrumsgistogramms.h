@@ -6,6 +6,7 @@
 #include "tcp/tcpcommandrentgenonfull.h"
 #include "models/sprsettingsrentgenmodel.h"
 #include "tcp/tcplogswigtets.h"
+#include "tcp/tcpexpositiononoff.h"
 
 #include "_types.h"
 
@@ -14,16 +15,20 @@ class TCPGetSpectrumsGistogramms : public TCPCommandSet
     Q_OBJECT
     
 //    uint threadNum;
-    QList<int8_t> workingThreads;
+    QList<uint8_t> workingThreads;
     EnumCommands dataType;
-    uint timeOfSpectorScope;
+    double timeOfSpectorScope_in_sec;
+    bool withRGU;
+    bool withOffExp;
+    bool toUpDown;
 
     SPRMainModel *model;
 //    TCPLogsWigtets *logWidget;
 
 public:
     TCPGetSpectrumsGistogramms();
-    TCPGetSpectrumsGistogramms(ServerConnect *_server, EnumCommands _dataType, SPRMainModel *_model, TCPTimeOutWigget *_widget = nullptr, TCPLogsWigtets *_logWidget = nullptr);
+//    TCPGetSpectrumsGistogramms(ServerConnect *_server, EnumCommands _dataType, SPRMainModel *_model, TCPTimeOutWigget *_widget = nullptr, TCPLogsWigtets *_logWidget = nullptr);
+    TCPGetSpectrumsGistogramms(ServerConnect *_server, EnumCommands _dataType, SPRMainModel *_model, double _timeSpk_in_sec = -1, QList<uint8_t> _threads = {}, TCPTimeOutWigget *_toWidget=nullptr, TCPLogsWigtets *_logWidgets=nullptr);
 
     void setModelData(SPRMainModel *_model){
         model = _model;
@@ -45,13 +50,19 @@ public:
         return res;
     }
 
-    void setThreadTimer(uint _threadsNum, double _time_in_sec = 1, QList<uint8_t> _wtList = {});
+    void setThreadTimer(double _time_spk_in_sec = 1, QList<uint8_t> _wtList = {});
 
     virtual EnumCommands getDataType() const;
 
-    bool isRentgenReady(uint *_mkv = nullptr, uint *_mka = nullptr);
+//    bool isRentgenReady(uint *_mkv = nullptr, uint *_mka = nullptr);
 //    TCPLogsWigtets *getLogWidget() const;
 //    virtual void setLogWidget(TCPLogsWigtets *value);
+
+    bool getWithRGU() const;
+    void setWithRGU(bool value, bool _toUpDown=false);
+
+    bool getWithOffExp() const;
+    void setWithOffExp(bool value);
 
 protected slots:
     virtual void go(TCPCommand *_command = NULL);

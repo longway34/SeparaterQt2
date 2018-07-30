@@ -75,6 +75,8 @@ public:
         }
         return this;
     }
+    void removeSpectrum(SPRSpectrumItemModel* _item);
+
     void removeSpectrum(int num, SPRTypeSpectrumSet typeData=spectrumsOnly){
         if(typeData == spectrumsOnly){
             if(num >=0 && num <spectrumsModel.size()){
@@ -96,10 +98,7 @@ public:
 
 //    SPRSpectrumItemModel *setSpectrumItem(SPRSpectrumItemModel* item, int th, SPRTypeSpectrumSet type = spectrumBase);
 
-    SPRSpectrumItemModel *setSpectrumData(int num, QByteArray data, SPRTypeSpectrumSet _type = spectrumBase){
-        return setSpectrumData(num, (uint8_t*)data.constData(), data.size(), _type);
-    }
-
+    SPRSpectrumItemModel *setSpectrumData(int num, QByteArray data, SPRTypeSpectrumSet _type=spectrumBase, uint32_t _timeScope_in_msec = 0, QString _formatName = "");
     SPRSpectrumItemModel *setSpectrumData(int num, uint8_t *buf, int bufLen, SPRTypeSpectrumSet _type=spectrumBase, uint32_t _timeScope_in_msec = 0, QString _formatName = "");
 
     QVector<SPRSpectrumItemModel *> *getSpectrumsModel(SPRTypeSpectrumSet type=spectrumsOnly);

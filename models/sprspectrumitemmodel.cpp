@@ -353,6 +353,7 @@ void SPRSpectrumItemModel::setGraphicMode(const SPRViewGraphicsMode &value, doub
 
 SPRSpectrumItemModel::SPRSpectrumItemModel():thread(0)
 {
+    hashKeyDebug = QString("spr_%1").arg(rand() % 100);
     zones = new SPRSpectrumZonesTableModel();
     formulas = new SPRSettingsFormulaModel();
     setProperty("delete_ranges", QVariant(true));
@@ -362,6 +363,7 @@ SPRSpectrumItemModel::SPRSpectrumItemModel():thread(0)
 
 SPRSpectrumItemModel::SPRSpectrumItemModel(QDomDocument *_doc, int _index, ISPRModelData *parent) : ISPRModelData(_doc, parent)
 {
+    hashKeyDebug = QString("spr_%1").arg(rand() % 100);
     setZonesTable(new SPRSpectrumZonesTableModel(doc));
     setFormulas(new SPRSettingsFormulaModel(doc, new SPRElementsModel(doc, this), nullptr));
     *spectrumData.thread = _index;
@@ -374,6 +376,7 @@ SPRSpectrumItemModel::SPRSpectrumItemModel(QDomDocument *_doc, int _index, ISPRM
 
 SPRSpectrumItemModel::SPRSpectrumItemModel(SPRSpectrumZonesTableModel *_ranges, SPRSettingsFormulaModel *_formulas, uint _thread, ISPRModelData *parent) : ISPRModelData(nullptr, parent)
 {
+    hashKeyDebug = QString("spr_%1").arg(rand() % 100);
     setZonesTable(_ranges);
     setFormulas(_formulas);
     if(_ranges){

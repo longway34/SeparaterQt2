@@ -32,8 +32,8 @@ void TCPAutoSetRentgen::setCodesCP(QByteArray &value)
 
 void TCPAutoSetRentgen::settingCodes()
 {
-    findCommands(setudeu).last()->setSendData(codesDEU);
-    findCommands(setptdeu).last()->setSendData(codesCP);
+    findCommands(setudeu).last()->addSendData(codesDEU);
+    findCommands(setptdeu).last()->addSendData(codesCP);
 }
 
 void TCPAutoSetRentgen::settingRentgenVA()
@@ -48,7 +48,7 @@ void TCPAutoSetRentgen::settingRentgenVA()
     va.append((char*)&mkv, sizeof(mkv));
     va.append((char*)&mka, sizeof(mka));
 
-    findCommands(setren).last()->setSendData(va);
+    findCommands(setren).last()->addSendData(va);
 }
 
 TCPAutoSetRentgen::TCPAutoSetRentgen(SPRMainModel *_model, TCPTimeOutWigget *_toWidget)
@@ -60,9 +60,24 @@ TCPAutoSetRentgen::TCPAutoSetRentgen(SPRMainModel *_model, TCPTimeOutWigget *_to
     commandRGU = new TCPCommandRGUUpDown2(mainModel->getServer(), _toWidget, false);
 }
 
+#define _MULAGE_DEBUG
 
 void TCPAutoSetRentgen::go(TCPCommand *_command)
 {
+#ifndef _MULAGE_DEBUG
+            uint time_out_hot_tube = mainModel->getSettingsRentgenModel()->timeOnRA->getData();
+            uint _time_out_expon = mainModel->getSettingsRentgenModel()->timeHotRA->getData() * 1000 + 1000;
+            uint _time_out_on_deu_cp = 2000;
+            uint32_t spkTime = 0x64;
+            uint _time_out_spk = 11000;
+
+#else
+            uint time_out_hot_tube = 1;
+            uint _time_out_expon = 2000;
+            uint _time_out_on_deu_cp = 1000;
+            uint32_t spkTime = 10;
+            uint _time_out_spk = 2000;
+#endif
     if(!_command){
         clear();
         if(mainModel){
@@ -75,48 +90,62 @@ void TCPAutoSetRentgen::go(TCPCommand *_command)
                 addCommand(new TCPCommand(offosw));
                 addCommand(new TCPCommand(onosw));
 
-                uint timeHotTube = mainModel->getSettingsRentgenModel()->timeOnRA->getData();
-
-                addCommand(new TCPTimeOutCommand(timeoutcommand, timeHotTube * 1000 + 1000,
-                                                 10, widget, QString(tr("Включение рентгена...")),
-                                                 QString(tr("Прогрев трубок (%1 секунд)...")).arg(timeHotTube)));
+                addCommand(new TCPTimeOutCommand(timeoutcommand, time_out_hot_tube * 1000 + 1000,
+                                                 10, widget,
+                                                 MSG_TIME_OUT_EXP_ON,
+                                                 MSG_TIME_OUT_REN_ON_MSG(time_out_hot_tube / 1000)));
+                                                 /*QString(tr("Прогрев трубок (%1 секунд)...")).arg(time_out_hot_tube / 1000)));*/
             }
             if(mainModel->getSettingsRentgenModel()->withRGU->getData()){
                 addCommand(commandRGU);
             }
             char ch = 0;
-            uint32_t spkTime = 0x64;
             if(mainModel->getServer()->isState(spr_state_rentgen_not_regime)){
                 addCommand(expoff);
+                findCommands(expoff).last()->addSendData(&ch, 1);
                 addCommand(offosw);
             }
 
             addCommand(new TCPCommand(setren));
             settingRentgenVA();
-            addCommand(new TCPTimeOutCommand(timeoutcommand, 2000, 5, widget, tr("Включение рентгена."), tr("Установка значений рентгена.")));
+
+
+
+            addCommand(new TCPTimeOutCommand(timeoutcommand, _time_out_on_deu_cp, 100, getTimeOutWidget(),
+                            MSG_TIME_OUT_REN_ON, MSG_TIME_OUT_EXP_ON_MSG(_time_out_on_deu_cp / 1000)));
+//                                             tr("Включение рентгена."),
+//                                             QString(tr("Установка значений рентгена. (%1 сек.)")).arg(_time_out_on_deu_cp / 1000)));
 
             addCommand(new TCPCommand(setudeu));
-            addCommand(new TCPTimeOutCommand(timeoutcommand, 2000, 5, widget, tr("Включение рентгена."), tr("Установка кодов ДЭУ.")));
+            addCommand(new TCPTimeOutCommand(timeoutcommand, _time_out_on_deu_cp, 100, getTimeOutWidget(),
+                            MSG_TIME_OUT_SET_DEU, MSG_TIME_OUT_SET_DEU_MSG(_time_out_on_deu_cp / 1000)));
+//                          tr("Включение рентгена."), QString(tr("Установка кодов ДЭУ. (%1 сек.)")).arg(_time_out_on_deu_cp / 1000)));
             addCommand(new TCPCommand(setptdeu));
-            addCommand(new TCPTimeOutCommand(timeoutcommand, 2000, 5, widget, tr("Включение рентгена."), tr("Установка кодов СР.")));
+            addCommand(new TCPTimeOutCommand(timeoutcommand, _time_out_on_deu_cp, 100, getTimeOutWidget(),
+                            MSG_TIME_OUT_SET_CP, MSG_TIME_OUT_SET_CP_MSG(_time_out_on_deu_cp / 1000)));
+//                            tr("Включение рентгена."), QString(tr("Установка кодов СР. (%1 сек.)")).arg(_time_out_on_deu_cp / 1000)));
 
             settingCodes();
 
             if(!mainModel->getServer()->isState(spr_state_exposition_on) || mainModel->getServer()->isState(spr_state_rentgen_not_regime)){
 
                 addCommand(expon)->addCommand(offosw)->addCommand(onosw);
-                findCommands(expon).last()->setSendData(&ch, 1);
-                addCommand(new TCPTimeOutCommand(timeoutcommand, 6000, 100, getTimeOutWidget(), tr("Включение экспозиции"), tr("Включение экспозиции...")));
+                findCommands(expon).last()->addSendData(&ch, 1);
+                addCommand(new TCPTimeOutCommand(timeoutcommand, _time_out_expon, 100, getTimeOutWidget(),
+                            MSG_TIME_OUT_EXP_ON, MSG_TIME_OUT_EXP_ON_MSG(_time_out_on_deu_cp / 1000)));
+//                            tr("Включение экспозиции"), QString(tr("Включение экспозиции... (%1 сек.)")).arg(_time_out_on_deu_cp / 1000)));
                 addCommand(getren);
-                findCommands(getren).last()->setSendData(&ch, 1);
+                findCommands(getren).last()->addSendData(&ch, 1);
             }
 
             addCommand(setspk);
-            findCommands(setspk).last()->setSendData(&spkTime, sizeof(spkTime));
-            addCommand(new TCPTimeOutCommand(timeoutcommand, 11000, 100, getTimeOutWidget(), tr("Накопление спектра"), tr("Накопление спектра (10 секунд)...")));
+            findCommands(setspk).last()->addSendData(&spkTime, sizeof(spkTime));
+            addCommand(new TCPTimeOutCommand(timeoutcommand, _time_out_spk, 100, getTimeOutWidget(),
+                            MSG_TIME_OUT_SET_SPK, MSG_TIME_OUT_SET_SPK_MSG(_time_out_spk / 1000)));
+//                            tr("Накопление спектра"), QString(tr("Накопление спектра  (%1 сек.)")).arg(_time_out_spk / 1000)));
             foreach(int8_t thread, getThreads()){
                 addCommand(getspk);
-                findCommands(getspk).last()->setSendData(&thread, sizeof(thread));
+                findCommands(getspk).last()->addSendData(&thread, sizeof(thread));
             }
         }
     }

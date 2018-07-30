@@ -8,6 +8,7 @@
 #include "tcp/tcptimeoutwigget.h"
 #include "tcpgetspectrumsgistogramms.h"
 #include "tcp/tcpseparatego.h"
+#include "tcp/tcpcommandseparatoroff.h"
 
 
 class TCPStartSeparate2 : public TCPCommandSet
@@ -18,8 +19,12 @@ class TCPStartSeparate2 : public TCPCommandSet
     SPRMainModel *model;
     TCPGetSpectrumsGistogramms *getBaseSpectrum;
     TCPSeparateGo *separateGo;
+    TCPCommandSeparatorOff *separatorStop;
 
     int errorSeparateState;
+
+    int countTry;
+    int numTry;
 
 public:
 

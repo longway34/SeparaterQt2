@@ -24,8 +24,10 @@ QVector<SPRSpectrumItemModel *> SPRSpectrumListItemsModel::getSpectrumsItemByThr
 
     QVector<SPRSpectrumItemModel*> *source = getSpectrumsModel(type);
     for(int index=0; index< source->size(); index++){
-        if(source->at(index)->getThread() == thread || thread < 0){
-            res.push_back(source->at(index));
+        SPRSpectrumItemModel* item = source->at(index);
+        int thr = item->getThread();
+        if(thr == thread || thread < 0){
+            res.push_back(item);
         }
     }
 
@@ -69,9 +71,10 @@ SPREnumVariable<EnumElements> *SPRSpectrumListItemsModel::getCorelControlArea() 
 }
 
 void  SPRSpectrumListItemsModel::clearSpectrums(QVector<SPRSpectrumItemModel*> *model){
-    for(int i=0; i<model->size(); i++){
-        delete model->at(i);
-    }
+//    for(int i=0; i<model->size(); i++){
+//        delete model->at(i);
+//    }
+//    qDeleteAll(*model);
     model->clear();
     unionModels();
     emit modelChanget(this);
@@ -139,17 +142,17 @@ SPRSpectrumItemModel *SPRSpectrumListItemsModel::addSpect(uint8_t *buf, int bufL
     }
 
     QVector<SPRSpectrumItemModel*> *model = getSpectrumsModel(typeData);
+    if(_formatName.isEmpty()){
+        if(model == &spectrumsModelBase){
+            _formatName = QString(tr("Ручей %1(базовый)"));
+        } else {
+            _formatName = QString(tr("Ручей %1"));
+        }
+    }
 
     if(bufLentgh == DEF_SPECTRUM_DATA_LENGTH_BYTE){
 //        item->setSpectrumThread(model->size());
-        if(_formatName.isEmpty()){
-            if(model == &spectrumsModelBase){
-                _formatName = "base %1";
-            } else {
-                _formatName = "spec %1";
-            }
-        }
-        item->setSpectrumName(QString(_formatName).arg(model->size()));
+        item->setSpectrumName(QString(_formatName).arg(model->size()+1));
         item->setSpectrumColor(mainColors[model->size() % mainColors.size()]);
         item->setSpectrumDateTime(QDateTime::currentDateTime());
         if(numTh >= 0 && numTh < zonesTableModel->getThreads()->getData()){
@@ -164,6 +167,10 @@ SPRSpectrumItemModel *SPRSpectrumListItemsModel::addSpect(uint8_t *buf, int bufL
             item->setSpectrumThread(th);
         } else {
             item->setSpectrumThread(0);
+        }
+        QString name = item->getSpectrumName();
+        if(name.isEmpty()){
+            item->setSpectrumName(QString(_formatName).arg(th+1));
         }
     }
     model->push_back(item);
@@ -211,7 +218,7 @@ void SPRSpectrumListItemsModel::addSpectrums(QString fName){
    }
    memset(buf, 0, DEF_SPECTRUM_DATA_LENGTH_BYTE);
    while (specCount < threads->getData()) {
-       addSpect(buf, DEF_SPECTRUM_DATA_LENGTH_BYTE, 0, spectrumBase);
+       addSpect(buf, DEF_SPECTRUM_DATA_LENGTH_BYTE, 0, spectrumBase, specCount, QString(tr("Ручей %1(базовый)")));
 //       SPRSpectrumItemModel *item = new SPRSpectrumItemModel(zonesTableModel, formulas, this);
 //       item->setSpectrumName(QString("bspect_%1").arg(specCount));
 //       item->setSpectrumThread(specCount);
@@ -403,6 +410,20 @@ ISPRModelData *SPRSpectrumListItemsModel::setModel(SPRSpectrumZonesTableModel *_
     return this;
 }
 
+void SPRSpectrumListItemsModel::removeSpectrum(SPRSpectrumItemModel *_item){
+    if(_item){
+        while(1){
+            int index = spectrumsModel.indexOf(_item);
+            if(index < 0) break;
+
+            spectrumsModel.remove(index);
+        }
+    }
+    //        spectrumsModelBase.removeAll(_item);
+    unionModels();
+    emit modelChanget(this);
+}
+
 //SPRSpectrumItemModel *SPRSpectrumListItemsModel::setSpectrumItem(SPRSpectrumItemModel *item, int th, SPRTypeSpectrumSet type)
 //{
 //    QVector<SPRSpectrumItemModel*> source = getSpectrumsItemByThread(th, type);
@@ -471,6 +492,10 @@ void SPRSpectrumListItemsModel::recomplite(){
     }
 }
 
+SPRSpectrumItemModel *SPRSpectrumListItemsModel::setSpectrumData(int num, QByteArray data, SPRTypeSpectrumSet _type, uint32_t _timeScope_in_msec, QString _formatName){
+    return setSpectrumData(num, (uint8_t*)data.constData(), data.size(), _type, _timeScope_in_msec, _formatName);
+}
+
 SPRSpectrumItemModel *SPRSpectrumListItemsModel::setSpectrumData(int num, uint8_t *buf, int bufLen, SPRTypeSpectrumSet _type, uint32_t _timeScope_in_msec, QString _formatName/*** "xxx %1" */)
 {
     SPRSpectrumItemModel *spec = nullptr;
@@ -484,7 +509,7 @@ SPRSpectrumItemModel *SPRSpectrumListItemsModel::setSpectrumData(int num, uint8_
     }
     QColor col = _type == spectrumBase ? QColor(Qt::white) : mainColors[num % mainColors.size()];
     if(_formatName == ""){
-        _formatName = _type == spectrumBase ? "base %1" : "spect %1";
+        _formatName = _type == spectrumBase ? QString(tr("Ручей %1(базовый)")) : QString(tr("Ручей %1"));
     }
     if(_timeScope_in_msec == 0){
         _timeScope_in_msec = _type == spectrumBase ? 30000 : 5000;
@@ -494,7 +519,7 @@ SPRSpectrumItemModel *SPRSpectrumListItemsModel::setSpectrumData(int num, uint8_
 
         if(bufLen == DEF_SPECTRUM_DATA_LENGTH_BYTE){
             spec->setSpectrumColor(col);
-            spec->setSpectrumName(QString(_formatName).arg(num));
+            spec->setSpectrumName(QString(_formatName).arg(num+1));
             spec->setTimeScope(_timeScope_in_msec);
             spec->setSpectrumDateTime(QDateTime::currentDateTime());
         }

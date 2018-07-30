@@ -1,6 +1,6 @@
 #include "tcpteststartseparate.h"
 #include "tcp/tcpcommandrentgenonfull.h"
-#include "tcp/tcpcommandseparatoronoff.h"
+#include "tcp/tcpcommandseparatoroff.h"
 #include "tcp/tcpcommandrentgeron.h"
 #include "tcp/tcpgetspectrumsgistogramms.h"
 #include "tcp/tcpseparatego.h"
@@ -18,103 +18,73 @@ TCPGetSpectrumsGistogramms *TCPTestStartSeparate::getGetBaseSpectrumCommand() co
 }
 
 TCPTestStartSeparate::TCPTestStartSeparate(ServerConnect *_server, SPRMainModel *_model, TCPTimeOutWigget *_widget, TCPLogsWigtets *log):
-    TCPCommandSet(server, _widget, {}), separateModel(nullptr), mainModel(_model)
+    TCPCommandSet(server, _widget, {}), separateModel(nullptr), mainModel(_model), separateGoCommand(nullptr), getBaseSpectrumCommand(nullptr), separatorStop(nullptr)
 {
     command = setTestStartSeparate;
     separateModel = mainModel->getSeparateModel();
-    char ch0 = '\0';
-//    addCommand(new TCPCommandSeparatorOn(_server, _widget)); //0
-
-//    addCommand(new TCPCommand(initada));
-//    addCommand(new TCPCommand(onsep));
-//    addCommand(new TCPCommand(onren));
-    addCommand(new TCPCommandSeparatorOnFull(_server, mainModel, _widget)); //3
-
-    addCommand(new TCPTimeOutCommand(timeoutcommand, 20000, 100, _widget, QString(tr("Включение рентгена")), QString(tr("Включение рентгена"))));
-    addCommand(new TCPCommand(onosw)); // 4
-
-    addCommand(new TCPCommand(getblk));
-    addCommand(new TCPCommand(expon))->setSendData(&ch0,sizeof(ch0)); //5
-    addCommand(new TCPCommand(offosw)); //5
-    addCommand(new TCPCommand(onosw)); //7
-    addCommand(new TCPTimeOutCommand(timeoutcommand, 7000, 100, _widget, tr("Включение экспозиции"), tr("Включение экспозиции"))); //8
-
-    addCommand(new TCPCommand(getren))->setSendData(&ch0, sizeof(ch0)); // 9
-//    addCommand(new TCPTimeOutCommand(timeoutcommand, ))
-
-
-    getBaseSpectrumCommand = new TCPGetSpectrumsGistogramms(_server, getspk, mainModel, _widget, getLogWidget());
-    getBaseSpectrumCommand->setThreadTimer(MAX_SPR_MAIN_THREADS, 1);
-    addCommand(getBaseSpectrumCommand); // 10
-
-    addCommand(new TCPCommand(setsepar)); // 11
-    addCommand(new TCPCommand(startsep)); // 12
-    addCommand(new TCPTimeOutCommand(timeoutcommand, 2000));
-
-    separateGoCommand = new TCPSeparateGo(log);
-//    separateGoCommand->setLogWidget(log);
-    addCommand(separateGoCommand);
-
-
-    addCommand(new TCPCommand(nocommand));
-
-//    addCommand(new TCPCommand(oniw)); // 13
-
-    addCommand(new TCPCommand(expoff))->setSendData(&ch0, sizeof(ch0));
-
-    addCommand((new TCPCommand(offosw)));
-    addCommand((new TCPCommand(onosw)));
-    addCommand((new TCPCommand(offosw)));
-    addCommand((new TCPCommand(onosw)));
-    addCommand(new TCPCommand(nocommand));
 }
 
 void TCPTestStartSeparate::go(TCPCommand *_command)
 {
     if(!_command){
         if(separateModel && mainModel){
+            clear();
+
+            addCommand(getstate);
+
+            getBaseSpectrumCommand = new TCPGetSpectrumsGistogramms(mainModel->getServer(), getspk, mainModel, 1, {}, getTimeOutWidget(), getLogWidget());
+            QList<uint8_t> lth;
+            for(uint8_t th; th<mainModel->getThreads()->getData(); th++) lth << th;
+            getBaseSpectrumCommand->setThreadTimer(1, lth);
+            getBaseSpectrumCommand->setWithOffExp(false);
+            getBaseSpectrumCommand->setWithRGU(false, true);
+            addCommand(getBaseSpectrumCommand);
+
+            addCommand(new TCPCommand(setsepar))->addSendData(separateModel->toByteArray(mainModel, &errorSeparateState));
+            addCommand(new TCPCommand(startsep));
+
+            //          addCommand(new TCPCommand(oniw));
+            addCommand(new TCPTimeOutCommand(timeoutcommand, 2000, 100, getTimeOutWidget(),
+                            MSG_TIME_OUT_ON_SEPAR, MSG_TIME_OUT_ON_SEPAR_MSG( 2 )));
+
             countTry = 0; numTry = 5;
-            findCommands(setsepar).first()->setSendData(separateModel->toByteArray(mainModel, &errorSeparateState));
-//            TCPCommandRentgerOn *reng = ((TCPCommandRentgerOn*)findCommands(setRentgenOn).last());
-//            reng->setModel(separateModel->getModelData()->getSettingsRentgenModel());
+
+            separateGoCommand = new TCPSeparateGo(mainModel, getLogWidget());
+            addCommand(separateGoCommand);
+
+            separatorStop = new TCPCommandSeparatorOff(mainModel->getServer(), getTimeOutWidget());
+            addCommand(separatorStop);
         }
     } else {
         if(_command->getCommand() == getren){
-            uint16_t kV, mka;
-            QByteArray res = _command->getReplayData();
-            memcpy(&kV, res.constData()+1, sizeof(kV));
-            memcpy(&mka, res.constData()+3, sizeof(mka));
-            if(kV < 0x600 || mka < 0x600){
-                emit errorCommand(_command);
-                countTry++;
-
-                TCPCommand *_next = findCommands(expoff).last();
-                _next->send(server);
+            uint16_t kV, mka; uint8_t err;
+            if(!isRentgenReady(_command->getReplayData(), &kV, &mka, &err)){
+                TCPCommand *stop = findCommand(separatorStop);
+                if(stop){
+                    stop->send(server);
+                }
                 return;
-            } else {
-                emit rentgenReady(_command);
             }
         }
-        if(_command == commandSet.last()){
+        if(_command == separatorStop){
             if(countTry < numTry){
                 int res = QMessageBox::question(nullptr, tr("Неудачная попытка..."),
-                            tr("Попытвться еще разок (%1/%2)?").arg(QString::number(countTry)).arg(QString::number(numTry)));
+                            tr("Попытаться еще разок (%1/%2)?").arg(QString::number(countTry)).arg(QString::number(numTry)));
                 if(res == QMessageBox::StandardButton::Yes){
-                    TCPCommand *_next = findCommands(getblk).last();
-                    _next->send(server);
+                    TCPCommand *_next = findCommands(getstate).first();
+                    if(_next){
+                        _next->send(server);
+                    }
                     return;
 
                 } else {
-                    emit commandComplite(nullptr); // output with error
+                    emit commandNotComplite(this); // output with error
                     return;
                 }
-            } else {
-                emit commandComplite(nullptr); // output with error
-                return;
             }
         }
-        if(_command != commandSet.last() && _command->getCommand() == nocommand){
-            emit commandComplite(this); // output with no errors
+        if(_command == separateGoCommand){
+            emit commandComplite(this);
             return;
         }
     }
