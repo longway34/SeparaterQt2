@@ -41,11 +41,17 @@
 #define SPR_STATE_TEST_IMS              0x00000010
 #define SPR_STATE_RGU_MOVED             0x00000020
 
+#define SPR_STATE_RGU_UP_POSITION       0x00001000
+#define SPR_STATE_RGU_DOWN_POSITION     0x00002000
+
+
 #define SPR_STATE_SEPATOR_ON            0x00010000
 #define SPR_STATE_RENTGEN_ON            0x00020000
 #define SPR_STATE_PITATEL_ON            0x00040000
 #define SPR_STATE_EXPOSITION_ON         0x00080000
 #define SPR_STATE_RENTGEN_ON_CORRECT    0x00100000
+#define SPR_STATE_RASKLAD_ON            0x00200000
+
 
 #define SPR_STATE_RENTGEN_NOT_REGIME    0x02000000
 #define SPR_STATE_ERROR_CONNECT         0x01000000
@@ -72,11 +78,15 @@ typedef enum server_connect_state :uint32_t {
     spr_state_test_ims              = SPR_STATE_TEST_IMS,
     spr_state_gru_moved             = SPR_STATE_RGU_MOVED,
 
+    spr_state_rgu_up_position       = SPR_STATE_RGU_UP_POSITION,
+    spr_state_rgu_down_position     = SPR_STATE_RGU_DOWN_POSITION,
+
     spr_state_separator_on          = SPR_STATE_SEPATOR_ON,
     spr_state_rentgen_on            = SPR_STATE_RENTGEN_ON,
     spr_state_pitatel_on            = SPR_STATE_PITATEL_ON,
     spr_state_exposition_on         = SPR_STATE_EXPOSITION_ON,
     spr_state_rentgen_on_correct    = SPR_STATE_RENTGEN_ON_CORRECT,
+    spr_state_rasklad_on            = SPR_STATE_RASKLAD_ON,
 
     spr_state_rentgen_not_regime    = SPR_STATE_RENTGEN_NOT_REGIME,
     spr_state_error_connect         = SPR_STATE_ERROR_CONNECT,
@@ -230,7 +240,7 @@ public:
 
     uint32_t getState(){ return currentState;}
     uint32_t addState(ServerConnectState _state){
-        if(_state > 0xFFFF){
+        if(_state > 0x0FFF){
             uint32_t newState = currentState | _state;
             setState(newState);
         }

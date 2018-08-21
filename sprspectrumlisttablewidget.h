@@ -75,6 +75,10 @@ public slots:
     void onSpectSpectrumTableClick(int row, int);
 //    void onSpectSpectrumTableClick2(int row, SPRSpectrumListTable *_sender);
     void onChangeSpectrumsFileName();
+    void setIsMasterMode(bool value)
+    {
+        ui.tRangesChannel->setEnabled(value);
+    }
 private:
     Ui::SPRSpectrumListTableWidget ui;
 
@@ -89,7 +93,7 @@ protected slots:
     virtual void viewChange(int row);
     virtual void viewChange(bool value);
     void onChangeZoneRange(EnumElements el, int thread, int col);
-    virtual void onModelChanget(IModelVariable *);
+    virtual void onModelChanget(IModelVariable *variable);
 
 
     // ISPRWidget interface

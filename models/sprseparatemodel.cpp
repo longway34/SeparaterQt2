@@ -1,5 +1,5 @@
 #include "sprseparatemodel.h"
-//#include "models/sprmainmodel.h"
+#include "models/sprmainmodel.h"
 
 SPRSettintsSeparate *SPRSeparateModel::getSettingsSeparate()
 {
@@ -17,7 +17,8 @@ void SPRSeparateModel::setSeparateEmpty(bool value)
 }
 
 void *SPRSeparateModel::fullWorkSeparate(SPRWorkSeparate *dst, QByteArray rawData){
-    return memcpy(dst, rawData.constData(), sizeof(SPRWorkSeparate));
+    dst->dt = QDateTime::currentDateTime().toSecsSinceEpoch();
+    return memcpy(&dst->source, rawData.constData(), sizeof(dst->source));
 }
 
 void *SPRSeparateModel::fullWorkGistogramm(SPRWorkGistogrammRow *dst, QByteArray rawData)
@@ -133,21 +134,21 @@ void SPRSeparateModel::setWorkSeparateData(QByteArray rawData){
     for(int th=0; th<MAX_SPR_MAIN_THREADS; th++){
         SPRWorkSeparateRow *diff = new SPRWorkSeparateRow();
 
-        diff->p_tk = workSeparateReceive.p_tk[th]/* - workSeparateCurrent.p_tk[th]*/;
-        diff->p_tkh1 = workSeparateReceive.p_tkh1[th]/* - workSeparateCurrent.p_tkh1[th]*/;
-        diff->p_tkh2 = workSeparateReceive.p_tkh2[th]/* - workSeparateCurrent.p_tkh2[th]*/;
-        diff->p_tkh3 = workSeparateReceive.p_tkh3[th]/* - workSeparateCurrent.p_tkh3[th]*/;
-        diff->wcount = workSeparateReceive.wcount[th]/* - workSeparateCurrent.wcount[th]*/;
+        diff->p_tk = workSeparateReceive.source.p_tk[th]/* - workSeparateCurrent.p_tk[th]*/;
+        diff->p_tkh1 = workSeparateReceive.source.p_tkh1[th]/* - workSeparateCurrent.p_tkh1[th]*/;
+        diff->p_tkh2 = workSeparateReceive.source.p_tkh2[th]/* - workSeparateCurrent.p_tkh2[th]*/;
+        diff->p_tkh3 = workSeparateReceive.source.p_tkh3[th]/* - workSeparateCurrent.p_tkh3[th]*/;
+        diff->wcount = workSeparateReceive.source.wcount[th]/* - workSeparateCurrent.wcount[th]*/;
         for(int i=0; i<4; i++){
-            diff->i_prd[i] = workSeparateReceive.i_prd[th][i] - workSeparateCurrent.i_prd[th][i];
-            diff->p_prd[i] = workSeparateReceive.p_prd[th][i]/* - workSeparateCurrent.p_prd[th][i]*/;
+            diff->i_prd[i] = workSeparateReceive.source.i_prd[th][i] - workSeparateCurrent.source.i_prd[th][i];
+            diff->p_prd[i] = workSeparateReceive.source.p_prd[th][i]/* - workSeparateCurrent.p_prd[th][i]*/;
         }
         for(int i = 0; i < 5; i++){
-            diff->s_rst[i] = workSeparateReceive.s_rst[th][i] - workSeparateCurrent.s_rst[th][i];
+            diff->s_rst[i] = workSeparateReceive.source.s_rst[th][i] - workSeparateCurrent.source.s_rst[th][i];
         }
         if(!diff->isNullStucture()){
             diff->thread = th;
-            diff->dt = QDateTime::currentDateTime();
+            diff->dt = QDateTime::currentDateTime().toSecsSinceEpoch();
             addWorkSeparateDataRow(diff);
             memcpy(&workSeparateCurrent, &workSeparateReceive, sizeof(SPRWorkSeparate));
 //            workSeparateCurrent.p
@@ -181,12 +182,12 @@ void SPRSeparateModel::setWorkGistogrammData(QByteArray rawData, int thread)
         needSignal = true;
     }
     if(needSignal){
-        qDebug() << diff.toString();
+//        qDebug() << diff.toString();
         emit modelChanget(this);
     }
 }
 
-QByteArray SPRSeparateModel::toByteArray(IMainModel *_mainModel, int *errors)
+QByteArray SPRSeparateModel::toByteArray(int *errors)
 {
     memset(&settingsSeparate, 0, sizeof(settingsSeparate));
 
@@ -195,7 +196,7 @@ QByteArray SPRSeparateModel::toByteArray(IMainModel *_mainModel, int *errors)
     }
 
     for(int th=0; th<MAX_SPR_MAIN_THREADS; th++){
-        QMapElementsRanges elements = _mainModel->getSpectrumZonesTableModel()->getElementsRanges(th);
+        QMapElementsRanges elements = mainModel->getSpectrumZonesTableModel()->getElementsRanges(th);
         //            SPRElementsModel *elProperty = mainModel->getSpectrumZonesTableModel()->getElementsProperty();
         //            QVector<int> unusedIndex;
         //            for(int i=0; i<MAX_SPR_SPECTOR_ELEMENTS; i++){
@@ -212,18 +213,18 @@ QByteArray SPRSeparateModel::toByteArray(IMainModel *_mainModel, int *errors)
         //                settingsSeparate.obl[th][unusedIndex[i]].rs = 2;
         //            }
         for(int cond=0; cond<MAX_SPR_FORMULA_CONDITION; cond++){
-            SPRPorogsModel *porogs = _mainModel->getSettingsPorogsModel()->getPorogs();
-            SPRPorogsModel *porogs2 = _mainModel->getSettingsPorogsModel()->getPorogs2();
+            SPRPorogsModel *porogs = mainModel->getSettingsPorogsModel()->getPorogs();
+            SPRPorogsModel *porogs2 = mainModel->getSettingsPorogsModel()->getPorogs2();
 
             settingsSeparate.prg[th][cond] = porogs->porogs[th][cond]->getData();
             settingsSeparate.prg2[th][cond] = porogs2->porogs[th][cond]->getData();
         }
-        settingsSeparate.k_im[0][th] = _mainModel->getSettingsIMSModel()->kKoeffDuration[th]->getData();
-        settingsSeparate.b_im[0][th] = _mainModel->getSettingsIMSModel()->bKoeffDuration[th]->getData();
-        settingsSeparate.k_zd[0][th] = _mainModel->getSettingsIMSModel()->kKoeffDelay[th]->getData();
-        settingsSeparate.b_zd[0][th] = _mainModel->getSettingsIMSModel()->bKoeffDelay[th]->getData();
+        settingsSeparate.k_im[0][th] = mainModel->getSettingsIMSModel()->kKoeffDuration[th]->getData();
+        settingsSeparate.b_im[0][th] = mainModel->getSettingsIMSModel()->bKoeffDuration[th]->getData();
+        settingsSeparate.k_zd[0][th] = mainModel->getSettingsIMSModel()->kKoeffDelay[th]->getData();
+        settingsSeparate.b_zd[0][th] = mainModel->getSettingsIMSModel()->bKoeffDelay[th]->getData();
 
-        SPRSpectrumItemModel *item = _mainModel->getSpectrumListItemsModel()->getSpectrumBaseItem(th);
+        SPRSpectrumItemModel *item = mainModel->getSpectrumListItemsModel()->getSpectrumBaseItem(th);
         double _gmz;
         if(item && *item->getSpectrumData()->summ > 0){
            _gmz = item->getXRay();
@@ -233,7 +234,7 @@ QByteArray SPRSeparateModel::toByteArray(IMainModel *_mainModel, int *errors)
                *errors += SPR_SEPARATE_STATE_ERROR_BASE_SPACTRUE;
            }
         }
-        _gmz += _mainModel->getSettingsPorogsModel()->xRayCorrection->getData();
+        _gmz += mainModel->getSettingsPorogsModel()->xRayCorrection->getData();
         settingsSeparate.gmz[th] = _gmz;
 
         settingsSeparate.usl[th] = usl[th]->getData();
@@ -241,11 +242,11 @@ QByteArray SPRSeparateModel::toByteArray(IMainModel *_mainModel, int *errors)
     }
 
     for(int i=0; i<DEF_SPR_IMS_PARTS_SIZE+1;i++){
-        settingsSeparate.tiz[i] = _mainModel->getSettingsIMSModel()->timesMettering[i]->getData();
+        settingsSeparate.tiz[i] = mainModel->getSettingsIMSModel()->timesMettering[i]->getData();
     }
 
 
-    SPRSettingsFormulaModel *formulas = _mainModel->getSettingsFormulaModel();
+    SPRSettingsFormulaModel *formulas = mainModel->getSettingsFormulaModel();
     //        QVector<QVector<double*>> kh = {{&settingsSeparate.kh1[0], &settingsSeparate.kh1[1]},
     //                                        {&settingsSeparate.kh2[0], &settingsSeparate.kh2[1]},
     //                                        {&settingsSeparate.kh3[0], &settingsSeparate.kh3[1]}};
@@ -284,22 +285,22 @@ QByteArray SPRSeparateModel::toByteArray(IMainModel *_mainModel, int *errors)
     //            }
     //        }
 
-    settingsSeparate.fh12 = static_cast<double>(_mainModel->getSettingsFormulaModel()->getConditions()->getData());
+    settingsSeparate.fh12 = static_cast<double>(mainModel->getSettingsFormulaModel()->getConditions()->getData());
 
-    settingsSeparate.fotb = static_cast<double>(_mainModel->getSettingsPorogsModel()->invertSelection->getData());
-    settingsSeparate.fotbR2 = static_cast<double>(_mainModel->getSettingsPorogsModel()->invertSelection2->getData());
+    settingsSeparate.fotb = static_cast<double>(mainModel->getSettingsPorogsModel()->invertSelection->getData());
+    settingsSeparate.fotbR2 = static_cast<double>(mainModel->getSettingsPorogsModel()->invertSelection2->getData());
 
-    settingsSeparate.ming1 = _mainModel->getSettingsFormulaModel()->min->getData();
-    settingsSeparate.maxg1 = _mainModel->getSettingsFormulaModel()->max->getData();
+    settingsSeparate.ming1 = mainModel->getSettingsFormulaModel()->min->getData();
+    settingsSeparate.maxg1 = mainModel->getSettingsFormulaModel()->max->getData();
 
     settingsSeparate.gcol = gcol->getData();
     settingsSeparate.kruch = kruch->getData();
 
-    settingsSeparate.totb = _mainModel->getSettingsIMSModel()->blockImsParam->getData();
-    settingsSeparate.totbR2 = _mainModel->getSettingsIMSModel()->blockImsParam2->getData();
+    settingsSeparate.totb = mainModel->getSettingsIMSModel()->blockImsParam->getData();
+    settingsSeparate.totbR2 = mainModel->getSettingsIMSModel()->blockImsParam2->getData();
 
-    settingsSeparate.kprMin = _mainModel->getSettingsPorogsModel()->forMinStone->getData();
-    settingsSeparate.kprMax = _mainModel->getSettingsPorogsModel()->forMaxStone->getData();
+    settingsSeparate.kprMin = mainModel->getSettingsPorogsModel()->forMinStone->getData();
+    settingsSeparate.kprMax = mainModel->getSettingsPorogsModel()->forMaxStone->getData();
 
     settingsSeparate.alg = alg->getData();
     settingsSeparate.sep_row = sep_row->getData();
@@ -310,9 +311,10 @@ QByteArray SPRSeparateModel::toByteArray(IMainModel *_mainModel, int *errors)
     return ret;
 }
 
-SPRSeparateModel::SPRSeparateModel(QDomDocument *_doc, ISPRModelData *parent):
+SPRSeparateModel::SPRSeparateModel(QDomDocument *_doc, SPRMainModel* _model, ISPRModelData *parent):
     ISPRModelData(_doc, parent), separateStructupeEmpty(true), gmz(), gcol(nullptr), kruch(nullptr), usl(), alg(nullptr), sep_row(nullptr)
 {
+    setModelData(_model);
     //    mainModel = new SPRMainModel(doc);
 //    setProperty("delete_main", QVariant(true));
 
@@ -336,6 +338,11 @@ SPRSeparateModel::SPRSeparateModel(QDomDocument *_doc, ISPRModelData *parent):
     alg = new SPRVariable<uint>(doc, SPR_SEPARATE_ALG_PATH, DEF_SPR_SEPARATE_ALG, this);
     sep_row = new SPRVariable<uint>(doc, SPR_SEPARATE_SEP_ROW_PATH, DEF_SPR_SEPARATE_SEP_ROW, this);
 
+}
+
+void SPRSeparateModel::setModelData(ISPRModelData *value)
+{
+    mainModel = value->getMainModel();
 }
 
 

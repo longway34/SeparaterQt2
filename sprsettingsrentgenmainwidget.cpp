@@ -185,3 +185,9 @@ void SPRSettingsRentgenMainWidget::onModelChanget(IModelVariable *)
 {
     widgetsShow();
 }
+
+
+void SPRSettingsRentgenMainWidget::setMasterMode(bool value)
+{
+    this->setEnabled(value);
+}

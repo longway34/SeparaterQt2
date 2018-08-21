@@ -27,6 +27,11 @@ QColor SPRGrSpectrumItemModel::getColorZone(EnumElements el)
     return rangesModel->getZones()[el]->element->color->getData();
 }
 
+//SPRGraphItem *SPRGrSpectrumItemModel::getGraphics()
+//{
+//    return graphics;
+//}
+
 SPRGrSpectrumItemModel *SPRGrSpectrumItemModel::complite()
 {
     if(rangesModel){
@@ -76,4 +81,5 @@ SPRGrSpectrumItemModel::SPRGrSpectrumItemModel(SPRSpectrumZonesModel *_ranges, S
     zonesGraphData.clear();
 
     complite();
+
 }

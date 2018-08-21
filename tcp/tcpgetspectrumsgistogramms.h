@@ -15,20 +15,21 @@ class TCPGetSpectrumsGistogramms : public TCPCommandSet
     Q_OBJECT
     
 //    uint threadNum;
-    QList<uint8_t> workingThreads;
+    SPRThreadList workingThreads;
     EnumCommands dataType;
     double timeOfSpectorScope_in_sec;
     bool withRGU;
     bool withOffExp;
     bool toUpDown;
 
+    TCPExpositionOnOff *expositionOn;
     SPRMainModel *model;
 //    TCPLogsWigtets *logWidget;
 
 public:
     TCPGetSpectrumsGistogramms();
 //    TCPGetSpectrumsGistogramms(ServerConnect *_server, EnumCommands _dataType, SPRMainModel *_model, TCPTimeOutWigget *_widget = nullptr, TCPLogsWigtets *_logWidget = nullptr);
-    TCPGetSpectrumsGistogramms(ServerConnect *_server, EnumCommands _dataType, SPRMainModel *_model, double _timeSpk_in_sec = -1, QList<uint8_t> _threads = {}, TCPTimeOutWigget *_toWidget=nullptr, TCPLogsWigtets *_logWidgets=nullptr);
+    TCPGetSpectrumsGistogramms(ServerConnect *_server, EnumCommands _dataType, SPRMainModel *_model, double _timeSpk_in_sec = -1, SPRThreadList _threads = {}, TCPTimeOutWigget *_toWidget=nullptr, TCPLogsWigtets *_logWidgets=nullptr);
 
     void setModelData(SPRMainModel *_model){
         model = _model;
@@ -50,7 +51,7 @@ public:
         return res;
     }
 
-    void setThreadTimer(double _time_spk_in_sec = 1, QList<uint8_t> _wtList = {});
+    void setThreadTimer(double _time_spk_in_sec = 1, SPRThreadList _wtList = {});
 
     virtual EnumCommands getDataType() const;
 
@@ -65,11 +66,19 @@ public:
     void setWithOffExp(bool value);
 
 protected slots:
-    virtual void go(TCPCommand *_command = NULL);
+    virtual void go(TCPCommand *_command = nullptr);
+    virtual void onCommandNotComplite(TCPCommand *_command);
 
 signals:
     void rentgenReady(TCPCommand*);
     void rentgenNotReady(TCPCommand*);
+
+    // TCPCommandSet interface
+protected slots:
+
+    // TCPCommandSet interface
+public:
+    virtual bool isCommamdCompare(TCPCommand *_command);
 };
 
 #endif // TCPGETSPECTRUMSGISTORGAMMS_H

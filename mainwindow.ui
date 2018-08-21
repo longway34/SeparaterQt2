@@ -7,25 +7,32 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>600</height>
+    <height>720</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <property name="maximumSize">
-    <size>
-     <width>1350</width>
-     <height>750</height>
-    </size>
-   </property>
-   <layout class="QVBoxLayout" name="verticalLayout" stretch="85,15">
+   <layout class="QVBoxLayout" name="verticalLayout" stretch="80,20">
     <item>
      <widget class="MainTabWidget" name="wMainTabWidget" native="true"/>
     </item>
     <item>
-     <widget class="TCPLogsWigtets" name="wLog" native="true"/>
+     <widget class="TCPLogsWigtets" name="wLog" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -38,7 +45,69 @@
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>Файл</string>
+    </property>
+    <addaction name="actMasterMode"/>
+    <addaction name="actOpenConfig"/>
+    <addaction name="actSave"/>
+    <addaction name="actAbout"/>
+    <addaction name="separator"/>
+    <addaction name="actExit"/>
+   </widget>
+   <addaction name="menu"/>
   </widget>
+  <action name="actOpenConfig">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/icons/b_Open.png</normaloff>:/icons/icons/b_Open.png</iconset>
+   </property>
+   <property name="text">
+    <string>Открыть конфигурациб</string>
+   </property>
+  </action>
+  <action name="actSave">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/icons/b_Save.png</normaloff>:/icons/icons/b_Save.png</iconset>
+   </property>
+   <property name="text">
+    <string>Сохранить изменения</string>
+   </property>
+  </action>
+  <action name="actExit">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/icons/b_Exit.png</normaloff>:/icons/icons/b_Exit.png</iconset>
+   </property>
+   <property name="text">
+    <string>Выход</string>
+   </property>
+  </action>
+  <action name="actMasterMode">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/icons/b_Keys.png</normaloff>:/icons/icons/b_Keys.png</iconset>
+   </property>
+   <property name="text">
+    <string>Режим мастера</string>
+   </property>
+  </action>
+  <action name="actAbout">
+   <property name="text">
+    <string>О нас</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -54,6 +123,25 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
- <connections/>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>actExit</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

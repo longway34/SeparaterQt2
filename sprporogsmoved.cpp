@@ -4,18 +4,19 @@
 #include <QEvent>
 #include <QMouseEvent>
 
-SPRPorogsMoved::SPRPorogsMoved(QwtPlot *plot, QVector<QwtPlotItem *> _items) : QObject(plot)
+SPRPorogsMoved::SPRPorogsMoved(QwtPlot *plot, QList<QwtPlotItem *> _items) : QObject(plot)
 {
     init(plot, _items);
 }
 
 SPRPorogsMoved::SPRPorogsMoved(QwtPlot *plot, QwtPlotItem *_item) : QObject(plot)
 {
-    init(plot, QVector<QwtPlotItem *>({_item}));
+    init(plot, QList<QwtPlotItem *>({_item}));
 }
 
-void SPRPorogsMoved::init(QwtPlot *plot, QVector<QwtPlotItem *> _items)
+void SPRPorogsMoved::init(QwtPlot *plot, QList<QwtPlotItem *> _items)
 {
+    movedItems.clear();
     addMovedItems(_items);
     currentMovedItem = nullptr;
 
@@ -36,14 +37,14 @@ void SPRPorogsMoved::init(QwtPlot *plot, QVector<QwtPlotItem *> _items)
     canvas->setFocusPolicy( Qt::StrongFocus );
 }
 
-QVector<QwtPlotItem *> SPRPorogsMoved::getMovedItems() const
+QList<QwtPlotItem *> SPRPorogsMoved::getMovedItems() const
 {
     return movedItems;
 }
 
-void SPRPorogsMoved::addMovedItems(const QVector<QwtPlotItem *> &value)
+void SPRPorogsMoved::addMovedItems(QList<QwtPlotItem *> &value)
 {
-    movedItems.append(value);
+    movedItems << value;
 }
 
 void SPRPorogsMoved::addMovedItems(QwtPlotItem *value)
@@ -56,9 +57,9 @@ void SPRPorogsMoved::addMovedItems(QwtPlotItem *value)
 void SPRPorogsMoved::remoteItem(QwtPlotItem *value)
 {
     if(movedItems.contains(value)){
-        for(int i=0; i<movedItems.size();i++){
-            if(movedItems[i] == value){
-                movedItems.remove(i);
+        foreach(QwtPlotItem* item, movedItems){
+            if(item == value){
+                movedItems.removeOne(item);
                 break;
             }
         }

@@ -49,7 +49,7 @@
    </property>
    <item>
     <widget class="QWidget" name="widget" native="true">
-     <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,0">
+     <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,0,0">
       <item>
        <widget class="QGroupBox" name="gbSpectrumElements">
         <property name="sizePolicy">
@@ -124,6 +124,19 @@
          </item>
         </layout>
        </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
       <item>
        <widget class="SPRSpectrumGraphicsWidget" name="graphic" native="true">
@@ -262,7 +275,7 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout">
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="70,30">
       <property name="spacing">
        <number>3</number>
       </property>
@@ -273,7 +286,7 @@
        <number>0</number>
       </property>
       <property name="rightMargin">
-       <number>6</number>
+       <number>0</number>
       </property>
       <property name="bottomMargin">
        <number>0</number>
@@ -291,76 +304,23 @@
         </property>
        </widget>
       </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="gbBasetSpectrums">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="title">
-      <string>Базовые спектры</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <property name="spacing">
-       <number>3</number>
-      </property>
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
       <item>
-       <widget class="QWidget" name="widget_5" native="true">
-        <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="50,50">
-         <item>
-          <widget class="SPRSpectrumBaseListTable2" name="tListBasedSpectrumItem">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>0</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_3">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item>
-       <widget class="QWidget" name="widget_6" native="true">
-        <layout class="QHBoxLayout" name="horizontalLayout_6">
+       <widget class="QGroupBox" name="gbBasetSpectrums">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="title">
+         <string>Базовые спектры</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <property name="spacing">
+          <number>3</number>
+         </property>
          <property name="leftMargin">
-          <number>9</number>
+          <number>0</number>
          </property>
          <property name="topMargin">
           <number>0</number>
@@ -372,34 +332,61 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QPushButton" name="bGetBaseSpectrum">
-           <property name="text">
-            <string>Получить базовый спектр</string>
-           </property>
-           <property name="icon">
-            <iconset resource="icons.qrc">
-             <normaloff>:/icons/icons/b_Get_Base_Spectrum.png</normaloff>:/icons/icons/b_Get_Base_Spectrum.png</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>32</width>
-             <height>32</height>
-            </size>
-           </property>
+          <widget class="QWidget" name="widget_5" native="true">
+           <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="50">
+            <item>
+             <widget class="SPRSpectrumBaseListTable2" name="tListBasedSpectrumItem">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
          <item>
-          <spacer name="horizontalSpacer_4">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
+          <widget class="QWidget" name="widget_6" native="true">
+           <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <property name="leftMargin">
+             <number>9</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QPushButton" name="bGetBaseSpectrum">
+              <property name="text">
+               <string>Получить базовые спектры</string>
+              </property>
+              <property name="icon">
+               <iconset resource="icons.qrc">
+                <normaloff>:/icons/icons/b_Get_Base_Spectrum.png</normaloff>:/icons/icons/b_Get_Base_Spectrum.png</iconset>
+              </property>
+              <property name="iconSize">
+               <size>
+                <width>32</width>
+                <height>32</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -411,6 +398,12 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>SPRSpectrumGraphicsWidget</class>
+   <extends>QWidget</extends>
+   <header>sprspectrumgraphicswidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>SPRZonesRangesTableWidget</class>
    <extends>QWidget</extends>
    <header>sprzonesrangestablewidget.h</header>
@@ -420,12 +413,6 @@
    <class>SPRSpectrumListTable</class>
    <extends>QTableWidget</extends>
    <header>sprspectrumlisttable.h</header>
-  </customwidget>
-  <customwidget>
-   <class>SPRSpectrumGraphicsWidget</class>
-   <extends>QWidget</extends>
-   <header>sprspectrumgraphicswidget.h</header>
-   <container>1</container>
   </customwidget>
   <customwidget>
    <class>SPRSpectrumBaseListTable2</class>

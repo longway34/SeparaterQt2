@@ -61,6 +61,8 @@ typedef enum _tcp_commands: unsigned char{
             getblk      = 0x67,
             setlog      = 0x68,
                     
+            clearrs     = 0x6F,
+
             lastcommand         = 0x7D,
             timeoutcommand      = 0x7E,
             nocommand           = 0x7F,

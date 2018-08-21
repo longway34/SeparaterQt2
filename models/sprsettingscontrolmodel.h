@@ -38,8 +38,8 @@ public:
 
     SPRBooleanVariable *autoOreStreamControl;
 
-    SPRVariable<double> *VEMSLevelLess;
-    SPRVariable<double> *VEMSMaxCode;
+    SPRVariable<uint16_t> *VEMSLevelLess;
+    SPRVariable<uint16_t> *VEMSMaxCode;
     SPRVariable<uint16_t> *VEMSBeginCode;
 ;
 

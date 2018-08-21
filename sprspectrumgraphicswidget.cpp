@@ -29,6 +29,17 @@ void SPRSpectrumGraphicsWidget::setModelData(SPRSpectrumListItemsModel *value, S
     }
 }
 
+void SPRSpectrumGraphicsWidget::setVisibleAll(bool _allVisible){
+    allVisible = _allVisible;
+    //        visibleItems.clear();
+    //        for(int i=0; i<spectrums->size(); i++){
+    //            SPRGraphItem *gr = findGraphItemByModel(spectrums->at(i));
+    //            if(gr){
+    //                visibleItems.push_back(gr);
+    //            }
+    //        }
+}
+
 void SPRSpectrumGraphicsWidget::onChangeSelectedCheckedItems(QList<SPRSpectrumItemModel*> _checked, SPRSpectrumItemModel *_current){
     visibleItems.clear();
     foreach(SPRSpectrumItemModel* model, _checked){
@@ -37,7 +48,7 @@ void SPRSpectrumGraphicsWidget::onChangeSelectedCheckedItems(QList<SPRSpectrumIt
             visibleItems.push_back(gr);
         }
     }
-//    visibleItems = _checked;
+    //    visibleItems = _checked;
     currentItem = findGraphItemByModel(_current);
 
 //    zoomer->setCurrent(currentItem);
@@ -79,9 +90,12 @@ void SPRSpectrumGraphicsWidget::onChangeSelectedCheckedItems(QList<SPRSpectrumIt
 
 void SPRSpectrumGraphicsWidget::clearPorogsMovedItems(){
     if(porogsMoved){
-        for(int index=0; index<graphItems.size(); index++){
-            foreach(QwtPlotItem *pi, graphItems[index]->zones.values()){
-                porogsMoved->remoteItem(pi);
+        if(spectrums){
+            foreach(SPRSpectrumItemModel* model, *spectrums){
+                foreach(QwtPlotItem *pi, model->getGraphic()->zones.values()){
+//                foreach(QwtPlotItem *pi, graphItems[index]->zones.values()){
+                    porogsMoved->remoteItem(pi);
+                }
             }
         }
     }
@@ -91,9 +105,9 @@ void SPRSpectrumGraphicsWidget::setPorogsMovedItems(){
     if(porogsMoved){
         clearPorogsMovedItems();
         if(currentItem){
-            QVector<QwtPlotItem*> lpl;
+            QList<QwtPlotItem*> lpl;
             foreach(QwtPlotItem* pi, currentItem->zones.values()){
-                lpl.push_back(pi);
+                lpl << pi;
             }
             porogsMoved->addMovedItems(lpl);
         }
@@ -120,31 +134,7 @@ void SPRSpectrumGraphicsWidget::setGraphicsMode(const SPRViewGraphicsMode &value
 {
     graphicsMode = value;
     if(model){
-        QVector<SPRSpectrumItemModel*> *vect = model->getSpectrumsModel(spectrumsAll);
-        double mul = 1;
-        if(value == viewModeScales){
-            uint32_t y_max = 0;
-            for(int index=0; index<vect->size(); index++){
-                uint32_t y = *vect->at(index)->getSpectrumData()->peak_value;
-                if(y_max < y){
-                    y_max = y;
-                }
-            }
-            for(int index=0; index<vect->size(); index++){
-                uint32_t val = *vect->at(index)->getSpectrumData()->peak_value;
-                if(val > 0){
-                    double mul = (double)y_max / (double)val;
-                    vect->at(index)->setGraphicMode(value, mul);
-                } else {
-                    vect->at(index)->setGraphicMode(value, 1);
-                }
-            }
-        } else {
-            for(int index=0; index<vect->size(); index++){
-                vect->at(index)->setGraphicMode(value, mul);
-            }
-        }
-        widgetsShow();
+        model->setGraphicMode(value);
     }
 }
 
@@ -194,12 +184,12 @@ void SPRSpectrumGraphicsWidget::setWithLegend(bool value)
     ui.canvas->insertLegend(legend, QwtPlot::BottomLegend);
 }
 
-QList<int> SPRSpectrumGraphicsWidget::getVisibleThreads() const
+SPRThreadList SPRSpectrumGraphicsWidget::getVisibleThreads() const
 {
     return visibleThreads;
 }
 
-void SPRSpectrumGraphicsWidget::setVisibleThreads(const QList<int> &value)
+void SPRSpectrumGraphicsWidget::setVisibleThreads(const SPRThreadList &value)
 {
     visibleThreads = value;
 }
@@ -222,6 +212,17 @@ SPRGraphItem *SPRSpectrumGraphicsWidget::getCurrentItem() const
 void SPRSpectrumGraphicsWidget::setCurrentItem(SPRGraphItem *value)
 {
     currentItem = value;
+}
+
+int SPRSpectrumGraphicsWidget::getGraphItemNumber(SPRSpectrumItemModel *_mod){
+    int ret = -1;
+    for(int index=0; index<spectrums->size(); index++){
+        if(_mod == spectrums->at(index)){
+            ret = index;
+            break;
+        }
+    }
+    return ret;
 }
 
 SPRSpectrumGraphicsWidget::SPRSpectrumGraphicsWidget(QWidget *parent) :
@@ -312,36 +313,41 @@ void SPRSpectrumGraphicsWidget::onDblClickMouse()
     }
 }
 
-void SPRSpectrumGraphicsWidget::clearGraphics(bool all){
-    QList<int> forDeleteIndex;
+void SPRSpectrumGraphicsWidget::hideGraphics(QwtPlotItem *graph){
+    if(graph && getCanvas()->itemList().contains(graph)){
+        graph->detach();
+    }
+}
 
-    QVector<SPRSpectrumItemModel*> _source = *model->getSpectrumsModel(spectrumsAll);
-    QVector<SPRGraphItem*> result;
-    for(int i=0; i<graphItems.size(); i++){
-        if(!_source.contains(graphItems[i]->getModelData()) || all){
-            if(porogsMoved){
-                foreach(QwtPlotItem* item, graphItems[i]->zones.values()){
-                    porogsMoved->remoteItem(item);
-                }
-            }
-            forDeleteIndex << i;
-        } else {
-            result.push_back(graphItems[i]);
-        }
+void SPRSpectrumGraphicsWidget::hideGraphics(SPRSpectrumItemModel *item){
+    if(item){
+        item->getGraphic()->setVisible(getCanvas(), false, false, zonesShow);
     }
-    foreach(int i, forDeleteIndex){
-        delete graphItems[i];
+}
+
+void SPRSpectrumGraphicsWidget::hideGraphics(QList<SPRSpectrumItemModel *> *items,  bool all){
+    if(all){
+        items = model->getSpectrumsModel(typeSpectrumSetDef);
     }
-    graphItems = result;
+    foreach(SPRSpectrumItemModel *item, *items){
+        hideGraphics(item);
+    }
+}
+
+void SPRSpectrumGraphicsWidget::hideGraphics(SPRTypeSpectrumSet type){
+    if(model){
+        QList<SPRSpectrumItemModel*> *lst = model->getSpectrumsModel(type);
+        hideGraphics(lst, false);
+    }
 }
 
 SPRGraphItem *SPRSpectrumGraphicsWidget::findGraphItemByModel(SPRSpectrumItemModel* model){
-    for(int i=0; i<graphItems.size(); i++){
-        if(graphItems[i]->getModelData() == model){
-            return graphItems[i];
-        }
-    }
-    return nullptr;
+//    foreach(SPRGraphItem *item, graphItems){
+//        if(item->getModelData() == model){
+//            return item;
+//        }
+//    }
+    return model->getGraphic();
 }
 
 void SPRSpectrumGraphicsWidget::widgetsShow()
@@ -349,7 +355,7 @@ void SPRSpectrumGraphicsWidget::widgetsShow()
     if(model){
         blockSignals(true);
 
-        clearGraphics();
+        hideGraphics(spectrumsAll);
 
 //        QList<SPRSpectrumItemModel*> visibleModels;
 //        foreach(SPRGraphItem* gr, visibleItems){
@@ -365,19 +371,19 @@ void SPRSpectrumGraphicsWidget::widgetsShow()
 //        onChangeSelectedCheckedItems({}, nullptr);
 //        ui.canvas->detachItems();
         spectSource = model->getSpectrumsItemByThread(currentThread, typeSpectrumSet);
-//        spectrums = &spectSource;
-        for(int i=0; i<spectrums->size(); i++){
-                SPRGraphItem *gi = findGraphItemByModel(spectrums->at(i));
-                if(!gi){
-                    gi = new SPRGraphItem(spectrums->at(i), ui.canvas);
-                    graphItems.push_back(gi);
-                }
-                gi->setModelData(spectrums->at(i));
+        spectrums = &spectSource;
+        QList<SPRGraphItem*> graphItems;
+        foreach(SPRSpectrumItemModel* model, *spectrums){
+                SPRGraphItem *gi = model->getGraphic();
+                graphItems << gi;
+//                if(!gi){
+//                    gi = new SPRGraphItem(model, ui.canvas);
+//                }
+//                gi->setModelData(model);
     //        }
         }
-        for(int i=0; i<graphItems.size(); i++){
+        foreach(SPRGraphItem *graph, graphItems){
             bool visible = false;
-            SPRGraphItem *graph = graphItems[i];
             if(spectrums->contains(graph->getModelData())){
                 if(currentItem == graph || allCurrent || allVisible){
                    visible = true;
@@ -389,7 +395,7 @@ void SPRSpectrumGraphicsWidget::widgetsShow()
                     visible = visibleItems.contains(graph);
                 }
             }
-            graphItems[i]->setVisible(visible, graphItems[i]==currentItem || allCurrent, zonesShow);
+            graph->setVisible(ui.canvas, visible, graph==currentItem || allCurrent, zonesShow);
         }
 //        onChangeSelectedCheckedItems(visibleModels, currentModel);
         setPorogsMovedItems();

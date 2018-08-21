@@ -8,7 +8,7 @@
 
 class TCPCommandStartPitatel :public TCPCommandSet
 {
-    bool pitatelWorking;
+//    bool pitatelWorking;
 
     SPRVariable<uint16_t> *VEMSBeginCode;
 
@@ -21,12 +21,12 @@ public:
     }
 
 public slots:
-    void setPercents(uint16_t _persents);
+//    void setPercents(uint16_t _persents);
 
     // TCPCommand interface
 public slots:
     virtual void go(TCPCommand *_command);
-    void setPitatelStopFlag(){pitatelWorking = false;}
+//    void setPitatelStopFlag(){pitatelWorking = false;}
 };
 
 

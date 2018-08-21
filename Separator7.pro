@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui xml network
+QT += charts
 CONFIG   += qwt
 
 win32:CONFIG += console
@@ -68,6 +69,7 @@ SOURCES += \
     models/sprmainmodel.cpp \
     models/sprspectrumzonestablemodel.cpp \
     models/sprspectrumzonesmodel.cpp \
+    models/sprgraphitem.cpp \
     models/sprspectrumitemmodel.cpp \
     models/sprspectrumlistitemsmodel.cpp \
     testtablewidget.cpp \
@@ -119,7 +121,6 @@ SOURCES += \
     mainwindow.cpp \
     scrollbar.cpp \
     scrollzoomer.cpp \
-    sprgraphitem.cpp \
     tcp/tcpstartseparate2.cpp \
     sprseparategistogrammwidget.cpp \
     sprseparatedetailstable.cpp \
@@ -133,7 +134,17 @@ SOURCES += \
     tcp/tcpautosetrentgen.cpp \
     tcp/tcpcommandrguupdown2.cpp \
     tcp/tcpexpositiononoff.cpp \
-    tcp/tcpcommandseparatoroff.cpp
+    tcp/tcpcommandseparatoroff.cpp \
+    tcp/tcpautosetcommandgo.cpp \
+    isprsettingswidget.cpp \
+    sprhitorygraphics.cpp \
+    sprseparatehistogrammreport.cpp \
+    sprsepratemaintable.cpp \
+    models/sprseparateoutputmodel.cpp \
+    models/sprhistorymodel.cpp \
+    sprstonesizeschart.cpp \
+    sprpitatelcontrolwidget.cpp \
+    sprseparatecontrolwidget.cpp
 
 HEADERS += \
     _types.h \
@@ -172,6 +183,7 @@ HEADERS += \
     models/sprmainmodel.h \
     models/sprspectrumzonestablemodel.h \
     models/sprspectrumzonesmodel.h \
+    models/sprgraphitem.h \
     models/sprspectrumitemmodel.h \
     models/sprspectrumlistitemsmodel.h \
     testtablewidget.h \
@@ -223,7 +235,6 @@ HEADERS += \
     mainwindow.h \
     scrollbar.h \
     scrollzoomer.h \
-    sprgraphitem.h \
     tcp/tcpstartseparate2.h \
     sprseparategistogrammwidget.h \
     sprseparatedetailstable.h \
@@ -236,7 +247,17 @@ HEADERS += \
     tcp/tcpautosetrentgen.h \
     tcp/tcpcommandrguupdown2.h \
     tcp/tcpexpositiononoff.h \
-    tcp/tcpcommandseparatoroff.h
+    tcp/tcpcommandseparatoroff.h \
+    tcp/tcpautosetcommandgo.h \
+    isprsettingswidget.h \
+    sprhitorygraphics.h \
+    sprseparatehistogrammreport.h \
+    sprsepratemaintable.h \
+    models/sprseparateoutputmodel.h \
+    models/sprhistorymodel.h \
+    sprstonesizeschart.h \
+    sprpitatelcontrolwidget.h \
+    sprseparatecontrolwidget.h
 
 FORMS += \
     sprsettingsrentgenmainwidget.ui \
@@ -266,7 +287,9 @@ FORMS += \
     sprseparategistogrammwidget.ui \
     sprseparatedetailtablewidget.ui \
     maintabwidget.ui \
-    sprsettingrentgenautosetdialog.ui
+    sprsettingrentgenautosetdialog.ui \
+    sprpitatelcontrolwidget.ui \
+    sprseparatecontrolwidget.ui
 
 RESOURCES += \
     icons.qrc \

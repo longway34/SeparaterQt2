@@ -1,4 +1,5 @@
 #include "imodelvariable.h"
+#include "models/sprmainmodel.h"
 
 /***
  * class FindData
@@ -154,11 +155,11 @@ void IModelVariable::Init(QDomDocument *parent, QString xpath, QString defValue,
     //    toDebug();
 }
 
-IModelVariable *IModelVariable::getMainModel()
+SPRMainModel *IModelVariable::getMainModel()
 {
-    IModelVariable *res = nullptr;
+    SPRMainModel *res = nullptr;
     if(objectName() == "MainModel"){
-        return this;
+        return (SPRMainModel*)this;
     } else {
         if(mvparent){
             res = mvparent->getMainModel();

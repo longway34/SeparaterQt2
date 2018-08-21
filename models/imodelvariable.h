@@ -47,6 +47,8 @@ public:
     QDomNode getFindedNode();
 };
 
+class SPRMainModel;
+
 class IModelVariable: public QObject
 {
     Q_OBJECT
@@ -98,7 +100,7 @@ protected:
 
 
 public:
-    IModelVariable *getMainModel();
+    SPRMainModel *getMainModel();
 
     void setMVParent(IModelVariable *_mvparent){
         mconnect(_mvparent);

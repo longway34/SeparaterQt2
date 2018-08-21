@@ -14,11 +14,16 @@ MainTabWidget::MainTabWidget(QWidget *parent) :
     connect(ui.tabSettings, SIGNAL(doShow()), this, SLOT(widgetsShow()));
 
     connect(this, SIGNAL(currentChanged(int)), this, SLOT(widgetsShow()));
+
+    isMasterMode = false;
 }
 
 MainTabWidget::MainTabWidget(QDomDocument *_doc, QWidget *parent): QTabWidget(parent), model(nullptr), errorSeparateState(SPR_SEPARATE_STATE_OK)
 {
     ui.setupUi(this);
+
+    isMasterMode = false;
+
     ISPRWidget::setDoc(doc);
     setModelData(new SPRMainModel(doc));
 
@@ -42,18 +47,40 @@ MainTabWidget::MainTabWidget(QString _fName, QWidget *parent): QTabWidget(parent
     setDoc(_fName);
 }
 
+bool MainTabWidget::getIsMasterMode() const
+{
+    return isMasterMode;
+}
+
+void MainTabWidget::setIsMasterMode(bool value)
+{
+    isMasterMode = value;
+    //    if(isMasterMode){
+    //        ui.tabSettings->setEnabled(false);
+    //    } else {
+    //        ui.tabSettings->setEnabled(true);
+    //    }
+    ui.tabSettings->setMasterMode(isMasterMode);
+    ui.tabSpectrum->setIsMasterMode(isMasterMode);
+    widgetsShow();
+}
+
 void MainTabWidget::setLogWidget(TCPLogsWigtets *value)
 {
     ISPRWidget::setLogWidget(value);
-//    logWidget = value;
+    //    logWidget = value;
     model->getServer()->setLogWidget(value);
 
     ui.tabTest->setLogWidget(value);
-    ui.wTest->setLogWidget(value);
+//    ui.wTest->setLogWidget(value);
     ui.tabSpectrum->setLogWidget(value);
     ui.wSeparateWigget->setLogWidget(value);
 
+    if(value){
+        connect(value, SIGNAL(logWidgetEvent(QString, QColor)), ui.logWidget, SLOT(onLogsCommand(QString, QColor)));
+//        ui.logWidget()
 //    ui.wTest->setl
+    }
 }
 
 ISPRModelData *MainTabWidget::setModelData(SPRMainModel *_model)
@@ -69,19 +96,35 @@ ISPRModelData *MainTabWidget::setModelData(SPRMainModel *_model)
         ui.tabSettings->setModelData(model);
 
         ui.tabSpectrum->setModelData(model);
-        ui.wTest->setModelData(model);
+//        ui.wTest->setModelData(model);
 
         ui.tabTest->setModelData(model);
-        ui.tabTestSeparateDetail->setModelData(model);
+//        ui.tabTestSeparateDetail->setModelData(model);
         ui.wSeparateWigget->setModelData(model);
 //    ui.testSeparateDetail->setModelData(model);
+
+        setCurrentWidget(ui.tabSeparate);
     }
 
 }
 
+void MainTabWidget::widgetsShow(){
+    //        emit doShow();
+//        ui.tabSettings->setVisible(true);
+        ui.tabSettings->setMasterMode(isMasterMode);
+        ui.tabSettings->widgetsShow();
+
+    ui.tabSpectrum->widgetsShow();
+    //        ui.tabSeparate->
+    //        ui.tabHistory->wid
+    ui.tabTest->widgetsShow();
+//    ui.tabTestSeparateDetail->widgetsShow();
+    ui.wSeparateWigget->widgetsShow();
+}
+
 void MainTabWidget::onClickSetSeparateButton(bool value){
-//    ui.teResult->clear();
-    QByteArray result = separateModel->toByteArray(model, &errorSeparateState);
+    //    ui.teResult->clear();
+    QByteArray result = separateModel->toByteArray(&errorSeparateState);
     QString str;
     for(int ch=0; ch<result.size(); ch++){
         char buf[20];

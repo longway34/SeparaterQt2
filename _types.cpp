@@ -15,3 +15,10 @@ static const DefaultElementsProperty elementsProperty[MAX_SPR_SPECTOR_ELEMENTS] 
 static const QColor mainColors[] = {Qt::red, Qt::green, Qt::blue, Qt::cyan, Qt::magenta, Qt::yellow,
                                     Qt::darkRed, Qt::darkBlue, Qt::darkGreen, Qt::darkCyan, Qt::darkMagenta, Qt::darkYellow,
                                     Qt::gray, Qt::lightGray, Qt::white, Qt::darkGray};
+
+const SPRThreadList getAllThreadsListDefault(uint8_t ths){
+    SPRThreadList res;
+    ths = (ths > MAX_SPR_MAIN_THREADS) ? MAX_SPR_MAIN_THREADS : ths;
+    for(uint8_t th; th<ths; th++) res << th;
+    return res;
+}

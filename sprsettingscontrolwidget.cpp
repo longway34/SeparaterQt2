@@ -1,4 +1,5 @@
 #include "sprsettingscontrolwidget.h"
+#include "models/sprmainmodel.h"
 
 SPRSettingsControlWidget::SPRSettingsControlWidget(QWidget *parent) :
     QWidget(parent)
@@ -44,14 +45,20 @@ void SPRSettingsControlWidget::widgetsShow()
         ui.tControl->setHorizontalHeaderLabels(hTitle);
         ui.tControl->setVerticalHeaderLabels(vTitle);
 
+        QLocale loc(QLocale::C);
+        loc.setNumberOptions(QLocale::RejectGroupSeparator);
+
         QLineEdit *le = setNumberCell(ui.tControl, 0, 0, model->correlSpectrumPermiss->getData(), 0, 100, tr("Допустимое значение корреляции спектра (-1..1)"));
-        le->setValidator(new QDoubleValidator(-1, 1, 2, le));
-        le->setText(model->correlSpectrumPermiss->toString());
+
+        QDoubleValidator *validator = new QDoubleValidator(-1, 1, 2, this);
+        validator->setLocale(loc);
+        le->setValidator(validator);
+        le->setText(QString::number(model->correlSpectrumPermiss->getData(), 'f', 2));
         connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
 
         le = setNumberCell(ui.tControl, 0, 1, model->correlSpectrumCritical->getData(), 0, 100, tr("Критичное значение корреляции спектра (-1..1)"));
-        le->setValidator(new QDoubleValidator(-1, 1, 2, le));
-        le->setText(model->correlSpectrumCritical->toString());
+        le->setValidator(validator);
+        le->setText(QString::number(model->correlSpectrumCritical->getData(), 'f', 2));
         connect(le, SIGNAL(editingFinished()), this, SLOT(viewChange()));
 
         le = setNumberCell(ui.tControl, 1, 0, model->speedStreamPermiss->getData(), 0, 25, tr("Допустимое значение скорости потока камней"));
@@ -100,17 +107,19 @@ void SPRSettingsControlWidget::widgetsShow()
         QVariant cur; cur.setValue<EnumElements>(model->controlArea->getData());
         int curIndex = ui.cbControlArea->findData(cur);
         ui.cbControlArea->setCurrentIndex(curIndex);
-
     }
 }
 
-ISPRModelData *SPRSettingsControlWidget::setModelData(SPRSettingsControlModel *data)
+ISPRModelData *SPRSettingsControlWidget::setModelData(ISPRModelData *data)
 {
     if(data){
         if(model){
             disconnect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
         }
-        model = data;
+        SPRMainModel *_mm = data->getMainModel();
+        if(_mm){
+            model = _mm->getSettingsControlModel();
+        }
         connect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
     }
     return model;
@@ -153,7 +162,7 @@ void SPRSettingsControlWidget::viewChange()
             return;
         }
         if(sender() == ui.leVEMSBegin){
-            model->VEMSBeginCode->setData(round(ui.leVEMSMaxCode->value()) * 20);
+            model->VEMSBeginCode->setData(ui.leVEMSBegin->value());
             return;
         }
         if(sender() == ui.leCorrectStream){
@@ -251,4 +260,10 @@ void SPRSettingsControlWidget::viewChange(int index)
 void SPRSettingsControlWidget::onModelChanget(IModelVariable *)
 {
     widgetsShow();
+}
+
+
+void SPRSettingsControlWidget::setMasterMode(bool value)
+{
+    this->setEnabled(value);
 }

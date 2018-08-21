@@ -321,3 +321,9 @@ void SPRSettingsIMSWidget::viewChange(bool val)
 void SPRSettingsIMSWidget::onModelChanget(IModelVariable *)
 {
 }
+
+
+void SPRSettingsIMSWidget::setMasterMode(bool value)
+{
+    this->setEnabled(value);
+}

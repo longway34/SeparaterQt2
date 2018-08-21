@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>566</width>
-    <height>484</height>
+    <width>791</width>
+    <height>395</height>
    </rect>
   </property>
   <property name="font">
@@ -19,94 +19,95 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
+  <layout class="QVBoxLayout" name="verticalLayout_4">
    <item>
-    <widget class="QGroupBox" name="widget_3">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>498</width>
-       <height>198</height>
-      </size>
-     </property>
-     <property name="title">
-      <string>Пороги сортировки</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_3">
+    <widget class="QWidget" name="widget" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
-       <widget class="SPRPorogsWidget" name="wPorogs" native="true">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+       <widget class="QGroupBox" name="widget_3">
+        <property name="title">
+         <string>Пороги сортировки</string>
         </property>
-        <property name="minimumSize">
-         <size>
-          <width>492</width>
-          <height>171</height>
-         </size>
-        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="SPRPorogsWidget" name="wPorogs" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>492</width>
+             <height>171</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QWidget" name="widget_7" native="true">
-     <layout class="QHBoxLayout" name="horizontalLayout_4">
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
       <item>
-       <widget class="QGroupBox" name="gbViewAs">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>271</width>
-          <height>73</height>
-         </size>
-        </property>
-        <property name="title">
-         <string>Отображать отбор как</string>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout">
-         <property name="leftMargin">
-          <number>6</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
+       <widget class="QWidget" name="widget_7" native="true">
+        <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
-          <widget class="QWidget" name="widget_8" native="true">
-           <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <widget class="QGroupBox" name="groupBox">
+           <property name="font">
+            <font>
+             <family>Tahoma</family>
+             <pointsize>12</pointsize>
+             <underline>false</underline>
+            </font>
+           </property>
+           <property name="title">
+            <string>Выводы в режиме сепарации</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_4">
+            <item>
+             <widget class="QRadioButton" name="rbH1Resume">
+              <property name="text">
+               <string>H1</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="rbH2Resume">
+              <property name="text">
+               <string>H2</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="rbH3Resume">
+              <property name="text">
+               <string>H3</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="gbViewAs">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="title">
+            <string>Отображать отбор как</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout">
             <property name="leftMargin">
-             <number>0</number>
+             <number>6</number>
             </property>
             <property name="topMargin">
              <number>0</number>
@@ -118,101 +119,74 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QRadioButton" name="rbTail">
+             <widget class="QWidget" name="widget_8" native="true">
+              <layout class="QHBoxLayout" name="horizontalLayout_3">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QRadioButton" name="rbTail">
+                 <property name="text">
+                  <string>Хвост</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="rbConcentrat">
+                 <property name="text">
+                  <string>Концентрат</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="cbInvert">
               <property name="text">
-               <string>Хвост</string>
+               <string>Инвертировать</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QRadioButton" name="rbConcentrat">
-              <property name="text">
-               <string>Концентрат</string>
+             <spacer name="verticalSpacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
               </property>
-             </widget>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
             </item>
            </layout>
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="cbInvert">
-           <property name="text">
-            <string>Инвертировать</string>
+          <spacer name="verticalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
            </property>
-          </widget>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
          </item>
         </layout>
-       </widget>
-      </item>
-      <item>
-       <widget class="QGroupBox" name="groupBox">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>70</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <family>Tahoma</family>
-          <pointsize>12</pointsize>
-          <underline>false</underline>
-         </font>
-        </property>
-        <property name="title">
-         <string>Выводы в режиме сепарации</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-        </property>
-        <widget class="QRadioButton" name="rbH1Resume">
-         <property name="geometry">
-          <rect>
-           <x>1</x>
-           <y>28</y>
-           <width>43</width>
-           <height>23</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>H1</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-        <widget class="QRadioButton" name="rbH2Resume">
-         <property name="geometry">
-          <rect>
-           <x>50</x>
-           <y>28</y>
-           <width>43</width>
-           <height>23</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>H2</string>
-         </property>
-        </widget>
-        <widget class="QRadioButton" name="rbH3Resume">
-         <property name="geometry">
-          <rect>
-           <x>99</x>
-           <y>28</y>
-           <width>43</width>
-           <height>23</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>H3</string>
-         </property>
-        </widget>
        </widget>
       </item>
      </layout>
@@ -220,49 +194,28 @@
    </item>
    <item>
     <widget class="QGroupBox" name="groupBox_2">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Ignored">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>548</width>
-       <height>155</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>548</width>
-       <height>155</height>
-      </size>
-     </property>
      <property name="title">
       <string>Коэффициенты длительности</string>
      </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QwtPlot" name="plotKoeffLengths">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+       <widget class="QwtPlot" name="plotKoeffLengths"/>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
         </property>
-        <property name="minimumSize">
+        <property name="sizeHint" stdset="0">
          <size>
-          <width>291</width>
-          <height>120</height>
+          <width>40</width>
+          <height>20</height>
          </size>
         </property>
-        <property name="maximumSize">
-         <size>
-          <width>291</width>
-          <height>120</height>
-         </size>
-        </property>
-       </widget>
+       </spacer>
       </item>
       <item>
        <widget class="QWidget" name="widget_5" native="true">
@@ -371,7 +324,7 @@
             <string>Коррекция X-Ray завесы</string>
            </property>
            <property name="text">
-            <string>Параметры обнаружения куска</string>
+            <string>Коррекция X-Ray завесы</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

@@ -4,8 +4,9 @@
 #include "ui_sprsettingsmainwidget.h"
 #include "isprwidget.h"
 #include "models/sprsettingsmainmodel.h"
+#include "isprsettingswidget.h"
 
-class SPRSettingsMainWidget : public QWidget, public ISPRWidget
+class SPRSettingsMainWidget : public QWidget, public ISPRWidget, public ISPRSettingsWidget
 {
     Q_OBJECT
 
@@ -42,6 +43,10 @@ signals:
 
     // ISPRWidget interface
 protected:
+
+    // ISPRSettingsWidget interface
+public:
+    virtual void setMasterMode(bool value);
 };
 
 #endif // SPRSETTINGSMAINWIDGET_H

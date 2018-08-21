@@ -103,3 +103,9 @@ void SPRSettingsFormulaWidget::onModelChanget(IModelVariable *)
 {
     widgetsShow();
 }
+
+
+void SPRSettingsFormulaWidget::setMasterMode(bool value)
+{
+    this->setEnabled(value);
+}

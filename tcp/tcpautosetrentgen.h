@@ -16,7 +16,7 @@ class TCPAutoSetRentgen: public TCPCommandSet
     TCPCommandRGUUpDown2 *commandRGU;
 
     bool useRGU;
-    QList<int> threads;
+    SPRThreadList threads;
 
     QByteArray codesDEU;
     QByteArray codesCP;
@@ -30,8 +30,8 @@ public:
     bool getUseRGU() const;
     void setUseRGU(bool value);
 
-    QList<int> getThreads();
-    void setThreads(QList<int> &value);
+    SPRThreadList getThreads();
+    void setThreads(SPRThreadList &value);
     void setCodesDEU(QByteArray &value);
     void setCodesCP(QByteArray &value);
 

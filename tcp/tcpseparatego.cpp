@@ -22,9 +22,9 @@ void TCPSeparateGo::setModel(SPRMainModel *value)
 void TCPSeparateGo::setLogWidget(TCPLogsWigtets *value)
 {
     logWidget = value;
-    getseparCommand->setLogWidget(value);
-    kspectCommand->setLogWidget(value);
-    histCommand->setLogWidget(value);
+    if(getseparCommand) getseparCommand->setLogWidget(value);
+    if(kspectCommand) kspectCommand->setLogWidget(value);
+    if(histCommand) histCommand->setLogWidget(value);
 }
 
 TCPGetSpectrumsGistogramms *TCPSeparateGo::getKspectCommand() const
@@ -48,34 +48,69 @@ TCPSeparateGo::TCPSeparateGo()
 }
 
 TCPSeparateGo::TCPSeparateGo(SPRMainModel *_model, TCPLogsWigtets *log):
-    TCPCommandSet(nullptr, nullptr, {}), logWidget(log), model(_model)
+    TCPCommandSet(nullptr, nullptr, {}), model(_model), logWidget(log),
+    kspectCommand(nullptr),
+    histCommand(nullptr),
+    getseparCommand(nullptr)
 {
 
     command = setSeparateGo;
     setTimeOut(1000);
 
 //    addCommand(new TCPTimeOutCommand(timeoutcommand, 1000));
-    addCommand(new TCPCommand(getstate));
-    getseparCommand = new TCPCommand(getsepar);
-    getseparCommand->setLogWidget(getLogWidget());
-    addCommand(getseparCommand);
-    QList<uint8_t> lth;
-    for(uint8_t th=0; th<model->getThreads()->getData(); th++) lth << th;
+//    addCommand(new TCPCommand(getstate));
+//    getseparCommand = new TCPCommand(getsepar);
+//    getseparCommand->setLogWidget(getLogWidget());
+//    addCommand(getseparCommand);
+//    QList<uint8_t> lth;
+//    for(uint8_t th=0; th<model->getThreads()->getData(); th++) lth << th;
 
-    kspectCommand = new TCPGetSpectrumsGistogramms(nullptr, getkspk, nullptr, 1, lth, getTimeOutWidget(), getLogWidget());
-    addCommand(kspectCommand);
-    histCommand = new TCPGetSpectrumsGistogramms(nullptr, getgist, nullptr, 1, lth, getTimeOutWidget(), getLogWidget());
-    addCommand(histCommand);
+//    kspectCommand = new TCPGetSpectrumsGistogramms(nullptr, getkspk, nullptr, 1, lth, getTimeOutWidget(), getLogWidget());
+//    addCommand(kspectCommand);
+//    histCommand = new TCPGetSpectrumsGistogramms(nullptr, getgist, nullptr, 1, lth, getTimeOutWidget(), getLogWidget());
+//    addCommand(histCommand);
 //    addCommand(new TCPCommand(nocommand));
 }
 
 void TCPSeparateGo::go(TCPCommand *_command)
 {
     if(!_command){
-        toCount = 0;
-        timer.start();
-//        commandSet[0]->send(server);
-        return;
+        clear();
+        if(model){
+//            if(getseparCommand) delete getseparCommand;
+//            getseparCommand = nullptr;
+//            if(kspectCommand) delete kspectCommand;
+//            kspectCommand = nullptr;
+//            if(histCommand) delete histCommand;
+//            histCommand = nullptr;
+
+
+            addCommand(new TCPCommand(getstate));
+//            if(!getseparCommand){
+                getseparCommand = new TCPCommand(getsepar);
+//            }
+            getseparCommand->setLogWidget(getLogWidget());
+            addCommand(getseparCommand);
+            QList<uint8_t> lth;
+            for(uint8_t th=0; th<model->getThreads()->getData(); th++) lth << th;
+
+//            if(!kspectCommand){
+                kspectCommand = new TCPGetSpectrumsGistogramms(nullptr, getkspk, nullptr, 1, lth, getTimeOutWidget(), getLogWidget());
+//            }
+            addCommand(kspectCommand);
+
+//            if(!histCommand){
+                histCommand = new TCPGetSpectrumsGistogramms(nullptr, getgist, nullptr, 1, lth, getTimeOutWidget(), getLogWidget());
+//            }
+            addCommand(histCommand);
+
+            setLogWidget(getLogWidget());
+
+            toCount = 0;
+            timer.start();
+    //        commandSet[0]->send(server);
+            return;
+        }
     } else {
 //        if(_command->getCommand() == timeoutcommand){
 //            toCount++; if(toCount > 1000000) toCount = 1;

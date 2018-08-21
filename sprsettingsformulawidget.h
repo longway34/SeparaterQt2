@@ -8,8 +8,9 @@
 #include "models/sprformulaitemmodel.h"
 
 #include "models/sprsettingsformulamodel.h"
+#include "isprsettingswidget.h"
 
-class SPRSettingsFormulaWidget : public QWidget, public ISPRWidget
+class SPRSettingsFormulaWidget : public QWidget, public ISPRWidget, public ISPRSettingsWidget
 {
     Q_OBJECT
 
@@ -41,6 +42,10 @@ signals:
 
     // ISPRWidget interface
 protected:
+
+    // ISPRSettingsWidget interface
+public:
+    virtual void setMasterMode(bool value);
 };
 
 #endif // SPRSETTINGSFORMULAWIDGET_H

@@ -10,8 +10,12 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
 
+protected slots:
+    void onChangeMasterMode();
 private:
     Ui::MainWindow ui;
+
+    bool isMasterMode;
 };
 
 #endif // MAINWINDOW_H

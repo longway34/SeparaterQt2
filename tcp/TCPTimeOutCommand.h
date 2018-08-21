@@ -55,6 +55,10 @@ signals:
     // TCPCommand interface
 public:
     virtual void setTimeOut(int);
+
+    // TCPCommand interface
+public slots:
+    virtual void onCommandNotComplite(TCPCommand *_command);
 };
 
 

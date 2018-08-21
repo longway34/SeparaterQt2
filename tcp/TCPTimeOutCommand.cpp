@@ -72,3 +72,9 @@ void TCPTimeOutCommand::setTimeOut(int _timeout)
     timer.setInterval(timeout);
     countParts = 0;
 }
+
+
+void TCPTimeOutCommand::onCommandNotComplite(TCPCommand *_command)
+{
+    emit commandNotComplite(_command);
+}

@@ -36,13 +36,13 @@ class SPRPorogsMoved : public QObject
     Q_OBJECT
 public:
 
-    SPRPorogsMoved( QwtPlot *plot, QVector<QwtPlotItem*>_items = {} );
+    SPRPorogsMoved(QwtPlot *plot, QList<QwtPlotItem *> _items = {} );
     SPRPorogsMoved( QwtPlot *plot, QwtPlotItem*_item);
 
     virtual bool eventFilter(QObject *object, QEvent * event);
 
-    QVector<QwtPlotItem *> getMovedItems() const;
-    void addMovedItems(const QVector<QwtPlotItem *> &value);
+    QList<QwtPlotItem *> getMovedItems() const;
+    void addMovedItems(QList<QwtPlotItem *> &value);
     void addMovedItems(QwtPlotItem *value);
     void remoteItem(QwtPlotItem *value);
 
@@ -51,9 +51,9 @@ private:
     //    virtual void move( const QPoint & );
 
 
-    void init(QwtPlot *plot, QVector<QwtPlotItem*> _items);
+    void init(QwtPlot *plot, QList<QwtPlotItem*> _items);
 
-    QVector<QwtPlotItem*> movedItems;
+    QList<QwtPlotItem*> movedItems;
     QPointF selectedPoint;
     QwtPlotItem *currentMovedItem;
     MovedItemPosition currentMovedItemSide;

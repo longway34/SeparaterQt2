@@ -12,8 +12,8 @@ SPRTestIMSWidget::SPRTestIMSWidget(QWidget *parent) :
 
 // connect command buttons and change values
 // *****************************************
-    connect(ui.bSeparatorOn, SIGNAL(clicked(bool)), this, SLOT(onCommand(bool)));
-    connect(ui.bSeparatorOff, SIGNAL(clicked(bool)), this, SLOT(onCommand(bool)));
+//    connect(ui.bSeparatorOn, SIGNAL(clicked(bool)), this, SLOT(onCommand(bool)));
+//    connect(ui.bSeparatorOff, SIGNAL(clicked(bool)), this, SLOT(onCommand(bool)));
 
     connect(ui.bRentgenOn, SIGNAL(clicked(bool)), this, SLOT(onCommand(bool)));
     connect(ui.bRentgenOff, SIGNAL(clicked(bool)), this, SLOT(onCommand(bool)));
@@ -33,27 +33,36 @@ SPRTestIMSWidget::SPRTestIMSWidget(QWidget *parent) :
     connect(ui.bIMSStart, SIGNAL(clicked(bool)), this, SLOT(onCommand(bool)));
     connect(ui.bIMSStop, SIGNAL(clicked(bool)), this, SLOT(onCommand(bool)));
 
-    connect(ui.lePitatelPercents, SIGNAL(valueChanged(double)), this, SLOT(onChangeValue(double)));
-    connect(ui.bPitatelStart, SIGNAL(clicked(bool)), this, SLOT(onCommand(bool)));
-    connect(ui.bPitatelStop, SIGNAL(clicked(bool)), this, SLOT(onCommand(bool)));
+//    connect(ui.lePitatelPercents, SIGNAL(valueChanged(double)), this, SLOT(onChangeValue(double)));
+//    connect(ui.bPitatelStart, SIGNAL(clicked(bool)), this, SLOT(onCommand(bool)));
+//    connect(ui.bPitatelStop, SIGNAL(clicked(bool)), this, SLOT(onCommand(bool)));
 
     connect(ui.bRaskladStart, SIGNAL(clicked(bool)), this, SLOT(onCommand(bool)));
     connect(ui.bRaskladStop, SIGNAL(clicked(bool)), this, SLOT(onCommand(bool)));
 
-    connect(ui.bRudospuskStart, SIGNAL(clicked(bool)), this, SLOT(onCommand(bool)));
-    connect(ui.bRudospustStop, SIGNAL(clicked(bool)), this, SLOT(onCommand(bool)));
+//    connect(ui.bRudospuskStart, SIGNAL(clicked(bool)), this, SLOT(onCommand(bool)));
+//    connect(ui.bRudospustStop, SIGNAL(clicked(bool)), this, SLOT(onCommand(bool)));
 
     vectorIms = {ui.cbIMSThread0, ui.cbIMSThread1, ui.cbIMSThread2, ui.cbIMSThread3, ui.cbIMSThread4, ui.cbIMSThread5, ui.cbIMSThread6, ui.cbIMSThread7};
 
     vectorSeparatorOnEnabled = {ui.bIMSStart,
-                                ui.bPitatelStart,
+//                                ui.bPitatelStart,
                                 ui.bRentgenOn,
                                 ui.bRGUDown, ui.bRGUUp,
-                                ui.bRudospuskStart,
+//                                ui.bRudospuskStart,
                                 ui.bThermoGet,
                                 ui.bThermoSet,
                                 ui.bRaskladStart,
                                 ui.bGetSpectrum};
+    vectorSeparatedProcessDisabled = {
+        ui.bGetSpectrum,
+        ui.bIMSStart,
+        ui.bIMSStop,
+        ui.bRentgenOff,
+        ui.bRGUDown,
+        ui.bRGUUp,
+        ui.bThermoSet
+    };
 
 // init commands and connects
 // *********************************************************************
@@ -78,11 +87,15 @@ SPRTestIMSWidget::SPRTestIMSWidget(QWidget *parent) :
                                             });
     connect(rguReadStateCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
 
-    rguUpCommand = new TCPCommandRGUUpDown(nullptr, towidget, true);
+    rguUpCommand = new TCPCommandRGUUpDown2(nullptr, towidget, true);
     connect(rguUpCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
 
-    rguDownCommand = new TCPCommandRGUUpDown(nullptr, towidget, false);
+    rguDownCommand = new TCPCommandRGUUpDown2(nullptr, towidget, false);
     connect(rguDownCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
+
+    rguStop = new TCPCommand(setrgu2);
+    uint8_t st = 0;
+    rguStop->setSendData(&st, 1);
 
     thermoReadStateCommand = new TCPCommandSet(nullptr, towidget, {});
     char ct0[] = {0, 0, 0, 0};
@@ -167,28 +180,28 @@ void SPRTestIMSWidget::onChangeValue(bool _val){
 }
 
 void SPRTestIMSWidget::onChangeValue(double _val){
-    if(sender() == ui.lePitatelPercents){
-        if(model->getServer()->isState(spr_state_pitatel_on)){
-            uint16_t code = round(_val) * 20;
-            model->getSettingsControlModel()->VEMSBeginCode->setData(code);
+//    if(sender() == ui.lePitatelPercents){
+//        if(model->getServer()->isState(spr_state_pitatel_on)){
+//            uint16_t code = round(_val) * 20;
+//            model->getSettingsControlModel()->VEMSBeginCode->setData(_val);
 
-            commandChangePersentPitatel->addSendData(&code, sizeof(code));
-            commandChangePersentPitatel->send(model->getServer());
-        }
-    }
+//            commandChangePersentPitatel->addSendData(&code, sizeof(code));
+//            commandChangePersentPitatel->send(model->getServer());
+//        }
+//    }
 }
 
 void SPRTestIMSWidget::onCommand(bool){
 
     if(model){
-        if(sender() == ui.bRudospuskStart){
-            commandStartRudostusk->send(model->getServer());
-            return;
-        }
-        if(sender() == ui.bRudospustStop){
-            commandStopRudospusk->send(model->getServer());
-            return;
-        }
+//        if(sender() == ui.bRudospuskStart){
+//            commandStartRudostusk->send(model->getServer());
+//            return;
+//        }
+//        if(sender() == ui.bRudospustStop){
+//            commandStopRudospusk->send(model->getServer());
+//            return;
+//        }
 
         if(sender() == ui.bRaskladStart){
             commandStartRasklad->send(model->getServer());
@@ -211,13 +224,13 @@ void SPRTestIMSWidget::onCommand(bool){
             rguDownCommand->send(model->getServer());
             return;
         }
-        if(sender() == ui.bSeparatorOn){
-            separatorOnCommand->send(model->getServer());
-        }
-        if(sender() == ui.bSeparatorOff){
-            separatorOffCommand->send(model->getServer());
-            return;
-        }
+//        if(sender() == ui.bSeparatorOn){
+//            separatorOnCommand->send(model->getServer());
+//        }
+//        if(sender() == ui.bSeparatorOff){
+//            separatorOffCommand->send(model->getServer());
+//            return;
+//        }
         if(sender() == ui.bThermoGet){
             thermoReadStateCommand->send(model->getServer());
             return;
@@ -242,15 +255,15 @@ void SPRTestIMSWidget::onCommand(bool){
             startTestImsCommand->stopTest();
             return;
         }
-        if(sender() == ui.bPitatelStart){
-            commandStartPitatel->send(model->getServer());
-            return;
-        }
-        if(sender() == ui.bPitatelStop){
-    //        commandStartPitatel->setPitatelStopFlag();
-            commandStopPitatel->send(model->getServer());
-            return;
-        }
+//        if(sender() == ui.bPitatelStart){
+//            commandStartPitatel->send(model->getServer());
+//            return;
+//        }
+//        if(sender() == ui.bPitatelStop){
+//    //        commandStartPitatel->setPitatelStopFlag();
+//            commandStopPitatel->send(model->getServer());
+//            return;
+//        }
         if(sender() == ui.bRentgenOn){
             rentgenOnCommand->send(model->getServer());
             return;
@@ -363,27 +376,27 @@ void SPRTestIMSWidget::onCommandComplite(TCPCommand *_comm){
 
     if(sender() == rguUpCommand){
         msgTitle = tr("Команда поднять РГУ");
-        int state = rguUpCommand->getState();
-        QByteArray result = rguUpCommand->getResult(getrgu2);
-        if(state == 0 && result.size() > 0 && result[0] == 1){
-           msgText = tr("Команда поднять РГУ\подана успешно");
-        } else {
-            msgText = QString("Команда поднять РГУ\подана с ошибкой %1 state %2").arg(QString::number(result[0]), QString::number(state));
-        }
+//        int state = rguUpCommand->getState();
+//        QByteArray result = rguUpCommand->getResult(getrgu2);
+//        if(state == 0 && result.size() > 0 && result[0] == 1){
+           msgText = tr("Команда поднять РГУ выполнена успешно");
+//        } else {
+//            msgText = QString("Команда поднять РГУ\подана с ошибкой %1 state %2").arg(QString::number(result[0]), QString::number(state));
+//        }
         QMessageBox::information(this, tr("Команда поднять РГУ"), tr("Команда поднять РГУ\подана успешно"));
         rguReadStateCommand->send(model->getServer());
     }
     if(sender() == rguDownCommand){
-        msgTitle = tr("Команда опустить РГУ");
-        int state = rguDownCommand->getState();
-        QByteArray result = rguDownCommand->getResult(getrgu2);
-        if(state == 0 && result.size() > 0 && result[0] == 2){
-           msgText = tr("Команда опустить РГУ\подана успешно");
-        } else {
-           msgText = QString("Команда опусеить РГУ\опущена с ошибкой %1 state %2").arg(QString::number(result[0]), QString::number(state));
-        }
-        QMessageBox::information(this, msgTitle, msgText);
-        rguReadStateCommand->send(model->getServer());
+//        msgTitle = tr("Команда опустить РГУ");
+//        int state = rguDownCommand->getState();
+//        QByteArray result = rguDownCommand->getResult(getrgu2);
+//        if(state == 0 && result.size() > 0 && result[0] == 2){
+           msgText = tr("Команда опустить РГУ выполнена успешно");
+//        } else {
+//           msgText = QString("Команда опусеить РГУ\опущена с ошибкой %1 state %2").arg(QString::number(result[0]), QString::number(state));
+//        }
+//        QMessageBox::information(this, msgTitle, msgText);
+//        rguReadStateCommand->send(model->getServer());
     }
     if(sender() == thermoReadStateCommand){
         QByteArray res = thermoReadStateCommand->getResult(gettemp);
@@ -453,7 +466,29 @@ void SPRTestIMSWidget::onCommandComplite(TCPCommand *_comm){
         if(_comm == startTestImsCommand->getStopTestCommand()){
             QMessageBox::information(this, tr("Останов теста"), tr("Тест остановлен пользователем"));
 
+        } else {
+            QMessageBox::information(this, tr("Останов теста"), tr("Тест выполнен полностью"));
         }
+    }
+}
+
+void SPRTestIMSWidget::onCommandNotComplite(TCPCommand *_comm)
+{
+    if(sender() == getSpectrumsCommand){
+        if(_comm->getCommand() == getren){
+            uint16_t mka, mkv; uint8_t err;
+            getSpectrumsCommand->isRentgenReady(_comm->getReplayData(), &mkv, &mka, &err);
+            QMessageBox::warning(nullptr, tr("Ошибка включения рентгена"),
+                                 tr("Рентген не вышел на рабочий режим (%1, %2 < 0x600)\n"
+                                    "Попробуйте выключить рентген\n"
+                                    "И получить спектры еще раз...").
+                                 arg(mkv, 0, 16).arg(mka, 0, 16));
+
+        }
+
+    }
+    if(sender() == rguDownCommand || sender() == rguUpCommand){
+        QMessageBox::warning(nullptr, tr("Работа РГУ"), tr("РГУ остановлено пользователем не дойдя до конечного положения..."));
     }
 }
 
@@ -480,11 +515,28 @@ void SPRTestIMSWidget::onServerConnectChangeState(uint32_t _state){
         } else {
             ui.bGetSpectrum->setEnabled(false);
         }
+
+        if(_state & spr_state_separated){
+            for(int i=0; i<vectorSeparatedProcessDisabled.size(); i++){
+                vectorSeparatorOnEnabled[i]->setEnabled(false);
+            }
+        } else {
+            for(int i=0; i<vectorSeparatedProcessDisabled.size(); i++){
+                vectorSeparatorOnEnabled[i]->setEnabled(true);
+            }
+        }
     } else {
         for(int i=0; i<vectorSeparatorOnEnabled.size(); i++){
             vectorSeparatorOnEnabled[i]->setEnabled(false);
         }
     }
+    if(_state & spr_state_rgu_up_position){
+        ui.lRGUPosition->setText(tr("Верхнее положение"));
+    }
+    if(_state & spr_state_rgu_down_position){
+        ui.lRGUPosition->setText(tr("Нижнее положение"));
+    }
+
 }
 
 ISPRModelData *SPRTestIMSWidget::setModelData(SPRMainModel *_model)
@@ -500,13 +552,16 @@ ISPRModelData *SPRTestIMSWidget::setModelData(SPRMainModel *_model)
 //        connect(model->getServer(), SIGNAL(serverReadWriteTimeOutError(ITCPCommand*)), this, SLOT(onServerReadWriteError(ITCPCommand*)));
         connect(model->getServer(), SIGNAL(serverStateChange(uint32_t)), this, SLOT(onServerConnectChangeState(uint32_t)));
 
-        ui.wSpectrumWidget->setModelData(new SPRSpectrumListItemsModel(model->getSpectrumZonesTableModel(), model->getSettingsFormulaModel(),model->getSettingsMainModel()->getThreads(), model->getSettingsMainModel()->getSpectrumFileName(), model->getSettingsControlModel()->controlArea), spectrumsOnly, true);
+
+//        ui.wSpectrumWidget->setModelData(new SPRSpectrumListItemsModel(model, model->getSpectrumListItemsModel()->getSpectrumsModel(spectrumBase) , true, nullptr), spectrumsOnly, true);
+        ui.wSpectrumWidget->setModelData(model->getKSpectrums(), spectrumsOnly, true);
 
         QList<uint8_t> lth;
         for(int th=0; th<model->getThreads()->getData(); th++) lth << th;
 
         getSpectrumsCommand = new TCPGetSpectrumsGistogramms(nullptr, getspk, model, 5, lth, towidget, getLogWidget());
         connect(getSpectrumsCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
+        connect(getSpectrumsCommand, SIGNAL(commandNotComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
 
 //        getSpectrumsCommand->setThreadTimer(model->getSettingsMainModel()->getThreads()->getData());
 
@@ -520,11 +575,15 @@ ISPRModelData *SPRTestIMSWidget::setModelData(SPRMainModel *_model)
         commandStartPitatel->setModelVariable(model->getSettingsControlModel()->VEMSBeginCode);
 
         uint16_t code = model->getSettingsControlModel()->VEMSBeginCode->getData();
+        code *= 20;
         commandChangePersentPitatel->addSendData(&code, sizeof(code));
 
 
         ui.wSpectrumWidget->setWithLegend(true);
         ui.wSpectrumWidget->setEnableChangeTypeSet(true);
+
+        ui.wPitatelControl->setModelData(model);
+        ui.wSeparateControl->setModelData(model, towidget, getLogWidget());
 
     //    commandRaskladStart
 
@@ -537,8 +596,9 @@ ISPRModelData *SPRTestIMSWidget::setModelData(SPRMainModel *_model)
 void SPRTestIMSWidget::widgetsShow()
 {
     if(model){
-        ui.lePitatelPercents->setValue((double)model->getSettingsControlModel()->VEMSBeginCode->getData());
-        ui.thPitatelPercents->setValue((double)model->getSettingsControlModel()->VEMSBeginCode->getData());
+        blockSignals(true);
+//        ui.lePitatelPercents->setValue((double)model->getSettingsControlModel()->VEMSBeginCode->getData());
+////        ui.thPitatelPercents->setValue((double)model->getSettingsControlModel()->VEMSBeginCode->getData());
 
         for(int i=0; i<model->getSettingsMainModel()->getIms()->getData(); i++){
             vectorIms[i]->setVisible(true);
@@ -547,6 +607,7 @@ void SPRTestIMSWidget::widgetsShow()
             vectorIms[i]->setVisible(false);
         }
         onServerConnectChangeState(model->getServer()->getState());
+        blockSignals(false);
     }
 
 }
@@ -558,7 +619,10 @@ ISPRModelData *SPRTestIMSWidget::getModelData()
 
 void SPRTestIMSWidget::onModelChanget(IModelVariable *)
 {
-    widgetsShow();
+    if(sender() == model->getSettingsMainModel()->getIms()){
+        widgetsShow();
+    }
+//    widgetsShow();
 }
 
 

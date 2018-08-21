@@ -15,7 +15,9 @@
 #include <QDomDocument>
 #include <QButtonGroup>
 
-class SPRSettingsPorogsWidget : public QWidget, public ISPRWidget
+#include "isprsettingswidget.h"
+
+class SPRSettingsPorogsWidget : public QWidget, public ISPRWidget, public ISPRSettingsWidget
 {
     Q_OBJECT
 
@@ -71,6 +73,10 @@ signals:
     // ISPRWidget interface
 protected slots:
     virtual void onModelChanget(IModelVariable*);
+
+    // ISPRSettingsWidget interface
+public:
+    virtual void setMasterMode(bool value);
 };
 
 

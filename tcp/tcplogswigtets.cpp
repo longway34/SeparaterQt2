@@ -15,11 +15,13 @@ TCPLogsWigtets::TCPLogsWigtets(QWidget *parent) :
 
 void TCPLogsWigtets::onClear(bool){
     ui.ptLogs->clear();
+//    emit clear();
 }
 
 void TCPLogsWigtets::onErrorLogsCommand(ITCPCommand *command, QString _prefix){
     QString msg = _prefix + onLogsCommand(command);
     onLogsCommand(msg, QColor(Qt::red));
+    emit logWidgetEvent(msg, QColor(Qt::red));
 }
 
 QString TCPLogsWigtets::onLogsCommand(ITCPCommand *command){
@@ -50,6 +52,8 @@ void TCPLogsWigtets::onLogsCommand(ITCPCommand *command, QString _prefix){
     QString msg = _prefix + onLogsCommand(command);
     onLogsCommand(msg);
 //    ui.ptLogs->appendPlainText(sdt+": "+msg);
+    emit logWidgetEvent(msg, QColor());
+
 }
 
 void TCPLogsWigtets::onLogsCommand(QString msg, QColor _color){

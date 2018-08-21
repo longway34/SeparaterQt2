@@ -11,39 +11,32 @@
 #include <QFile>
 #include <QDir>
 
+
+void myMyssageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg){
+    switch(type){
+    case QtInfoMsg:
+        std::cerr << QString("Info: %1 (%2:%3, %4)\n").arg(msg).arg(context.file).arg(context.line).arg(context.function).toStdString();
+        break;
+    case QtDebugMsg:
+//        std::cerr << QString("Debug: %1 (%2:%3, %4)\n").arg(msg).arg(context.file).arg(context.line).arg(context.function).toStdString();
+        std::cerr << QString(msg).toStdString() << std::endl;
+        break;
+    case QtWarningMsg:
+        std::cerr << QString("Warn: %1 (%2:%3, %4)\n").arg(msg).arg(context.file).arg(context.line).arg(context.function).toStdString();
+        break;
+    case QtCriticalMsg:
+        std::cerr << QString("Crit: %1 (%2:%3, %4)\n").arg(msg).arg(context.file).arg(context.line).arg(context.function).toStdString();
+        break;
+    case QtFatalMsg:
+        std::cerr << QString("Fatal: %1 (%2:%3, %4)\n").arg(msg).arg(context.file).arg(context.line).arg(context.function).toStdString();
+        abort();
+    }
+}
+
 int main(int argc, char *argv[])
 {
 
-
-//    SPRElementsModel *model;
-
-//    QDomDocument doc;
-//    QFile in("Separator.xml");
-//    if(in.open(QIODevice::ReadOnly)){
-//        if(doc.setContent(&in)){
-
-
-//            model = new SPRElementsModel(&doc);
-
-//            model->IModelVariable::store();
-//            in.close();
-
-//            QFile out("Separator1.xml");
-//            if(out.open(QIODevice::WriteOnly)){
-//            QTextStream stream( &out );
-//              stream << doc.toString();
-
-//              out.close();
-//            }
-
-
-
-//        }
-
-//    }
-
-
-
+    qInstallMessageHandler(myMyssageOutput);
 
     QApplication a(argc, argv);
 
@@ -51,7 +44,7 @@ int main(int argc, char *argv[])
 //    w.show();
 
     MainWindow w;
-    w.showMaximized();
+    w.show();
 
     return a.exec();
 }

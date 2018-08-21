@@ -1,7 +1,7 @@
 #include "sprseparatedetailtablewidget.h"
 
 SPRSeparateDetailTableWidget::SPRSeparateDetailTableWidget(QWidget *parent) :
-    QWidget(parent)
+    QWidget(parent), model(nullptr), separateModel(nullptr)
 {
     ui.setupUi(this);
 
@@ -10,10 +10,10 @@ SPRSeparateDetailTableWidget::SPRSeparateDetailTableWidget(QWidget *parent) :
     connect(ui.bClear, SIGNAL(clicked(bool)), this, SLOT(onClickButtomCommand(bool)));
 }
 
-QList<int> SPRSeparateDetailTableWidget::getVisbleThreads(){
-    QList<int> res;
+SPRThreadList SPRSeparateDetailTableWidget::getVisbleThreads(){
+    SPRThreadList res;
     QList<QCheckBox*> cbs = ui.gbThreads->findChildren<QCheckBox*>();
-    for(int i=0; i<cbs.size(); i++){
+    for(uint8_t i=0; i<cbs.size(); i++){
         if(cbs[i]->isChecked()){
             if(cbs[i]->property("index").isValid()){
                 res.push_back(cbs[i]->property("index").value<int>());
@@ -88,7 +88,7 @@ void SPRSeparateDetailTableWidget::onChandeServerState(uint32_t){
             }
         }
         if(model->getServer()->isState(spr_state_separated)){
-            if(ui.tSeparateDetail->getMyModel()->getScopeData() >=0){
+            if(ui.tSeparateDetail->isStartingScope()){
                 ui.bBeginScope->setEnabled(false);
                 ui.bEndScope->setEnabled(true);
             } else {
@@ -109,22 +109,26 @@ void SPRSeparateDetailTableWidget::onChandeServerState(uint32_t){
 void SPRSeparateDetailTableWidget::onClickButtomCommand(bool){
     if(sender() == ui.bBeginScope){
         if(model){
-            ui.tSeparateDetail->getMyModel()->setVisibleThreads(getVisbleThreads());
-            ui.tSeparateDetail->getMyModel()->setMinTimeScope(ui.leMinimumTimeScope->value());
-            ui.tSeparateDetail->getMyModel()->setScopeData(0);
+            ui.tSeparateDetail->setMinStoneTime(ui.leMinimumTimeScope->value());
+            ui.tSeparateDetail->startStopScope(true);
+//            ui.tSeparateDetail->getMyModel()->setScopeData(0);
 
-            ui.tSeparateDetailSummary->getMyModel()->setVisibleThreads(getVisbleThreads());
-            ui.tSeparateDetailSummary->getMyModel()->setMinTimeScope(ui.leMinimumTimeScope->value());
-            ui.tSeparateDetailSummary->getMyModel()->setScopeData(0);
+            ui.tSeparateDetailSummary->setVisibleThreads(getVisbleThreads());
+            ui.tSeparateDetailSummary->setMinStoneTime(ui.leMinimumTimeScope->value());
+            ui.tSeparateDetailSummary->startStopScope(true);
+
+            ui.bEndScope->setEnabled(true);
             model->getSettingsControlModel()->tMeassureForData->setData(ui.leCommandTimeInterval->value());
         }
         return;
     }
     if(sender() == ui.bEndScope){
         if(model){
-            ui.tSeparateDetail->getMyModel()->setScopeData(-1);
-            ui.tSeparateDetailSummary->getMyModel()->setScopeData(-1);
+            ui.tSeparateDetail->startStopScope(false);
+            ui.tSeparateDetailSummary->startStopScope(false);
             model->getSettingsControlModel()->tMeassureForData->restore();
+
+            ui.bEndScope->setEnabled(false);
         }
     }
     if(sender() == ui.bClear){
@@ -141,14 +145,14 @@ void SPRSeparateDetailTableWidget::onChangeIntValue(int){
         return;
     }
     if(sender() == ui.leMinimumTimeScope){
-        ui.tSeparateDetail->getMyModel()->setMinTimeScope(ui.leMinimumTimeScope->value());
+        ui.tSeparateDetail->setMinStoneTime(ui.leMinimumTimeScope->value());
         return;
     }
 }
 
 void SPRSeparateDetailTableWidget::onChangeThreadList(bool value){
-    QList<int> visible = getVisbleThreads();
-    ui.tSeparateDetail->getMyModel()->setVisibleThreads(visible);
+    SPRThreadList visible = getVisbleThreads();
+    ui.tSeparateDetail->setVisibleThreads(visible);
     ui.tSeparateDetail->widgetsShow();
 }
 
@@ -156,8 +160,19 @@ ISPRModelData *SPRSeparateDetailTableWidget::setModelData(ISPRModelData *data)
 {
     model = (SPRMainModel*)data;
     if(model){
+        SPRSeparateModel *_separateModel = model->getSeparateModel();
+        if(separateModel != _separateModel){
+//            if(separateModel){
+//                disconnect(separateModel, SIGNAL(modelChanget(IModelVariable*)), this->ui.tSeparateDetail, SLOT(onModelChanget(IModelVariable*)));
+//                disconnect(separateModel, SIGNAL(modelChanget(IModelVariable*)), this->ui.tSeparateDetailSummary, SLOT(onModelChanget(IModelVariable*)));
+//            }
+            separateModel = _separateModel;
+//            connect(separateModel, SIGNAL(modelChanget(IModelVariable*)), this->ui.tSeparateDetail, SLOT(onModelChanget(IModelVariable*)));
+//            connect(separateModel, SIGNAL(modelChanget(IModelVariable*)), this->ui.tSeparateDetailSummary, SLOT(onModelChanget(IModelVariable*)));
+        }
         connect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
         connect(model->getServer(), SIGNAL(serverStateChange(uint32_t)), this, SLOT(onChandeServerState(uint32_t)));
+
         ui.tSeparateDetail->setModelData(model);
         ui.tSeparateDetailSummary->setModelData(model);
 
@@ -181,5 +196,8 @@ void SPRSeparateDetailTableWidget::onModelChanget(IModelVariable *variable)
         if(variable == model->getSettingsMainModel()->getThreads()){
             widgetsShow();
         }
+//        if(sender() == separateModel){
+//            widgetsShow();
+//        }
     }
 }

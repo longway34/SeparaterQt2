@@ -178,3 +178,17 @@ void SPRZonesRangesTableWidget::onModelChanget(IModelVariable *)
 {
     widgetsShow();
 }
+
+void SPRZonesRangesTableWidget::setThreadsVisible(QList<int> visible){
+    ui.tZonesTable->setThreadsVisible(visible);
+}
+
+void SPRZonesRangesTableWidget::setThreadsVisible(int thr){
+    setThreadsVisible(QList<int>({thr}));
+}
+
+
+void SPRZonesRangesTableWidget::setMasterMode(bool value)
+{
+    this->setEnabled(value);
+}

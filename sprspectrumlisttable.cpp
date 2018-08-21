@@ -14,7 +14,9 @@ void SPRSpectrumListTable::onRowSelect(bool checked, int row){
         storeCurrentItem = spectrums->at(row);
 
         setCurrentCell(row, columnCount()-1);
-        currentItem()->setSelected(true);
+        if(currentItem()){
+            currentItem()->setSelected(true);
+        }
     }
     emit rowSelectedChecked3(getSelectedItems(), spectrums->at(row));
 }
@@ -23,14 +25,18 @@ void SPRSpectrumListTable::onDeleteRow(int row){
 //        int baseVectorSize = model->getSpectrumsModel(spectrumBase)->size();
 //        row += baseVectorSize;
 //    }
-    int vectorSize = model->getSpectrumsModel(typeData)->size();
-    if(row >= 0 && row < vectorSize){
-        model->removeSpectrum(spectrums->at(row));
-        if(spectrums->at(row) == storeCurrentItem){
-            storeCurrentItem = nullptr;
-        }
-        removeRow(row);
-        storeCheckedItems = getSelectedItems();
+    int listSize = model->getSpectrumsModel(typeData)->size();
+    storeCurrentItem = nullptr;
+    if(row >= 0 && row < listSize){
+        SPRSpectrumItemModel *item = spectrums->at(row);
+//        if(spectrums->at(row) == storeCurrentItem){
+//        }
+        model->removeSpectrum(item);
+//        if(!storeCurrentItem){
+//            storeCurrentItem = spectrums->first();
+//        }
+//        removeRow(row);
+//        storeCheckedItems = getSelectedItems();
     }
 //    while(rowCount()>0) removeRow(0);
 //    widgetsShow();
@@ -83,19 +89,21 @@ SPRTypeSpectrumSet SPRSpectrumListTable::getTypeData() const
     return typeData;
 }
 
-void SPRSpectrumListTable::addRowTable(SpectrumItemData *data, int pastRow)
+void SPRSpectrumListTable::setRowTable(SpectrumItemData *data, int row)
 {
-    int row = 0;
-    if(pastRow >= 0 && pastRow < rowCount() - 1){
-        insertRow(pastRow);
-        row = pastRow + 1;
-    } else {
-        insertRow(this->rowCount());
-        row = rowCount() - 1;
-    }
+//    int row = 0;
+//    if(pastRow >= 0 && pastRow < rowCount() - 1){
+//        insertRow(pastRow);
+//        row = pastRow + 1;
+//    } else {
+//        insertRow(this->rowCount());
+//        row = rowCount() - 1;
+//    }
+
+//    insertRow(this->rowCount());
+//    row = rowCount() - 1;
 
     insertFirstColumn(data, row);
-
     insertContentColumns(data, row);
 }
 
@@ -163,7 +171,7 @@ SPRSpectrumListTable::SPRSpectrumListTable(QWidget *parent):
 }
 
 void SPRSpectrumListTable::onCurrentPosChanged(int row, int col){
-    storeCurrentItem = model->getSpectrumItem(row, typeData);
+//    storeCurrentItem = model->getSpectrumItem(row, typeData);
     emit rowSelectedChecked3(getSelectedItems(), spectrums->at(row));
 }
 
@@ -188,6 +196,49 @@ ISPRModelData *SPRSpectrumListTable::setModelData(SPRSpectrumListItemsModel *_mo
 
     }
     return model;
+}
+
+SPRSpectrumItemModel *SPRSpectrumListTable::getModelData(int index){
+    if(index < spectrums->size()){
+        return spectrums->at(index);
+    } else {
+        return nullptr;
+    }
+}
+
+QList<int> SPRSpectrumListTable::getSelectedItemsNumbers(){
+    QList<int> res;
+    for(int row=0; row<rowCount(); row++){
+        FirstCollumn2 *fc = (FirstCollumn2*)cellWidget(row, 0);
+        if(fc->isSelect()){
+            res.push_back(row);
+        }
+    }
+    return res;
+}
+
+QList<SPRSpectrumItemModel *> SPRSpectrumListTable::getSelectedItems(){
+    QList<SPRSpectrumItemModel*> res;
+    for(int row=0; row<rowCount();row++){
+        FirstCollumn2 *fc = (FirstCollumn2*)cellWidget(row, 0);
+        if(fc && fc->isSelect()){
+            SPRSpectrumItemModel* item = model->getSpectrumItem(row, typeData);
+            if(item)
+                res.push_back(item);
+        }
+
+    }
+    return res;
+}
+
+QColor SPRSpectrumListTable::getColorSpectrum(int row){
+
+    SPRSpectrumItemModel *mod = spectrums->at(row);
+    if(mod){
+        QColor ret = mod->getSpectrumColor();
+        return ret;
+    }
+    return QColor(Qt::black);
 }
 
 void SPRSpectrumListTable::resizeEvent(QResizeEvent *event)
@@ -250,20 +301,20 @@ void SPRSpectrumListTable::widgetsShow()
 
         while(rowCount() > 0) this->removeRow(0);
 
-        for(int row=0; row<spectrums->size(); row++){
-            SpectrumItemData *mod = spectrums->at(row)->getSpectrumData();
-            int rc = rowCount();
-            if(row > rc-1){
-                addRowTable(mod);
-            }
-    //    for(int row=0; row < rowCount(); row++){
+        int rowsNum = rowCount();
+        setRowCount(spectrums->size());
+        rowsNum = rowCount();
+        int row = 0;
+        foreach(SPRSpectrumItemModel *item, *spectrums){
+            SpectrumItemData *mod = item->getSpectrumData();
+            setRowTable(mod, row);
+
             FirstCollumn2 *fc = ((FirstCollumn2*)cellWidget(row, 0));
-            QColor col(*mod->red, *mod->green, *mod->blue);
+            QColor col(item->getSpectrumColor());
             fc->setColor(col); fc->setText(QString::number(row));
             if(storeCheckedItems.contains(spectrums->at(row))){
                 fc->setSelect(true);
             }
-    //        fc->setData(row, col);
 
             ((QLabel*)cellWidget(row, 1))->setText(QString::number(*mod->thread));
             ((QLineEdit*)cellWidget(row, 2))->setText(QString(mod->name));
@@ -286,17 +337,29 @@ void SPRSpectrumListTable::widgetsShow()
             ((QLabel*)cellWidget(row, 16))->setText(QString::number(*mod->Zn));
             ((QLabel*)cellWidget(row, 17))->setText(QString::number(*mod->Mg));
             resizeColumnsToContents();
+
+            row++;
         }
     //    foreach (int srow, storeCheckedRows) {
     //        FirstCollumn2 *fc = ((FirstCollumn2*)cellWidget(srow, 0));
     ////        fc->ui.cbSelect->setChecked(true);
     //        fc->setSelect(true);
     //    }
+
+        rowsNum = rowCount();
+//void QTableWidget::scrollToItem ( const QTableWidgetItem * item, QAbstractItemView::ScrollHint hint = EnsureVisible )
+
+        QTableWidgetItem *item = itemAt(0, 0);
+        scrollToItem(item);
+
         if(storeCurrentItem){
             int row = findRowByItemModel(storeCurrentItem);
             if(row >= 0 && row < rowCount()){
-                setCurrentCell(row, columnCount()-1);
-                currentItem()->setSelected(true);
+                QTableWidgetItem *item = itemAt(0, 0);
+                scrollToItem(item);
+//                setCurrentCell(row, columnCount()-1);
+//                if(currentItem())
+//                    currentItem()->setSelected(true);
             }
         }
     }

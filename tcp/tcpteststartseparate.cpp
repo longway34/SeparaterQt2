@@ -40,7 +40,7 @@ void TCPTestStartSeparate::go(TCPCommand *_command)
             getBaseSpectrumCommand->setWithRGU(false, true);
             addCommand(getBaseSpectrumCommand);
 
-            addCommand(new TCPCommand(setsepar))->addSendData(separateModel->toByteArray(mainModel, &errorSeparateState));
+            addCommand(new TCPCommand(setsepar))->addSendData(separateModel->toByteArray(&errorSeparateState));
             addCommand(new TCPCommand(startsep));
 
             //          addCommand(new TCPCommand(oniw));

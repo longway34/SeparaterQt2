@@ -1,111 +1,70 @@
 #include "sprseparatedetailssummarytable.h"
 
-SPRSeparateModel *SPRSeparateDetailSummaryModel::getModelData() const
+SPRSeparateOutputModel *SPRSeparateDetailSummaryModel::getModelData() const
 {
     return separateModel;
 }
 
-void SPRSeparateDetailSummaryModel::setVisibleThreads(const QList<int> &value)
+void SPRSeparateDetailSummaryModel::setVisibleThreads(const SPRThreadList &value)
 {
     if(value.size() > 0){
         visibleThreads = value;
     } else {
-        for(int i=0; i<MAX_SPR_MAIN_THREADS; i++){
-            visibleThreads.push_back(i);
-        }
+        visibleThreads = getAllThreadsListDefault();
+//        for(int i=0; i<MAX_SPR_MAIN_THREADS; i++){
+//            visibleThreads.push_back(i);
+//        }
     }
 }
 
-void SPRSeparateDetailSummaryModel::setScopeData(int value)
+void SPRSeparateDetailSummaryModel::startStopScope(bool value)
 {
     if(separateModel){
-        if(value == 0){
-            if(separateModel->workSeparateRows.size() > 0){
-                scopeDataRowEnd = separateModel->workSeparateRows[0]->id;
-                lastValidRowId = scopeDataRowEnd;
-                return;
-            }
-        }
-        scopeDataRowEnd = value;
-        lastValidRowId = scopeDataRowEnd;
-    }
-}
-
-int SPRSeparateDetailSummaryModel::getScopeData()
-{
-    return scopeDataRowEnd;
-}
-
-void SPRSeparateDetailSummaryModel::setMinTimeScope(int value)
-{
-    minTimeScope = value;
-}
-
-int SPRSeparateDetailSummaryModel::getMinTimeScope() const
-{
-    return minTimeScope;
-}
-
-QVector<SPRWorkSeparateRow *> SPRSeparateDetailSummaryModel::getLastValidRow(bool now)
-{
-    if(!now){
-        return lastValidRows;
-    }
-//    QVector<SPRWorkSeparateRow*> res;
-    if(separateModel){
-        if(getScopeData() >= 0){
-            lastValidRows.clear();
-            beginResetModel();
-            int count = 0;
-            for(int row=0; row < separateModel->workSeparateRows.size(); row++){
-                if(separateModel->workSeparateRows[row]->id == getScopeData()){
-                    break;
-                }
-                if(separateModel->workSeparateRows[row]->id == lastValidRowId){
-                    break;
-                }
-                if(separateModel->workSeparateRows[row]->wcount < getMinTimeScope()){
-                    continue;
-                }
-                SPRWorkSeparateRow *modelRow = separateModel->workSeparateRows[row];
-                if(visibleThreads.contains(modelRow->thread)){
-                    lastValidRows.push_back(modelRow);
-                    if(count++ == 0){
-                        lastValidRowId = modelRow->id;
-                    }
-                    myData.addData(modelRow->p_tkh1, modelRow->p_tkh2, modelRow->p_tkh3, (int)modelRow->wcount);
-                }
-            }
-            endResetModel();
+        if(value){
+            lastMdt = 0;
+            connect(separateModel, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
+        } else {
+            disconnect(separateModel, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
         }
     }
-    return lastValidRows;
+}
 
+bool SPRSeparateDetailSummaryModel::isStartStopScope()
+{
+    return startStop;
+}
+
+void SPRSeparateDetailSummaryModel::setMinStoneTime(int value)
+{
+    minStoneTime = value;
+}
+
+int SPRSeparateDetailSummaryModel::getMinStoneTime() const
+{
+    return minStoneTime;
 }
 
 SPRSeparateDetailSummaryModel::SPRSeparateDetailSummaryModel(QObject *parent):
-    QAbstractTableModel(parent)
+    QAbstractTableModel(parent), separateModel(nullptr), lastData(nullptr), prevData(nullptr), lastMdt(0)
 {
-//    for(int i=1; i<11; i++){
-//        myData.addData(i*0.1+i, i*0.1+i, i*0.1+i, i+10);
-
-//    }
 
 }
 
-void SPRSeparateDetailSummaryModel::setModelData(SPRSeparateModel *_model)
+void SPRSeparateDetailSummaryModel::setModelData(SPRSeparateOutputModel *_model)
 {
     separateModel = _model;
     if(separateModel){
         connect(separateModel, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
+        visibleThreads = separateModel->getWorkThreadList();
     }
 }
-int SPRSeparateDetailSummaryModel::rowCount(const QModelIndex &parent) const
+
+int SPRSeparateDetailSummaryModel::rowCount(const QModelIndex &) const
 {
     return 6;
 }
 
-int SPRSeparateDetailSummaryModel::columnCount(const QModelIndex &parent) const
+int SPRSeparateDetailSummaryModel::columnCount(const QModelIndex &) const
 {
     return 4;
 }
@@ -113,6 +72,9 @@ int SPRSeparateDetailSummaryModel::columnCount(const QModelIndex &parent) const
 QVariant SPRSeparateDetailSummaryModel::data(const QModelIndex &index, int role) const
 {
     QVariant res/* = QAbstractTableModel::data(index, role)*/;
+    if(role == Qt::TextAlignmentRole){
+        res = QVariant(Qt::AlignCenter);
+    }
     if(role == Qt::DisplayRole){
         QString sres;
         switch(index.row()){
@@ -223,69 +185,73 @@ QVariant SPRSeparateDetailSummaryModel::headerData(int section, Qt::Orientation 
     QVariant res = QAbstractTableModel::headerData(section, orientation, role);
     if(role == Qt::DisplayRole){
         if(orientation == Qt::Horizontal){
-            switch(section){
-            case 0:
-                res = QVariant(QString(tr("H1")));
-                break;
-            case 1:
-                res = QVariant(QString(tr("H2")));
-                break;
-            case 2:
-                res = QVariant(QString(tr("H3")));
-                break;
-            case 3:
-                res = QVariant(QString(tr("Время изм. (мс)")));
+            QVector<QVariant> hHeaders = {QVariant(QString(tr("значение H1"))),
+                                         QVariant(QString(tr("знасение H2"))),
+                                         QVariant(QString(tr("значение H3"))),
+                                         QVariant(QString(tr("Время изм. (мс)")))};
+            if(section < hHeaders.size()){
+                res = hHeaders[section];
             }
         }
         if(orientation == Qt::Vertical){
-            switch(section){
-            case 0:
-                res = QVariant(QString(tr("Разброс")));
-                break;
-            case 1:
-                res = QVariant(QString(tr("Min")));
-                break;
-            case 2:
-                res = QVariant(QString(tr("Max")));
-                break;
-            case 3:
-                res = QVariant(QString(tr("Среднее")));
-                break;
-            case 4:
-                res = QVariant(QString(tr("Дельта")));
-                break;
-            case 5:
-                res = QVariant(QString(tr("Ср. кв. откл.")));
-                break;
+            QVector<QVariant> vHeaders = {
+                QVariant(QString(tr("Разброс"))),
+                QVariant(QString(tr("Минимум"))),
+                QVariant(QString(tr("Максимуи"))),
+                QVariant(QString(tr("Среднее"))),
+                QVariant(QString(tr("Дельта"))),
+                QVariant(QString(tr("Ср. кв. откл.")))
+            };
+            if(section < vHeaders.size()){
+                res = vHeaders[section];
             }
         }
     }
     return res;
 }
 
-void SPRSeparateDetailSummaryModel::onModelChanget(IModelVariable *model)
+void SPRSeparateDetailSummaryModel::onModelChanget(IModelVariable *variable)
 {
-    getLastValidRow(true);
+    if(variable == separateModel || sender() == separateModel){
+        qint64 mdt = separateModel->getWorkSeparateLast()->mdt;
+        if(abs(static_cast<int>(lastMdt - mdt)) >= 1000 || lastMdt == 0){
+            lastMdt = mdt;
+            lastData = separateModel->getWorkSeparateLast();
+            prevData = separateModel->getWorkSeparatePrev();
+            foreach(uint8_t th, visibleThreads){
+                int diff_w_count = static_cast<int>(lastData->source.wcount[th] - prevData->source.wcount[th]);
+                int stone_count = static_cast<int>(lastData->source.i_prd[th][SPR_SEPARATE_OUT_INDEX_ALL] - prevData->source.i_prd[th][SPR_SEPARATE_OUT_INDEX_ALL]);
+                if(stone_count > 0){
+                    beginResetModel();
+                    myData.addData(lastData->source.p_tkh1[th], lastData->source.p_tkh2[th], lastData->source.p_tkh3[th], diff_w_count, stone_count);
+                    endResetModel();
+                }
+            }
+        }
+    }
 }
 
 /***
  *
 */
-SPRSeparateDetailSummaryModel *SPRSeparateDetailsSummaryTable::getMyModel() const
-{
-    return myModel;
-}
+//SPRSeparateDetailSummaryModel *SPRSeparateDetailsSummaryTable::getMyModel() const
+//{
+//    return myModel;
+//}
 
-void SPRSeparateDetailsSummaryTable::setMyModel(SPRSeparateDetailSummaryModel *value)
-{
-    myModel = value;
-}
+//void SPRSeparateDetailsSummaryTable::setMyModel(SPRSeparateDetailSummaryModel *value)
+//{
+//    myModel = value;
+//}
 
 SPRSeparateDetailsSummaryTable::SPRSeparateDetailsSummaryTable(QWidget *parent):
-    QTableView(parent), ISPRWidget(), myModel(nullptr)
+    QTableView(parent), ISPRWidget(), myModel(nullptr), separateModel(nullptr)
 {
-    myModel = new SPRSeparateDetailSummaryModel(this);
-    setModel(myModel);
+//    if(separateModel){
+//        myModel = new SPRSeparateDetailSummaryModel(_model);
+//        setModel(myModel);
+//        connect(separateModel, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
+//    }
 
     setSelectionBehavior(QAbstractItemView::SelectRows);
     setSelectionMode(QAbstractItemView::SingleSelection);
@@ -305,16 +271,65 @@ void SPRSeparateDetailsSummaryTable::widgetsShow()
 
 ISPRModelData *SPRSeparateDetailsSummaryTable::setModelData(ISPRModelData *data)
 {
-    getMyModel()->setModelData(((SPRMainModel*)data)->getSeparateModel());
+    if(data){
+        SPRMainModel *_mod = data->getMainModel();
+        if(_mod){
+            if(!separateModel){
+                separateModel = _mod->getSeparateOutputModel();
+                connect(separateModel, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
+                if(!myModel) myModel = new SPRSeparateDetailSummaryModel(separateModel);
+                myModel->setModelData(_mod->getSeparateOutputModel());
+                setModel(myModel);
+
+                this->horizontalHeader()->resizeSections(QHeaderView::Stretch);
+
+                horizontalHeader()->setDefaultAlignment(Qt::AlignHCenter);
+                horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+                show();
+            }
+        }
+    }
     return data;
 }
 
 ISPRModelData *SPRSeparateDetailsSummaryTable::getModelData()
 {
-    return getMyModel()->getModelData();
+    return separateModel;
+}
+
+void SPRSeparateDetailsSummaryTable::setVisibleThreads(const SPRThreadList &value)
+{
+    if(myModel){
+        myModel->setVisibleThreads(value);
+    }
+}
+
+bool SPRSeparateDetailsSummaryTable::isStartStopScope()
+{
+    if(myModel){
+        return myModel->isStartStopScope();
+    }
+    return false;
+}
+
+void SPRSeparateDetailsSummaryTable::startStopScope(bool value)
+{
+    if(myModel){
+        myModel->startStopScope(value);
+    }
+}
+
+void SPRSeparateDetailsSummaryTable::setMinStoneTime(int value)
+{
+    if(myModel){
+        myModel->setMinStoneTime(value);
+    }
 }
 
 void SPRSeparateDetailsSummaryTable::onModelChanget(IModelVariable *)
 {
+    if(sender() == separateModel){
+//        resizeColumnsToContents();
+    }
 }
 

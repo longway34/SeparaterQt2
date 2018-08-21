@@ -9,20 +9,17 @@ TCPCommandStopPitatel::TCPCommandStopPitatel(ServerConnect *_server, TCPTimeOutW
     TCPCommandSet(_server, _widget, {})
 {
     command = setStopPitatel;
-    addCommand(new TCPCommand(stoppuw));
+//    addCommand(new TCPCommand(stoppuw));
 }
 
 void TCPCommandStopPitatel::go(TCPCommand *_command)
 {
     if(!_command){
+        clear();
+        addCommand(stoppuw);
         commandSet[0]->send(server);
-        return;
-    } else {
-        if(_command->noErrors()){
-            server->clearState(spr_state_pitatel_on);
-        }
-        emit commandComplite(this);
-        return;
+        addCommand(new TCPTimeOutCommand(timeoutcommand, 4000, 100, getTimeOutWidget(),
+                        MSG_TIME_OUT_OFF_PITATEL, MSG_TIME_OUT_OFF_PITAPEL_MSG( 4 )));
     }
-    return;
+    TCPCommandSet::go(_command);
 }

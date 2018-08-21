@@ -5,7 +5,7 @@
 #include <qwt_plot_zoomer.h>
 #include <qwt_plot.h>
 
-#include "sprgraphitem.h"
+#include "models/sprgraphitem.h"
 
 class ScrollData;
 class ScrollBar;

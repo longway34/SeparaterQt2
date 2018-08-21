@@ -12,7 +12,7 @@
 #include <qwt_plot_zoomer.h>
 #include <qwt_legend.h>
 
-#include "sprgraphitem.h"
+#include "models/sprgraphitem.h"
 #include "scrollzoomer.h"
 #include "sprporogsmoved.h"
 
@@ -23,9 +23,9 @@ class SPRSpectrumGraphicsWidget : public QWidget, public ISPRWidget
 public:
 
     SPRSpectrumListItemsModel *model;
-    QVector<SPRSpectrumItemModel*> *spectrums;
-    QVector<SPRSpectrumItemModel*> spectSource;
-    QVector<SPRGraphItem*> graphItems;
+    QList<SPRSpectrumItemModel*> *spectrums;
+    QList<SPRSpectrumItemModel*> spectSource;
+//    QList<SPRGraphItem*> graphItems;
 
     SPRViewGraphicsMode graphicsMode;
 
@@ -38,19 +38,10 @@ public:
 
     QwtLegend *legend;
 
-    int getGraphItemNumber(SPRSpectrumItemModel* _mod){
-        int ret = -1;
-        for(int index=0; index<spectrums->size(); index++){
-            if(_mod == spectrums->at(index)){
-                ret = index;
-                break;
-            }
-        }
-        return ret;
-    }
+    int getGraphItemNumber(SPRSpectrumItemModel* _mod);
 
 
-    QList<int> visibleThreads;
+    SPRThreadList visibleThreads;
 
     QList<SPRGraphItem*> visibleItems;
     SPRGraphItem *currentItem;
@@ -78,16 +69,7 @@ public:
 
     virtual ISPRModelData *getModelData(){return model;}
     void setModelData(SPRSpectrumListItemsModel *value, SPRTypeSpectrumSet typeSpectrumSet, bool _zonesShow, bool _enableChangeTypeSet = false);
-    void setVisibleAll(bool _allVisible = true){
-        allVisible = _allVisible;
-//        visibleItems.clear();
-//        for(int i=0; i<spectrums->size(); i++){
-//            SPRGraphItem *gr = findGraphItemByModel(spectrums->at(i));
-//            if(gr){
-//                visibleItems.push_back(gr);
-//            }
-//        }
-    }
+    void setVisibleAll(bool _allVisible = true);
     void setAllCurrent(bool value);
     QwtPlot *getCanvas(){
         return ui.canvas;
@@ -105,8 +87,8 @@ public:
     bool getWithLegend() const;
     void setWithLegend(bool value);
 
-    QList<int> getVisibleThreads() const;
-    void setVisibleThreads(const QList<int> &value);
+    SPRThreadList getVisibleThreads() const;
+    void setVisibleThreads(const SPRThreadList &value);
 
     int getCurrentThread() const;
 
@@ -116,6 +98,8 @@ public:
     void setCurrentItem(SPRGraphItem *value);
     SPRGraphItem *findGraphItemByModel(SPRSpectrumItemModel *model);
 
+    void hideGraphics(QwtPlotItem *graph);
+    void hideGraphics(SPRTypeSpectrumSet type);
 public slots:
     virtual void widgetsShow();
     //    void onChangeSelectedCheckedItems(QList<int> checked, int current);
@@ -129,7 +113,8 @@ public slots:
     void onChangeSelectedCheckedItems(QList<SPRSpectrumItemModel *> checked, SPRSpectrumItemModel *current);
 protected:
     void setPorogsMovedItems();
-    void clearGraphics(bool all=false);
+    void hideGraphics(SPRSpectrumItemModel *items = {});
+    void hideGraphics(QList<SPRSpectrumItemModel*> *items = {}, bool all=false);
     void clearPorogsMovedItems();
 protected slots:
     void onCusorOverSelectItem(QwtPlotItem *item, MovedItemPosition);

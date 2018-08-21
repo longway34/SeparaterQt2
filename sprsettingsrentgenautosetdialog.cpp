@@ -4,19 +4,11 @@
 
 void SPRSettingsRentgenAutoSetDialog::onChangeSelectedItemValue(QwtPlotItem *item, double distance, MovedItemPosition position){
     if(item && item == peakCurve){
-//        if(item->rtti() == QwtPlotItem::Rtti_PlotCurve){
-//            QVector<QPointF> points;
-//            for(int sam=0; sam<peakCurve->data()->size();sam++){
-//                QPointF point = peakCurve->sample(sam);
-//                point.setX(point.rx() + distance);
-//                points.push_back(point);
-//            }
-//            peakCurve->setSamples(points);
+//        if(rentgenModel){
+//            uint last = rentgenModel->peakPosition->getData();
+//            rentgenModel->peakPosition->setData(last + distance);
 //        }
-        if(rentgenModel){
-            uint last = rentgenModel->peakPosition->getData();
-            rentgenModel->peakPosition->setData(last + distance);
-        }
+        tempPeakPosition += distance;
     }
 }
 
@@ -28,46 +20,6 @@ void SPRSettingsRentgenAutoSetDialog::onCusorOverSelectItem(QwtPlotItem *item, M
     } else {
         peakCurve->setPen(defPen);
     }
-}
-
-ISPRModelData *SPRSettingsRentgenAutoSetDialog::setModelData(ISPRModelData *value)
-{
-    if(value){
-        rentgenModel = (SPRSettingsRentgenModel*)value;
-        if(rentgenModel){
-            IModelVariable *_mod = rentgenModel->getMainModel();
-            if(_mod && _mod->objectName() == "MainModel"){
-                mainModel = (SPRMainModel*)_mod;
-                if(mainModel){
-                    ui.bStart->setEnabled(true);
-
-                    if(autoSetCommand) delete autoSetCommand;
-                    autoSetCommand = new TCPAutoSetRentgen(mainModel, new TCPTimeOutWigget(nullptr));
-                    connect(autoSetCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
-
-                    if(spectrums) delete spectrums;
-                    spectrums = new SPRSpectrumListItemsModel(mainModel->getSpectrumZonesTableModel(), mainModel->getSettingsFormulaModel(), mainModel->getThreads(), nullptr, mainModel->getSettingsControlModel()->controlArea, nullptr);
-
-                    ui.graphic->setModelData(spectrums, spectrumsOnly, false, true);
-                    ui.graphic->setAllCurrent(true);
-                }
-            }
-            for(int th=0; th<mainModel->getThreads()->getData(); th++){
-                tempDEU[th] = rentgenModel->codeBegin->getData();
-                tempCP[th] = 128;
-            }
-
-            controlCP = 0;
-            controlDEU = 0;
-
-            qreal xmin = 0, xmax = 100;
-            peakData = {QPointF(rentgenModel->peakPosition->getData(), xmin), QPointF(rentgenModel->peakPosition->getData(), xmax)};
-            peakCurve->setSamples(peakData);
-
-            widgetsShow();
-        }
-    }
-    return value;
 }
 
 void SPRSettingsRentgenAutoSetDialog::widgetsShow()
@@ -88,9 +40,9 @@ void SPRSettingsRentgenAutoSetDialog::widgetsShow()
         QString _textTitle = QString(tr("Ручей %1")).arg(QString::number(th + 1));
         bool _deleteVisible = false, _colorVisible = true, _selectVisible = false;
         if(spectrums){
-            QVector<SPRSpectrumItemModel*> vspect = spectrums->getSpectrumsItemByThread(th);
-            if(vspect.size() > 0){
-                SPRSpectrumItemModel *spect = vspect.last();
+            QList<SPRSpectrumItemModel*> lst = spectrums->getSpectrumsItemByThread(th);
+            if(lst.size() > 0){
+                SPRSpectrumItemModel *spect = lst.last();
                 if(spect){
                     _color = spect->getSpectrumColor();
                     _textTitle = spect->getSpectrumName();
@@ -100,24 +52,6 @@ void SPRSettingsRentgenAutoSetDialog::widgetsShow()
         }
 
         FirstCollumn2 *fc = new FirstCollumn2(_textTitle, _colorVisible, _color, _selectVisible, _deleteVisible, nullptr);
-//        fc->setSelectVisible(false); fc->setDeleteVisible(false);
-//        if(spectrums){
-//            QVector<SPRSpectrumItemModel*> vspect = spectrums->getSpectrumsItemByThread(th);
-//            if(vspect.size() > 0){
-//                SPRSpectrumItemModel *spect = vspect.last();
-//                fc->setColor(spect->getSpectrumColor());
-//                QString ttt = spect->getSpectrumName();
-//                fc->setText(ttt);
-//            } else {
-//                fc->setColor(Qt::white);
-//                QString ttt = QString(tr("Ручей %1")).arg(QString::number(th + 1));
-//                fc->setText(ttt);
-//            }
-//        } else {
-//            fc->setColor(Qt::white);
-//            QString ttt = QString(tr("Ручей %1")).arg(QString::number(th + 1));
-//            fc->setText(ttt);
-//        }
         ui.tDeuCP->setCellWidget(ui.tDeuCP->rowCount()-1, 0, fc);
 //        fc->widgetsShow();
 
@@ -125,25 +59,6 @@ void SPRSettingsRentgenAutoSetDialog::widgetsShow()
         ui.tDeuCP->setItem(ui.tDeuCP->rowCount()-1, 1, new QTableWidgetItem(QString::number(tempDEU[th])));
         ui.tDeuCP->setItem(ui.tDeuCP->rowCount()-1, 2, new QTableWidgetItem(QString::number(tempCP[th])));
 
-//        fc = new FirstCollumn2();
-//        fc->setSelectVisible(false); fc->setDeleteVisible(false);
-//        if(spectrums){
-//            QVector<SPRSpectrumItemModel*> vspect = spectrums->getSpectrumsItemByThread(th);
-//            if(vspect.size() > 0){
-//                SPRSpectrumItemModel *spect = vspect.last();
-//                fc->setColor(spect->getSpectrumColor());
-//                QString ttt = spect->getSpectrumName();
-//                fc->setText(ttt);
-//            } else {
-//                fc->setColor(Qt::white);
-//                QString ttt = QString(tr("Ручей %1")).arg(QString::number(th + 1));
-//                fc->setText(ttt);
-//            }
-//        } else {
-//            fc->setColor(Qt::white);
-//            QString ttt = QString(tr("Ручей %1")).arg(QString::number(th + 1));
-//            fc->setText(ttt);
-//        }
         fc = new FirstCollumn2(_textTitle, _colorVisible, _color, _selectVisible, _deleteVisible, nullptr);
         ui.tPeakRS->setCellWidget(ui.tPeakRS->rowCount()-1, 0, fc);
 //        fc->widgetsShow();
@@ -151,9 +66,9 @@ void SPRSettingsRentgenAutoSetDialog::widgetsShow()
 //        ui.tPeakRS->setItem(ui.tPeakRS->rowCount()-1, 0, new QTableWidgetItem(QString::number(th+1)));
         QString rs = "0"; QString peak = "0";
         if(spectrums){
-            QVector<SPRSpectrumItemModel *> specs = spectrums->getSpectrumsItemByThread(th);
-            if(specs.size() > 0){
-                SPRSpectrumItemModel* spec = specs.last();
+            QList<SPRSpectrumItemModel *> lst = spectrums->getSpectrumsItemByThread(th);
+            if(lst.size() > 0){
+                SPRSpectrumItemModel* spec = lst.last();
                 rs = QString::number(*spec->getSpectrumData()->Rs, 'f', 0);
                 peak = QString::number(*spec->getSpectrumData()->peak);
             }
@@ -172,13 +87,18 @@ void SPRSettingsRentgenAutoSetDialog::widgetsShow()
     ui.tmContrilCP->setValue(controlCP);
     ui.tmContrilCP->setToolTip(QString::number(controlCP,'f',1) + "%");
 
+    ui.tmContrilAll->setValue(controlCP);
+    ui.tmContrilAll->setToolTip(QString::number(controlAll,'f',1) + "%");
+
+    ui.graphic->hideGraphics(this->peakCurve);
     ui.graphic->getCanvas()->replot();
 
-//    QList<QwtLegendData> legendValues = peakCurve->legendData();
-//    foreach (QwtLegendData data, legendValues) {
-//        qDebug() << "legend title: "<< data.title().text();
-//        qDebug() << "data: "<< data.values();
-//    }
+    peakData[1].setY(ui.graphic->getCanvas()->axisInterval(QwtPlot::yLeft).maxValue());
+    peakCurve->setSamples(peakData);
+    peakCurve->attach(ui.graphic->getCanvas());
+
+    ui.graphic->getCanvas()->replot();
+
     setGraphicTitle();
     onDblClickMouseEvent();
 }
@@ -192,19 +112,90 @@ void SPRSettingsRentgenAutoSetDialog::setGraphicTitle(){
     ui.graphic->getCanvas()->setTitle(title);
 }
 
-QList<int> SPRSettingsRentgenAutoSetDialog::getThreads()
+SPRThreadList SPRSettingsRentgenAutoSetDialog::getThreads()
 {
     return threads;
 }
 
-void SPRSettingsRentgenAutoSetDialog::setThreads(QList<int> &value)
+double SPRSettingsRentgenAutoSetDialog::prDeuCpOKAll(QList<bool> *_src){
+    QList<bool> src = _src == nullptr ? deuOK + cpOK : *_src;
+    double countOk = 0, size = src.size();
+    foreach(bool b, src){
+        if(b){
+            countOk++;
+        }
+    }
+    return (countOk / size) * 100.;
+}
+
+bool SPRSettingsRentgenAutoSetDialog::isDeuCpAllOK(uint8_t th, QList<bool> *_src)
+{
+    QList<bool> src; bool res = true;
+    if(th == 255){
+        if(_src){
+            src = *_src;
+        } else {
+            src = deuOK + cpOK;
+        }
+    } else {
+        if(_src){
+            src = QList<bool>({(*_src)[th]});
+        } else {
+            if(th < deuOK.size() && th < cpOK.size()){
+                src =  QList<bool>({deuOK[th] + cpOK[th]});
+            } else {
+                return false;
+            }
+        }
+    }
+
+//    QList<uint8_t> lst = th < 0 ? threads : QList<uint8_t>({th});
+    foreach(bool b, src){
+        res &= b;
+    }
+    return res;
+}
+
+void SPRSettingsRentgenAutoSetDialog::setThreads(SPRThreadList &value)
 {
     threads = value;
     ui.graphic->setVisibleThreads(threads);
+
+    deuOK.clear();
+    cpOK.clear();
+    if(mainModel){
+        for(int i=0; i< MAX_SPR_MAIN_THREADS; i++){
+            tempDEU[i] = mainModel->getSettingsRentgenModel()->deuCodes[i]->getData();
+            tempCP[i] = mainModel->getSettingsRentgenModel()->cpCodes[i]->getData();
+        }
+        foreach(uint8_t i, threads){
+            deuOK << false;
+            cpOK << false;
+            tempCP[i] = 128;
+            tempDEU[i] = mainModel->getSettingsRentgenModel()->codeBegin->getData();
+        }
+    }
+}
+
+TCPTimeOutWigget *SPRSettingsRentgenAutoSetDialog::getToWidget() const
+{
+    return toWidget;
+}
+
+void SPRSettingsRentgenAutoSetDialog::setToWidget(TCPTimeOutWigget *value)
+{
+    toWidget = value;
 }
 
 SPRSettingsRentgenAutoSetDialog::SPRSettingsRentgenAutoSetDialog(QWidget *parent) :
-    QDialog(parent), rentgenModel(nullptr), mainModel(nullptr), autoSetCommand(nullptr), peakCurve(nullptr), spectrums(nullptr)
+    QDialog(parent),
+    rentgenModel(nullptr),
+    mainModel(nullptr),
+    autoSetCommand(nullptr),
+    autoSetGo(nullptr),
+    toWidget(nullptr),
+    peakCurve(nullptr),
+    spectrums(nullptr)
 
 {
     ui.setupUi(this);
@@ -239,16 +230,75 @@ SPRSettingsRentgenAutoSetDialog::SPRSettingsRentgenAutoSetDialog(QWidget *parent
     connect(ui.graphic->getPorogsMoved(), SIGNAL(changeArgumentValue(QwtPlotItem*,double,MovedItemPosition)), this, SLOT(onChangeSelectedItemValue(QwtPlotItem*,double,MovedItemPosition)));
     connect(ui.graphic->getPorogsMoved(), SIGNAL(dblClickMouseEvent()), this, SLOT(onDblClickMouseEvent()));
 
-    connect(ui.bStart, SIGNAL(clicked(bool)), this, SLOT(onStartButton(bool)));
+    connect(ui.bStart, SIGNAL(clicked(bool)), this, SLOT(onClickButtons(bool)));
+    connect(ui.bSuspend, SIGNAL(clicked(bool)), this, SLOT(onClickButtons(bool)));
+    connect(ui.bExit, SIGNAL(clicked(bool)), this, SLOT(onClickButtons(bool)));
+    connect(ui.bComplite, SIGNAL(clicked(bool)), this, SLOT(onClickButtons(bool)));
+
+    tempCP.resize(MAX_SPR_MAIN_THREADS);
+    tempDEU.resize(MAX_SPR_MAIN_THREADS);
 
     for(int th=0; th<MAX_SPR_MAIN_THREADS; th++){
         threads.push_back(th);
         ui.graphic->setVisibleThreads(threads);
     }
+    setThreads(threads);
+
     ui.graphic->setEnableChangeTypeSet(true);
 //    ui.graphic->setWithLegend(true);
 
     widgetsShow();
+}
+
+ISPRModelData *SPRSettingsRentgenAutoSetDialog::setModelData(ISPRModelData *value)
+{
+    if(value){
+        rentgenModel = (SPRSettingsRentgenModel*)value;
+        if(rentgenModel){
+            IModelVariable *_mod = rentgenModel->getMainModel();
+            if(_mod && _mod->objectName() == "MainModel"){
+                mainModel = (SPRMainModel*)_mod;
+                if(mainModel){
+                    ui.bStart->setEnabled(true);
+
+                    for(int th=0; th<mainModel->getThreads()->getData(); th++){
+                        tempDEU[th] = rentgenModel->codeBegin->getData();
+                        tempCP[th] = 128;
+                    }
+
+                    settingBACodes();
+
+                    if(autoSetCommand) delete autoSetCommand;
+                    if(!toWidget) toWidget = new TCPTimeOutWigget(nullptr);
+                    autoSetCommand = new TCPAutoSetRentgen(mainModel, toWidget);
+                    connect(autoSetCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
+
+                    if(autoSetGo) delete autoSetGo;
+                    autoSetGo = new TCPAutosetCommandGo(mainModel->getServer(), tempDEU2Command, tempCP2Command, threads, toWidget, nullptr);
+                    connect(autoSetGo, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
+
+                    if(spectrums) delete spectrums;
+                    spectrums = new SPRSpectrumListItemsModel(mainModel, nullptr, true, nullptr);
+
+                    ui.graphic->setModelData(spectrums, spectrumsOnly, false, true);
+                    ui.graphic->setAllCurrent(true);
+
+                    tempPeakPosition = mainModel->getSettingsRentgenModel()->peakPosition->getData();
+                }
+            }
+
+            controlCP = 0;
+            controlDEU = 0;
+            controlAll = 0;
+
+            qreal xmin = 0, xmax = 100;
+            peakData = {QPointF(tempPeakPosition, xmin), QPointF(tempPeakPosition, xmax)};
+            peakCurve->setSamples(peakData);
+
+            widgetsShow();
+        }
+    }
+    return value;
 }
 
 void SPRSettingsRentgenAutoSetDialog::onDblClickMouseEvent(){
@@ -257,9 +307,9 @@ void SPRSettingsRentgenAutoSetDialog::onDblClickMouseEvent(){
     SPRGraphItem *gr = nullptr;
     if(thr >= 0){
         if(spectrums){
-            QVector<SPRSpectrumItemModel*> vmodels = spectrums->getSpectrumsItemByThread(thr, spectrumsOnly);
-            if(vmodels.size() > 0){
-                 gr = ui.graphic->findGraphItemByModel(vmodels.last());
+            QList<SPRSpectrumItemModel*> lst = spectrums->getSpectrumsItemByThread(thr, spectrumsOnly);
+            if(lst.size() > 0){
+                 gr = lst.last()->getGraphic();
             }
         }
     }
@@ -281,48 +331,133 @@ QByteArray SPRSettingsRentgenAutoSetDialog::codesToByteArray(uint16_t *table){
     return res;
 }
 
-void SPRSettingsRentgenAutoSetDialog::onStartButton(bool){
+TCPCommand *restartsep = nullptr;
+
+void SPRSettingsRentgenAutoSetDialog::onClickButtons(bool){
     if(mainModel){
-        ui.bSuspend->setEnabled(true);
+        if(sender() == ui.bStart){
 
-        QByteArray codeDeu, codeCP;
-//        char ren = 0;
-//        codeDeu.append(&ren, 1); codeCP.append(&ren, 1);
-        for(int th=0; th<MAX_SPR_MAIN_THREADS; th++){
-            uint16_t deu = rentgenModel->deuCodes[th]->getData();
-            uint16_t cp = rentgenModel->cpCodes[th]->getData();
-            codeDeu.append((char*)(&deu), sizeof(deu));
-            codeCP.append((char*)(&cp), sizeof(cp));
+//            if(!restartsep){
+//                restartsep = new TCPCommand(clearrs);
+//            }
+//            restartsep->send(mainModel->getServer());
+
+            ui.bSuspend->setEnabled(true);
+            ui.bComplite->setEnabled(false);
+
+            finish = false;
+
+            QByteArray codeDeu, codeCP;
+    //        char ren = 0;
+    //        codeDeu.append(&ren, 1); codeCP.append(&ren, 1);
+            for(int th=0; th<MAX_SPR_MAIN_THREADS; th++){
+                uint16_t deu = rentgenModel->deuCodes[th]->getData();
+                uint16_t cp = rentgenModel->cpCodes[th]->getData();
+                codeDeu.append((char*)(&deu), sizeof(deu));
+                codeCP.append((char*)(&cp), sizeof(cp));
+            }
+            autoSetCommand->setCodesDEU(codeDeu);
+            autoSetCommand->setCodesCP(codeCP);
+            autoSetCommand->setThreads(threads);
+
+            autoSetCommand->send(mainModel->getServer());
         }
-        autoSetCommand->setCodesDEU(codeDeu);
-        autoSetCommand->setCodesCP(codeCP);
-        autoSetCommand->setThreads(threads);
-
-        autoSetCommand->send(mainModel->getServer());
+        if(sender() == ui.bSuspend){
+            ui.bComplite->setEnabled(false);
+            ui.bSuspend->setEnabled(false);
+        }
+    }
+    if(sender() == ui.bExit){
+        finish = true;
+        this->accept();
+    }
+    if(sender() == ui.bComplite){
+        if(mainModel){
+            foreach(uint8_t th, threads){
+                mainModel->getSettingsRentgenModel()->deuCodes[th]->setData(tempDEU[th]);
+                mainModel->getSettingsRentgenModel()->cpCodes[th]->setData(tempCP[th]);
+            }
+            mainModel->getSettingsRentgenModel()->peakPosition->setData(tempPeakPosition);
+        }
     }
 
 }
 
 
 void SPRSettingsRentgenAutoSetDialog::onCommandComplite(TCPCommand* _command){
-    if(_command == autoSetCommand){
-        QVector<TCPCommand*> vspc = autoSetCommand->findCommands(getspk);
-        for(int i=0; i<vspc.size(); i++){
-            QByteArray rep = vspc[i]->getReplayData();
-            QByteArray spc = rep.right(DEF_SPECTRUM_DATA_LENGTH_BYTE);
+    if(spectrums && mainModel){
+        if(_command == autoSetCommand || _command == autoSetGo){
 
-            SPRSpectrumItemModel *mod = nullptr;
-            mod = spectrums->setSpectrumData(threads[i], spc, spectrumsOnly, 30000, QString(tr("Ручей %1")));
-            mod->setTimeScope(10000);
-//            mod->setSpectrumName(QString(tr("Ручей %1")).arg(threads[i]+1));
+            QVector<TCPCommand*> vspc = _command->findCommands(getspk);
+            for(int i=0; i<vspc.size(); i++){
+                QByteArray rep = vspc[i]->getReplayData();
+                QByteArray spc = rep.right(DEF_SPECTRUM_DATA_LENGTH_BYTE);
 
+                SPRSpectrumItemModel *mod = nullptr;
+                mod = spectrums->setSpectrumData(threads[i], spc, spectrumsOnly, 10000, QString(tr("Ручей %1")));
+                mod->setTimeScope(10000);
+    //            mod->setSpectrumName(QString(tr("Ручей %1")).arg(threads[i]+1));
+
+            }
+            ui.graphic->getCanvas()->replot();
+            double h = ui.graphic->getCanvas()->axisScaleDiv(QwtPlot::yLeft).upperBound();
+            peakData[0].setY(0); peakData[1].setY(h);
+            peakCurve->setSamples(peakData);
+
+            controlCP = prDeuCpOKAll(&cpOK);
+            controlDEU = prDeuCpOKAll(&deuOK);
+            controlAll = prDeuCpOKAll();
+
+            widgetsShow();
+
+            uint peakFinish = tempPeakPosition;
+            uint deuStep = mainModel->getSettingsRentgenModel()->codeStep->getData();
+
+            int cnt = 0;
+            foreach(uint8_t th, threads){
+                QList<SPRSpectrumItemModel*> lst = spectrums->getSpectrumsItemByThread(th, spectrumsOnly);
+                SPRSpectrumItemModel *spect = nullptr;
+                if(lst.size() > 0){
+                    spect = lst.last();
+                    if(spect){
+                        if(*spect->getSpectrumData()->peak == peakFinish){
+                            deuOK[cnt] = true;
+                            cpOK[cnt] = true;
+                        } else if (*spect->getSpectrumData()->peak > peakFinish) {
+                            deuOK[cnt] = true;
+                            cpOK[cnt] = false;
+                        } else {
+                            deuOK[cnt] = false;
+                            cpOK[cnt] = false;
+                        }
+                    }
+                }
+                if(spect){
+                    if(!isDeuCpAllOK(255, &deuOK)){
+                        if(!deuOK[cnt]){
+                            tempDEU[cnt] += deuStep;
+                        }
+                    } else {
+                        if(!cpOK[cnt]){
+                            tempCP[cnt] -= 1;
+                        }
+                    }
+qDebug() << "ch: " << threads[cnt] << "(" << deuOK[cnt] << "); deu: " << tempDEU[cnt] << "; cp: " << tempCP[cnt] << " (" << cpOK[cnt] << ")";
+                }
+                cnt++;
+            }
+            if(isDeuCpAllOK()){
+                finish = true;
+            } else {
+                settingBACodes();
+                if(!isDeuCpAllOK(255, &deuOK)){
+                    autoSetGo->setDeuCpCodes(tempDEU2Command, {});
+                } else {
+                    autoSetGo->setDeuCpCodes({}, tempCP2Command);
+                }
+                autoSetGo->send(mainModel->getServer());
+            }
         }
-        ui.graphic->getCanvas()->replot();
-        double h = ui.graphic->getCanvas()->axisScaleDiv(QwtPlot::yLeft).upperBound();
-        peakData[0].setY(0); peakData[1].setY(h);
-        peakCurve->setSamples(peakData);
-
-        widgetsShow();
     }
 
 }
@@ -338,3 +473,4 @@ void SPRSettingsRentgenAutoSetDialog::onModelChanget(IModelVariable *source)
         ui.graphic->widgetsShow();
     }
 }
+

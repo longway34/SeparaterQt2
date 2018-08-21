@@ -33,7 +33,8 @@ testTableWidget::testTableWidget(QWidget *parent) :
     towidget->setVisible(false);
 
 //    ui.baseGrapthics->getCanvas()->setAxisScale(QwtPlot::Axis::xBottom, 0, 256, 25);
-    ui.kSpertGraphic->getCanvas()->setAxisScale(QwtPlot::Axis::xBottom, 0, 256, 25);
+//    ui.kSpertGraphic->getCanvas()->setAxisScale(QwtPlot::Axis::xBottom, 0, 256, 25);
+
 
 //    startSeparate = new TCPTestStartSeparate(nullptr, ui.towidget, ui.logWidget);
 //    TCPCommand *getRen = startSeparate->findCommands(getren).last();
@@ -43,6 +44,8 @@ testTableWidget::testTableWidget(QWidget *parent) :
 
     stopSeparate = new TCPTestStopSeparate(towidget);
     connect(stopSeparate, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
+
+
 }
 
 ISPRModelData *testTableWidget::setModelData(SPRMainModel *_model){
@@ -50,13 +53,13 @@ ISPRModelData *testTableWidget::setModelData(SPRMainModel *_model){
         mainModel = _model;
 
         ui.separateDetailsTable->setModelData(mainModel);
-        ui.separateDetailsTable->getMyModel()->setVisibleThreads(QList<int>({0,1,2,3}));
-        ui.separateDetailsTable->getMyModel()->setScopeData(0);
+//        ui.separateDetailsTable->getMyModel()->setVisibleThreads(SPRThreadList(getAllThreadsListDefault()));
+//        ui.separateDetailsTable->getMyModel()->setScopeData(0);
 
 //        spectrumsBaseModel = new SPRSpectrumListItemsModel(_model->getSpectrumZonesTableModel(), _model->getSettingsFormulaModel(),_model->getSettingsMainModel()->getThreads(), _model->getSettingsMainModel()->getSpectrumFileName());
 //        kSpectrumsModel = new SPRSpectrumListItemsModel(_model->getSpectrumZonesTableModel(), _model->getSettingsFormulaModel(),_model->getSettingsMainModel()->getThreads(), _model->getSettingsMainModel()->getSpectrumFileName(), _model->getSettingsControlModel()->controlArea);
-        kSpectrumsModel = new SPRSpectrumListItemsModel(_model->getSpectrumZonesTableModel(), _model->getSettingsFormulaModel(),_model->getSettingsMainModel()->getThreads(), nullptr, _model->getSettingsControlModel()->controlArea);
-        connect(kSpectrumsModel, SIGNAL(modelChanget(IModelVariable*)), ui.kSpertGraphic, SLOT(onModelChanged(IModelVariable*)));
+        kSpectrumsModel = new SPRSpectrumListItemsModel(mainModel, _model->getSpectrumListItemsModel()->getSpectrumsModel(spectrumBase), true, nullptr);
+//        connect(kSpectrumsModel, SIGNAL(modelChanget(IModelVariable*)), ui.kSpertGraphic, SLOT(onModelChanged(IModelVariable*)));
 //        separateModel = new SPRSeparateModel(mainModel->getDoc());
 //        separateModel->setModelData(_model);
         separateModel = mainModel->getSeparateModel();
@@ -70,14 +73,16 @@ ISPRModelData *testTableWidget::setModelData(SPRMainModel *_model){
         stopSeparate->setModelData(mainModel);
 
         ui.kspectTable->setModelData(kSpectrumsModel, spectrumsOnly);
-        ui.kSpertGraphic->setModelData(kSpectrumsModel, spectrumsOnly, true);
+//        ui.kSpertGraphic->setModelData(kSpectrumsModel, spectrumsOnly, true);
 
         ui.separateDetailsTable->setModelData(mainModel);
 //        ui.baseGrapthics->setModelData(kSpectrumsModel, spectrumBase, true);
-        ui.testGistogramm->setModelData(mainModel);
+//        ui.testGistogramm->setModelData(mainModel);
 
-
-
+//        SPRHistoryGraphicsModel *sepModel=
+        SPRHistoryModel *histModel = new SPRHistoryModel(mainModel, kSpectrumsModel);
+        ui.gHistoryIn->init({}, histModel, countInputInTime, tr("Подача руды ( %1 )"), /*60*60*2*/ 600);
+        ui.gHistoryOut->init({}, histModel, percentConcentrate2Input, tr("Выход продукта,% ( %1 )"), /*60*60*2*/ 600);
 
         rentgenOnFull = new TCPCommandSeparatorOnFull(mainModel->getServer(), mainModel, towidget);
         rentgenOnFull->setModelData(mainModel);
@@ -161,7 +166,7 @@ void testTableWidget::widgetsShow(){
                 QLabel *lb = new QLabel(QString::number(separateModel->workSeparateRows[i]->number));
                 ui.workSeparTable->setCellWidget(i, 0, lb);
 
-                lb = new QLabel(separateModel->workSeparateRows[i]->dt.toString("dd.MM hh:mm:ss"));
+                lb = new QLabel(QDateTime::fromSecsSinceEpoch(separateModel->workSeparateRows[i]->dt).toString("dd.MM hh:mm:ss"));
                 ui.workSeparTable->setCellWidget(i, 1, lb);
 
                 lb = new QLabel(QString::number(separateModel->workSeparateRows[i]->thread));
@@ -172,7 +177,7 @@ void testTableWidget::widgetsShow(){
                     lb = new QLabel(QString::number(data[vec],'f', 3));
                         ui.workSeparTable->setCellWidget(i, col, lb);
                 }
-                lb = new QLabel(QString::number(round(separateModel->workSeparateCurrent.error)));
+                lb = new QLabel(QString::number(round(separateModel->workSeparateCurrent.source.error)));
         }
         while (ui.workGistorrammTable->rowCount() > 0) {
             ui.workGistorrammTable->removeRow(0);
@@ -194,9 +199,9 @@ void testTableWidget::widgetsShow(){
     ui.workSeparTable->resizeColumnsToContents();
 
     ui.kspectTable->widgetsShow();
-    ui.kSpertGraphic->widgetsShow();
+//    ui.kSpertGraphic->widgetsShow();
 //    ui.baseTable->widgetsShow();
-    ui.testGistogramm->widgetsShow();
+//    ui.testGistogramm->widgetsShow();
 //    ui.baseGrapthics->widgetsShow();
 }
 
@@ -227,7 +232,7 @@ void testTableWidget::onStartSepareteCommandComplite(TCPCommand *command){
                     blockSignals(true);
                     kSpectrumsModel->clearSpectrums();
                     onKSpectrumReady(comm);
-                    ui.kSpertGraphic->setVisibleAll();
+//                    ui.kSpertGraphic->setVisibleAll();
                     widgetsShow();
                     blockSignals(false);
 
@@ -276,7 +281,7 @@ void testTableWidget::onGetButtomsClick(bool)
 //            return;
 //        }
         if(sender() == ui.bSetSepar){
-            setSeparate->addSendData(separateModel->toByteArray(mainModel, &separate_error));
+            setSeparate->addSendData(separateModel->toByteArray(&separate_error));
             setSeparate->send(mainModel->getServer());
         }
         if(sender() == ui.bStartSepar){
@@ -334,7 +339,7 @@ void testTableWidget::onCommandComplite(TCPCommand *_command)
 
 
         onKSpectrumReady(getKSpectrums);
-        ui.kSpertGraphic->setVisibleAll();
+//        ui.kSpertGraphic->setVisibleAll();
         widgetsShow();
         return;
     }
@@ -343,7 +348,7 @@ void testTableWidget::onCommandComplite(TCPCommand *_command)
 //        TCPGetSpectrumsGistogramms *kspk = startSeparate->findCommands(setGetRentgenParams).first();
         kSpectrumsModel->clearSpectrums();
         onKSpectrumReady((TCPGetSpectrumsGistogramms*)kspecCommand);
-        ui.kSpertGraphic->setVisibleAll();
+//        ui.kSpertGraphic->setVisibleAll();
         widgetsShow();
         return;
     }

@@ -1,14 +1,51 @@
-#include "sprgraphitem.h"
+#include "models/sprgraphitem.h"
+#include "models/sprspectrumitemmodel.h"
 
 
-SPRGraphItem::SPRGraphItem(SPRSpectrumItemModel *_model, QwtPlot *_plot): plot(_plot), spect(nullptr) {
-    setModelData(_model);
+SPRSpectrumItemModel *SPRGraphItem::getModel()
+{
+    return model;
+}
+
+double SPRGraphItem::getModeKoeff()
+{
+    return modeKoeff;
+}
+
+void SPRGraphItem::setModeKoeff(double value)
+{
+    modeKoeff = value;
+}
+
+void SPRGraphItem::renameGraph(QString _name){
+    if(_name.isEmpty()){
+        if(model){
+            _name = model->getSpectrumName();
+        }
+    }
+    if(spect){
+        spect->setTitle(_name);
+    }
+    if(model){
+        foreach(QwtPlotHistogram *zone, zones.values()){
+            EnumElements el = zones.key(zone);
+            QString _elName = model->getZones()->getElementsProperty()->getSName(el);
+            zone->setTitle(_elName);
+        }
+    }
+}
+
+SPRGraphItem::SPRGraphItem(SPRSpectrumItemModel *_model, double _modeKoeff): /*plot(_plot), */
+    model(nullptr), spect(nullptr) {
+//    modeKoeff = 1;
+    setModelData(_model, _modeKoeff);
     //        thread = _model->getThread();
     defZonesPen.setWidth(1);
     defZonesPen.setStyle(Qt::SolidLine);
 
     selZonesPen.setWidth(2);
     selZonesPen.setStyle(Qt::DashLine);
+
 }
 
 int SPRGraphItem::getThread(){
@@ -39,7 +76,7 @@ bool SPRGraphItem::findItemKey(QwtPlotItem *item, EnumElements *key){
     return res;
 }
 
-void SPRGraphItem::setVisible(bool visible, bool current, bool showZones){
+void SPRGraphItem::setVisible(QwtPlot *plot, bool visible, bool current, bool showZones){
     foreach (EnumElements el, zones.keys()) {
         if(current && showZones){
             QColor color=model->getZones()->getElementsProperty()->getColor(el);
@@ -81,15 +118,15 @@ void SPRGraphItem::setVisible(bool visible, bool current, bool showZones){
 }
 
 SPRGraphItem::~SPRGraphItem(){
-    if(plot){
+//    if(plot){
         foreach (QwtPlotHistogram *zone, zones.values()) {
             //                plot->removeItem(zones[el]);
-            if(plot->itemList().contains(zone)) zone->detach();
+//            if(plot->itemList().contains(zone)) zone->detach();
             if(zone) delete zone;
         }
-        if(plot->itemList().contains(spect)) spect->detach();
+//        if(plot->itemList().contains(spect)) spect->detach();
         if(spect) delete spect;
-    }
+//    }
 }
 
 SPRSpectrumItemModel *SPRGraphItem::getModelData()
@@ -97,20 +134,47 @@ SPRSpectrumItemModel *SPRGraphItem::getModelData()
     return model;
 }
 
-void SPRGraphItem::setModelData(SPRSpectrumItemModel *_model){
+void SPRGraphItem::setModelData(SPRSpectrumItemModel *_model, double _modeKoeff){
+    if(model && model != _model){
+        disconnect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
+    }
+
     model = _model;
+
+    if(model){
+        modeKoeff = _modeKoeff;
+
+        onModelChanget(_model);
+        connect(model, SIGNAL(modelChanget(IModelVariable*)), this, SLOT(onModelChanget(IModelVariable*)));
+    }
+}
+
+void SPRGraphItem::onModelChanget(IModelVariable *_model)
+{
+    model = (SPRSpectrumItemModel*)_model;
     if(model){
         if(!spect){
             spect = new QwtPlotCurve(QString(model->getSpectrumName()));
         }
-        spect->setSamples(model->getSpectrumGraphics());
+
+        QVector<QPointF> samples = model->getSpectrumGraphics();
+        for(int x=0; x<samples.size(); x++){
+            double y = samples[x].ry() * modeKoeff;
+            samples[x].setY(y);
+        }
+        spect->setSamples(samples);
         spect->setPen(QPen(model->getSpectrumColor(), 0.5));
         foreach (EnumElements el, model->getZones()->getZones().keys()) {
             if(!zones[el]){
                 zones[el] = new QwtPlotHistogram(model->getZones()->getZones()[el]->element->fName->getData());
             }
-            zones[el]->setSamples(model->getZonesGaphics()[el]);
+            QVector<QwtIntervalSample> intervals = model->getZonesGaphics()[el];
+            for(int i=0; i<intervals.size(); i++){
+                double value = intervals[i].value * modeKoeff;
+                intervals[i].value = value;
+            }
+            zones[el]->setSamples(intervals);
         }
+        renameGraph();
     }
-
 }

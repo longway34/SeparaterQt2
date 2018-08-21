@@ -103,11 +103,13 @@ void SPRSpectrumListTableWidget::changeGraphicViewMode(){
         if(ui.rbScales->isChecked()){
             mode = viewModeScales;
         }
-    } else {
-
     }
 
-    ui.graphic->setGraphicsMode(mode);
+//    if(model){
+//        QList<SPRSpectrumItemModel*> *spects = spectrums->getSpectrumsModelAll();
+//        spectrums->setV
+//    }
+    spectrums->setGraphicMode(mode);
 
     switch(mode){
     case viewModeAsIs:
@@ -456,9 +458,11 @@ void SPRSpectrumListTableWidget::onChangeZoneRange(EnumElements el, int thread, 
 }
 
 
-void SPRSpectrumListTableWidget::onModelChanget(IModelVariable *)
+void SPRSpectrumListTableWidget::onModelChanget(IModelVariable *variable)
 {
-    widgetsShow();
+    if((sender() == model && variable != spectrums) || (!sender())){
+        widgetsShow();
+    }
 }
 
 

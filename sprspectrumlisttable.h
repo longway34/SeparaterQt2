@@ -20,7 +20,7 @@ class SPRSpectrumListTable : public QTableWidget, public ISPRWidget
 protected:
     SPRSpectrumListItemsModel* model;
 
-    QVector<SPRSpectrumItemModel*> *spectrums;
+    QList<SPRSpectrumItemModel*> *spectrums;
 
     QList<SPRSpectrumItemModel*> storeCheckedItems;
     SPRSpectrumItemModel* storeCurrentItem;
@@ -30,7 +30,7 @@ protected:
     QLineEdit *setCellMyWidget(QTableWidget *table, int row, int col, QString value, bool editable=false, QString tt="");
 
     virtual void insertFirstColumn(SpectrumItemData *data, int row);
-    virtual void addRowTable(SpectrumItemData *data, int pastRow = -1);
+    virtual void setRowTable(SpectrumItemData *data, int row);
     virtual void connectFirstTable(FirstCollumn2 *fc);
     virtual void insertContentColumns(SpectrumItemData *data, int row);
 
@@ -47,55 +47,20 @@ public:
         return model;
     }
 
-    SPRSpectrumItemModel *getModelData(int index){
-        if(index < spectrums->size()){
-            return spectrums->at(index);
-        } else {
-            return nullptr;
-        }
-    }
+    SPRSpectrumItemModel *getModelData(int index);
 //    SPRSpectrumItemModel *addSpectrum(uint8_t *_inp, int _bufSize = DEF_SPECTRUM_DATA_BUF_LENGTH, int _thread = -1);
 //    ISPRModelData *setZonesTableModel(SPRSpectrumZonesTableModel *ranges);
 
 
-    QList<int> getSelectedItemsNumbers(){
-        QList<int> res;
-        for(int row=0; row<rowCount(); row++){
-            FirstCollumn2 *fc = (FirstCollumn2*)cellWidget(row, 0);
-            if(fc->isSelect()){
-                res.push_back(row);
-            }
-        }
-        return res;
-    }
+    QList<int> getSelectedItemsNumbers();
 
-    QList<SPRSpectrumItemModel*> getSelectedItems(){
-        QList<SPRSpectrumItemModel*> res;
-        for(int row=0; row<rowCount();row++){
-            FirstCollumn2 *fc = (FirstCollumn2*)cellWidget(row, 0);
-            if(fc->isSelect()){
-                SPRSpectrumItemModel* item = model->getSpectrumItem(row, typeData);
-                if(item)
-                    res.push_back(item);
-            }
-
-        }
-        return res;
-    }
+    QList<SPRSpectrumItemModel*> getSelectedItems();
 
     bool isSelectedItem(int row){
         FirstCollumn2 *fc = (FirstCollumn2*)cellWidget(row, 0);
         return fc->isSelect();
     }
-    QColor getColorSpectrum(int row){
-
-        SPRSpectrumItemModel *mod = spectrums->at(row);
-        if(mod){
-            QColor ret = mod->getSpectrumColor();
-            return ret;
-        }
-        return QColor(Qt::black);
-    }
+    QColor getColorSpectrum(int row);
     int getThread(int row){
         QLabel* lth = (QLabel*)cellWidget(row, 1);
         return lth->text().toInt();

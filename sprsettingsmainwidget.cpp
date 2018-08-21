@@ -69,6 +69,7 @@ SPRSettingsMainWidget::SPRSettingsMainWidget(QWidget *parent) :
 void SPRSettingsMainWidget::widgetsShow()
 {
     if(model){
+
         QTextCodec *codec = QTextCodec::codecForName("UTF-8");
         QString v = model->name->getData();
         QString v1 = codec->toUnicode(model->name->getData().toStdString().c_str());
@@ -286,4 +287,10 @@ void SPRSettingsMainWidget::onErrorStateConnectServer(ITCPCommand *command)
         QString msg = QString(tr("Соединение с сервером %1:%2 не удалось...")).arg(model->getServer()->getName()).arg(QString::number(model->getServer()->getPort()));
         QMessageBox::warning(nullptr, QString(tr("Проверка соединения")), msg, QMessageBox::Ok);
     }
+}
+
+
+void SPRSettingsMainWidget::setMasterMode(bool value)
+{
+    this->setEnabled(value);
 }

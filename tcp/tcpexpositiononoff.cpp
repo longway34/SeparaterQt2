@@ -50,7 +50,7 @@ void TCPExpositionOnOff::go(TCPCommand *_command)
             if(!isRentgenReady(_command->getReplayData(), &mka, &mkv, &err)){
                 addCommand(expoff)->addSendData(&ren, sizeof(ren), expoff);
                 addCommand(offosw)->addCommand(onosw)->addCommand(offosw);
-                emit commandNotComplite(this);
+                emit commandNotComplite(_command);
                 TCPCommand *off = findCommands(expoff).last();
                 off->send(server);
                 return;

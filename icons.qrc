@@ -36,6 +36,8 @@
         <file>icons/b_Start_Passive.png</file>
         <file>icons/b_Stop_Active.png</file>
         <file>icons/b_Up_passive.png</file>
+        <file>icons/b_Keys.png</file>
+        <file>icons/b_Exit.png</file>
     </qresource>
     <qresource prefix="/icons/settings">
         <file>icons/AlgoripmSerrings_tabs/Algoritm_Sittings_Porogs_tab.png</file>

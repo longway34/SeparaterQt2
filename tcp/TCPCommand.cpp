@@ -45,6 +45,11 @@ void TCPCommand::clear(){
     commandSet.clear();
 }
 
+void TCPCommand::onCommandNotComplite(TCPCommand *_command)
+{
+    emit commandNotComplite(_command);
+}
+
 
 bool TCPCommand::isRentgenReady(QByteArray result, uint16_t *mkv, uint16_t *mka, uint8_t *err){
     bool res = false;

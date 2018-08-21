@@ -22,6 +22,8 @@ class SPRGrSpectrumItemModel : public ISPRModelData
     SPRSpectrumZonesModel *rangesModel;
     SPRSpectrumItemModel *spectModel;
 
+//    SPRGraphItem *graphics;
+
     QPolygonF spectGraphData;
     QMap<EnumElements, QVector<QwtIntervalSample>> zonesGraphData;
 
@@ -38,6 +40,8 @@ public:
     QPolygonF getSamples() const;
     QMap<EnumElements, QVector<QwtIntervalSample> > getIntervalSamples() const;
     QColor getColorZone(EnumElements el);
+//    SPRGraphItem *getGraphics();
+
 signals:
 
 public slots:

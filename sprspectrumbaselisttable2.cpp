@@ -35,11 +35,11 @@ void SPRSpectrumBaseListTable2::widgetsShow()
     SPRSpectrumListTable::widgetsShow();
 
     blockSignals(true);
-    QVector<SPRSpectrumItemModel*> *vect = model->getSpectrumsModel(spectrumBase);
-    for(int row=0; row<rowCount() && row<vect->size(); row++){
+    QList<SPRSpectrumItemModel*> *lst = model->getSpectrumsModel(spectrumBase);
+    for(int row=0; row < lst->size(); row++){
         QLabel *la = (QLabel*)cellWidget(row, 9);
         if(la){
-            double xray = vect->at(row)->getXRay();
+            double xray = lst->at(row)->getXRay();
             QString txt = QString::number(xray, 'f', 2);
             la->setText(txt);
         }

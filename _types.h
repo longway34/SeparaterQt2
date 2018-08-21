@@ -420,6 +420,7 @@ typedef struct{
 #define SPR_SEPARATE_SEP_ROW_PATH  "SEPARATOR/SEPARATE_SETUP/Sep_Row[Value]"
 
 #define DEF_SPR_SEPARATE_GMZ        25
+#define MAX_SPR_SEPARATE_TIME_SIZE_GROUPS   5
 #define DEF_SPR_SEPARATE_GCOL       200
 #define DEF_SPR_SEPARATE_KRUCH      4
 #define DEF_SPR_SEPARATE_USL        1
@@ -430,6 +431,16 @@ typedef struct{
 #define SPR_SEPARATE_STATE_ERROR_BASE_SPACTRUE  1
 #define SPR_SEPARATE_STATE_ERROR_CORREL         2
 #define SPR_SEPARATE_STATE_ERROR_IMS            4
+
+#define SPR_SEPARATE_OUT_INDEX_CONCENTRATE      0
+#define SPR_SEPARATE_OUT_INDEX_TAIL             2
+#define SPR_SEPARATE_OUT_INDEX_ALL              3
+
+typedef QList<uint8_t> SPRThreadList;
+
+const QColor defThreadsColor[] = {QColor(Qt::red), QColor(Qt::green), QColor(Qt::blue), QColor(Qt::yellow), QColor(Qt::cyan), QColor(Qt::magenta), QColor(Qt::white)};
+
+const SPRThreadList getAllThreadsListDefault(uint8_t ths=255);
 
 #endif // TYPES_H
 

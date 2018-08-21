@@ -10,6 +10,12 @@
     <height>404</height>
    </rect>
   </property>
+  <property name="font">
+   <font>
+    <family>Tahoma</family>
+    <pointsize>11</pointsize>
+   </font>
+  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
@@ -36,8 +42,8 @@
      </property>
      <property name="iconSize">
       <size>
-       <width>32</width>
-       <height>32</height>
+       <width>20</width>
+       <height>20</height>
       </size>
      </property>
      <property name="tabsClosable">

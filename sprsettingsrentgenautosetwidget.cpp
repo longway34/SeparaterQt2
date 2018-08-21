@@ -63,8 +63,8 @@ SPRSettingsRentgenAutosetWidget::SPRSettingsRentgenAutosetWidget(QWidget *parent
     connect(ui.bStart, SIGNAL(clicked(bool)), this, SLOT(viewChange(bool)));
 }
 
-QList<int> SPRSettingsRentgenAutosetWidget::getSelectedThreads(){
-    QList<int> res;
+QList<uint8_t> SPRSettingsRentgenAutosetWidget::getSelectedThreads(){
+    QList<uint8_t> res;
     QList<QCheckBox*> lcb = ui.gbAllChannels->findChildren<QCheckBox*>();
     for(int th=0; th<lcb.size(); th++){
         if(lcb[th]->isChecked() || ui.gbAllChannels->isChecked()){
@@ -90,7 +90,7 @@ void SPRSettingsRentgenAutosetWidget::widgetsShow()
             }
         }
         ui.gbAllChannels->setChecked(allChSelected);
-        QList<int> thSelected = getSelectedThreads();
+        QList<uint8_t> thSelected = getSelectedThreads();
 //        QSpacerItem *ui.chSpacer;
         QList<QCheckBox*> lcb = ui.wAllChannels->findChildren<QCheckBox*>();
 //        QWidget *wCh = ui.gbAllChannels->findChildren<QWidget*>().first();
@@ -185,7 +185,7 @@ void SPRSettingsRentgenAutosetWidget::viewChange(bool value)
 //        }
 
         if(sender() == ui.bStart){
-            QList<int> threads = getSelectedThreads();
+            QList<uint8_t> threads = getSelectedThreads();
 
             autoSettingDialog->setThreads(threads);
             autoSettingDialog->widgetsShow();
@@ -221,4 +221,10 @@ void SPRSettingsRentgenAutosetWidget::viewChange(int value)
 void SPRSettingsRentgenAutosetWidget::onModelChanget(IModelVariable *)
 {
     widgetsShow();
+}
+
+
+void SPRSettingsRentgenAutosetWidget::setMasterMode(bool value)
+{
+    this->setEnabled(value);
 }

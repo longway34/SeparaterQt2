@@ -34,6 +34,7 @@ TCPCommandSet *TCPCommandSet::addCommand(TCPCommand *_comm){
 //    static const QMetaMethod commandCompliteSignal = QMetaMethod::fromSignal(&TCPCommand::commandComplite);
 //    if(!isSignalConnected(commandCompliteSignal)){
         connect(_comm, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(go(TCPCommand*)));
+        connect(_comm, SIGNAL(commandNotComplite(TCPCommand*)), this, SLOT(onCommandNotComplite(TCPCommand*)));
 //    }
     return this;
 }

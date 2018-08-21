@@ -5,8 +5,9 @@
 #include "models/sprspectrumzonestablemodel.h"
 #include "isprwidget.h"
 #include "sprzonesrangestablewidget.h"
+#include "isprsettingswidget.h"
 
-class SPRZonesRangesTableWidget : public QWidget, ISPRWidget
+class SPRZonesRangesTableWidget : public QWidget, public ISPRWidget, public ISPRSettingsWidget
 {
     Q_OBJECT
 
@@ -19,13 +20,9 @@ public:
 
     ISPRModelData *setModelData(SPRSpectrumZonesTableModel *value);
 
-    void setThreadsVisible(QList<int> visible){
-        ui.tZonesTable->setThreadsVisible(visible);
-    }
+    void setThreadsVisible(QList<int> visible);
 
-    void setThreadsVisible(int thr){
-        setThreadsVisible(QList<int>({thr}));
-    }
+    void setThreadsVisible(int thr);
 public slots:
     void onAddClick(bool);
     void onEditClick(bool);
@@ -46,7 +43,15 @@ protected:
 
     // ISPRWidget interface
 protected:
+
+    // ISPRSettingsWidget interface
+public:
+    virtual void setMasterMode(bool value);
 };
+
+
+
+
 
 
 

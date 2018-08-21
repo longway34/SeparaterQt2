@@ -1,4 +1,6 @@
-#include "sprspectrumitemmodel.h"
+#include "models/sprspectrumitemmodel.h"
+#include "models/sprgraphitem.h"
+
 
 void spectumItemData::setData(uint8_t *inp, uint16_t inplength)
 {
@@ -63,7 +65,24 @@ void spectumItemData::setData(QByteArray inp)
     setData((uint8_t*)(inp.constData()), inp.size());
 }
 
-void SPRSpectrumItemModel::recomplite()
+
+SPRGraphItem *SPRSpectrumItemModel::getGraphic()
+{
+    return graphic;
+}
+
+SPRSpectrumItemModel::SPRSpectrumItemModel():thread(0), graphic(nullptr)
+{
+    hashKeyDebug = QString("spr_%1").arg(rand() % 100);
+    zones = new SPRSpectrumZonesTableModel();
+    formulas = new SPRSettingsFormulaModel();
+    setProperty("delete_ranges", QVariant(true));
+    setProperty("delete_formulas", QVariant(true));
+
+    graphic = new SPRGraphItem(this);
+}
+
+void SPRSpectrumItemModel::recomplite(SPRSpectrumItemModel *baseItem)
 {
     memset(spectrumData.Ns, 0, 6 * sizeof(uint32_t));
     *spectrumData.peak_value = 0;
@@ -192,34 +211,79 @@ void SPRSpectrumItemModel::recomplite()
             *spectrumData.elementsSumm[el] = summ;
         }
     }
+    if(baseItem){
+        double correl = setCorrelData(baseItem);
+    }
+}
+
+double SPRSpectrumItemModel::setCorrelData(SPRSpectrumItemModel *ather){
+
+    if(ather){
+        double covr = 0;
+        double sqrSummDisp = 0;
+        spectrumData.correl = 0;
+        double correl = 0;
+
+        for(int i=0; i<this->spectrumData.diff.size() && i<ather->spectrumData.diff.size();i++){
+            covr += ather->spectrumData.diff[i] * this->spectrumData.diff[i];
+        }
+        double sdiff = ather->spectrumData.dispersion * this->spectrumData.dispersion;
+        sqrSummDisp = sqrt(sdiff);
+        if(sqrSummDisp > 1e-6)
+            correl = covr / sqrSummDisp;
+
+        spectrumData.correl = correl;
+
+        foreach(EnumElements el, zones->items[static_cast<int>(*spectrumData.thread)]->getZones().keys()){
+            covr = 0;
+            for(int i=0; i<spectrumData.elementsCount[el] && i<ather->spectrumData.elementsCount[el]; i++){
+                covr += ather->spectrumData.elementsDiff[el][i] * this->spectrumData.elementsDiff[el][i];
+            }
+            double sdiff = ather->spectrumData.elementsDispersion[el] * this->spectrumData.elementsDispersion[el];
+            sqrSummDisp = sqrt(sdiff);
+            if(sqrSummDisp > 1e-6)
+                spectrumData.elementsCorrel[el] = covr / sqrSummDisp;
+
+        }
+    }
+    return spectrumData.correl;
 }
 
 double SPRSpectrumItemModel::getCorrel(SPRSpectrumItemModel *ather, bool elementsOnly, EnumElements _elements)
 {
     if(ather){
-        double covr=0;
-        double sqrSummDisp = 0;
-        spectrumData.correl = 0;
-        double correl = 0;
-        if(!elementsOnly){
-            for(int i=0; i<this->spectrumData.diff.size() && i<ather->spectrumData.diff.size();i++){
-                covr += ather->spectrumData.diff[i] * this->spectrumData.diff[i];
-            }
-            double sdiff = ather->spectrumData.dispersion * this->spectrumData.dispersion;
-            sqrSummDisp = sqrt(sdiff);
-        } else {
-            for(int i=0; i<spectrumData.elementsCount[_elements] && i<ather->spectrumData.elementsCount[_elements]; i++){
-                covr += ather->spectrumData.elementsDiff[_elements][i] * this->spectrumData.elementsDiff[_elements][i];
-            }
-            double sdiff = ather->spectrumData.elementsDispersion[_elements] * this->spectrumData.elementsDispersion[_elements];
-            sqrSummDisp = sqrt(sdiff);
-        }
-        if(sqrSummDisp > 1e-6)
-            correl = covr / sqrSummDisp;
+//        this->recomplite();
+//        ather->recomplite();
 
-        spectrumData.correl = correl;
-        return correl;
+        setCorrelData(ather);
+
+//        double covr=0;
+//        double sqrSummDisp = 0;
+//        spectrumData.correl = 0;
+//        double correl = 0;
+        if(!elementsOnly){
+              return spectrumData.correl;
+            //            for(int i=0; i<this->spectrumData.diff.size() && i<ather->spectrumData.diff.size();i++){
+//                covr += ather->spectrumData.diff[i] * this->spectrumData.diff[i];
+//            }
+//            double sdiff = ather->spectrumData.dispersion * this->spectrumData.dispersion;
+//            sqrSummDisp = sqrt(sdiff);
+        } else {
+            if(spectrumData.elementsCorrel.keys().contains(_elements)){
+                return spectrumData.elementsCorrel[_elements];
+            }
+//            for(int i=0; i<spectrumData.elementsCount[_elements] && i<ather->spectrumData.elementsCount[_elements]; i++){
+//                covr += ather->spectrumData.elementsDiff[_elements][i] * this->spectrumData.elementsDiff[_elements][i];
+//            }
+//            double sdiff = ather->spectrumData.elementsDispersion[_elements] * this->spectrumData.elementsDispersion[_elements];
+//            sqrSummDisp = sqrt(sdiff);
+        }
     }
+    return 0;
+}
+
+double SPRSpectrumItemModel::getCorrel(){
+    return spectrumData.correl;
 }
 
 double SPRSpectrumItemModel::getXRay()
@@ -230,6 +294,52 @@ double SPRSpectrumItemModel::getXRay()
     res += add;
 
     return res;
+}
+
+ISPRModelData *SPRSpectrumItemModel::setModel(SPRSpectrumZonesTableModel *_ranges, SPRSettingsFormulaModel *_formulas){
+    setZonesTable(_ranges);
+    setFormulas(_formulas);
+    recomplite();
+    return this;
+}
+
+QColor SPRSpectrumItemModel::getSpectrumColor(){
+    QColor ret(int(*spectrumData.red), int(*spectrumData.green), int(*spectrumData.blue));
+    return ret;
+}
+
+void SPRSpectrumItemModel::setSpectrumColor(QColor color){
+    *spectrumData.red = (uint8_t)color.red();
+    *spectrumData.green = (uint8_t)color.green();
+    *spectrumData.blue = (uint8_t)color.blue();
+    //        emit modelChanget(this);
+}
+
+QString SPRSpectrumItemModel::getSpectrumName(){
+    return QString(spectrumData.name);
+}
+
+void SPRSpectrumItemModel::setSpectrumName(QString name){
+    setObjectName(name);
+    memcpy(spectrumData.name, name.toUtf8().constData(), name.toUtf8().size());
+    if(graphic){
+        graphic->renameGraph(name);
+    }
+    //        emit modelChanget(this);
+}
+
+void SPRSpectrumItemModel::setSpectrumThread(uint th){
+    *spectrumData.thread = th;
+    thread = th;
+}
+
+uint SPRSpectrumItemModel::getSpectrumThread(){
+    return *spectrumData.thread;
+}
+
+SPRSpectrumZonesModel *SPRSpectrumItemModel::getZones(){
+    uint th = *spectrumData.thread;
+    return zones->items[*spectrumData.thread];
 }
 
 void SPRSpectrumItemModel::setZonesTable(SPRSpectrumZonesTableModel *value)
@@ -252,7 +362,7 @@ QMap<EnumElements, QVector<QwtIntervalSample> > SPRSpectrumItemModel::getZonesGa
                 value = (double(spectrumData.spect[i]));
             }
         }
-        value = value * scaleMul;
+        value = value;
 
         double xmin = qreal(zone->getZones()[el]->min->getData());
         double xmax = qreal(zone->getZones()[el]->max->getData());
@@ -266,7 +376,7 @@ QMap<EnumElements, QVector<QwtIntervalSample> > SPRSpectrumItemModel::getZonesGa
 QPolygonF SPRSpectrumItemModel::getSpectrumGraphics(){
     spectGraphData.clear();
     for(int i=0; i<(DEF_SPECTRUM_DATA_LENGTH); i++){
-        QPointF val(qreal(i), qreal(spectrumData.spect[i]) * scaleMul);
+        QPointF val(qreal(i), qreal(spectrumData.spect[i]));
         spectGraphData.push_back(val);
     }
     return spectGraphData;
@@ -307,11 +417,14 @@ SpectrumItemData *SPRSpectrumItemModel::getSpectrumData()
     return &spectrumData;
 }
 
-void SPRSpectrumItemModel::setSpectrumData(uint8_t *buf, uint16_t len)
+void SPRSpectrumItemModel::setSpectrumData(uint8_t *buf, uint16_t len, SPRSpectrumItemModel *baseItem)
 {
     spectrumData.setData(buf, len);
     if(len == DEF_SPECTRUM_DATA_LENGTH_BYTE){
         recomplite();
+    }
+    if(graphic){
+        graphic->onModelChanget(this);
     }
 }
 
@@ -334,34 +447,26 @@ void SPRSpectrumItemModel::setGraphicMode(const SPRViewGraphicsMode &value, doub
 {
     switch(value){
     case viewModeAsIs:
-        scaleMul = 1.;
+        _scaleMul = 1.;
         break;
     case viewModeOneSecond:
         if(*spectrumData.time > 1e-10){
-            scaleMul = 1/(*spectrumData.time);
+            _scaleMul = 1/(*spectrumData.time);
         }
         break;
     case viewModeScales:
-        scaleMul = _scaleMul;
+//        scaleMul = _scaleMul;
         break;
     }
     if(graphicMode != value){
-        emit modelChanget(this);
+        getGraphic()->setModelData(this, _scaleMul);
     }
     graphicMode = value;
 }
 
-SPRSpectrumItemModel::SPRSpectrumItemModel():thread(0)
-{
-    hashKeyDebug = QString("spr_%1").arg(rand() % 100);
-    zones = new SPRSpectrumZonesTableModel();
-    formulas = new SPRSettingsFormulaModel();
-    setProperty("delete_ranges", QVariant(true));
-    setProperty("delete_formulas", QVariant(true));
-}
 
 
-SPRSpectrumItemModel::SPRSpectrumItemModel(QDomDocument *_doc, int _index, ISPRModelData *parent) : ISPRModelData(_doc, parent)
+SPRSpectrumItemModel::SPRSpectrumItemModel(QDomDocument *_doc, int _index, ISPRModelData *parent) : ISPRModelData(_doc, parent), graphic(nullptr)
 {
     hashKeyDebug = QString("spr_%1").arg(rand() % 100);
     setZonesTable(new SPRSpectrumZonesTableModel(doc));
@@ -371,10 +476,11 @@ SPRSpectrumItemModel::SPRSpectrumItemModel(QDomDocument *_doc, int _index, ISPRM
     setProperty("delete_ranges", QVariant(true));
     setProperty("delete_formulas", QVariant(true));
 
+    graphic = new SPRGraphItem(this);
     setGraphicMode(viewModeAsIs, 1);
 }
 
-SPRSpectrumItemModel::SPRSpectrumItemModel(SPRSpectrumZonesTableModel *_ranges, SPRSettingsFormulaModel *_formulas, uint _thread, ISPRModelData *parent) : ISPRModelData(nullptr, parent)
+SPRSpectrumItemModel::SPRSpectrumItemModel(SPRSpectrumZonesTableModel *_ranges, SPRSettingsFormulaModel *_formulas, uint _thread, ISPRModelData *parent) : ISPRModelData(nullptr, parent), graphic(nullptr)
 {
     hashKeyDebug = QString("spr_%1").arg(rand() % 100);
     setZonesTable(_ranges);
@@ -384,7 +490,21 @@ SPRSpectrumItemModel::SPRSpectrumItemModel(SPRSpectrumZonesTableModel *_ranges, 
     }
     setProperty("delete_ranges", QVariant(false));
     setProperty("delete_formulas", QVariant(false));
+
+    graphic = new SPRGraphItem(this);
     setGraphicMode(viewModeAsIs, 1);
+
+}
+
+SPRSpectrumItemModel::~SPRSpectrumItemModel(){
+    if(zones != nullptr && QVariant(property("delete_ranges")).toBool()){
+        delete zones; zones = nullptr;
+        setProperty("delete_ranges", QVariant(false));
+    }
+    if(formulas != nullptr && QVariant(property("delete_formulas")).toBool()){
+        delete formulas; formulas = nullptr;
+        setProperty("delete_formulas", QVariant(false));
+    }
 }
 
 

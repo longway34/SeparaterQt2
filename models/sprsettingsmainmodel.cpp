@@ -103,7 +103,7 @@ SPRQStringVariable *SPRSettingsMainModel::getName() const
     return name;
 }
 
-SPRQStringVariable *SPRSettingsMainModel::getSpectrumFileName() const
+SPRQStringVariable *SPRSettingsMainModel::getSpectrumFileName()
 {
     return spectrumFileName;
 }

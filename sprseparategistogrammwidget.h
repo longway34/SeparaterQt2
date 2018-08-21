@@ -7,6 +7,8 @@
 #include "isprwidget.h"
 #include "sprporogsmoved.h"
 
+#include "tcp/TCPCommand.h"
+
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
 
@@ -26,13 +28,17 @@ class SPRSeparateGistogrammWidget : public QWidget, public ISPRWidget
 
     SPRPorogsMoved *pm;
 
+    TCPCommand *setSeparateData;
+
     int threadCurrent; // -1 all channels;
+
+
 
 //    QVector<QwtPlotHistogram*> gistogramms;
 
 public:
     Ui::SPRSeparateGistogrammWidget ui;
-    explicit SPRSeparateGistogrammWidget(QWidget *parent = 0);
+    explicit SPRSeparateGistogrammWidget(QWidget *parent = nullptr);
 
     virtual ~SPRSeparateGistogrammWidget();
 private:
@@ -52,6 +58,8 @@ protected slots:
     virtual void onModelChanget(IModelVariable *source);
 
     void onSetSecectedItem(QwtPlotItem *item, MovedItemPosition);
+    void onTCPCommandComplite(TCPCommand*);
+    void onTCPErrorCommandComplite(TCPCommand *_command);
 signals:
     void changePorogsCompite();
 };

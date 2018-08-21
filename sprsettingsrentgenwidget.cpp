@@ -5,12 +5,14 @@ SPRSettingsRentgenWidget::SPRSettingsRentgenWidget(QWidget *parent) :
 {
     ui.setupUi(this);
 
+    masterMode = false;
     connect(ui.tabWidget, SIGNAL(currentChanged(int)), this, SLOT(widgetsShow()));
 }
 
 
 void SPRSettingsRentgenWidget::widgetsShow()
 {
+    setMasterMode(masterMode);
     ui.wSettingsRentgenAutoWidget->widgetsShow();
     ui.wSettingsRentgenControlWidget->widgetsShow();
     ui.wSettingsRentgenMainWidget->widgetsShow();
@@ -44,4 +46,17 @@ void SPRSettingsRentgenWidget::viewChange(QTableWidget *, int, int)
 void SPRSettingsRentgenWidget::onModelChanget(IModelVariable*)
 {
     widgetsShow();
+}
+
+
+void SPRSettingsRentgenWidget::setMasterMode(bool value)
+{
+    masterMode = value;
+    QList<ISPRSettingsWidget *> lst = {ui.wSettingsRentgenAutoWidget,
+                                       ui.wSettingsRentgenControlWidget,
+                                       ui.wSettingsRentgenMainWidget};
+    foreach(ISPRSettingsWidget *w, lst){
+        w->setMasterMode(value);
+    }
+//    this->setEnabled(value);
 }

@@ -21,6 +21,8 @@ public:
     SPRSeparateModel *separateModel;
     int errorSeparateState;
 
+    bool isMasterMode;
+
 signals:
     void doStore();
     void doShow();
@@ -33,16 +35,7 @@ public slots:
     virtual void viewChange(){}
     virtual void viewChange(int){}
     virtual void viewChange(QTableWidget *, int, int){}
-    virtual void widgetsShow(){
-//        emit doShow();
-        ui.tabSettings->widgetsShow();
-        ui.tabSpectrum->widgetsShow();
-//        ui.tabSeparate->
-//        ui.tabHistory->wid
-        ui.tabTest->widgetsShow();
-        ui.tabTestSeparateDetail->widgetsShow();
-        ui.wSeparateWigget->widgetsShow();
-    }
+    virtual void widgetsShow();
 
     void onChangeFileSettings(QString fName);
     void onChangeFileSpectrum(QString fName);
@@ -58,6 +51,8 @@ protected:
 public:
     virtual void setDoc(QString _fName);
     void setLogWidget(TCPLogsWigtets *value);
+    bool getIsMasterMode() const;
+    void setIsMasterMode(bool value);
 };
 
 

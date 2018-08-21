@@ -273,6 +273,45 @@ void ServerConnect::onReadyRead(){
         } else {
             clearState(spr_state_exposition_on);
         }
+    } else if(com == startpuw){
+        if(noErrorsInReplay()){
+            addState(spr_state_pitatel_on);
+        } else {
+            clearState(spr_state_pitatel_on);
+        }
+
+    } else if(com == stoppuw){
+        if(noErrorsInReplay()){
+            clearState(spr_state_pitatel_on);
+        }
+
+    } else if(com == oniw){
+        if(noErrorsInReplay()){
+            addState(spr_state_rasklad_on);
+        } else {
+            clearState(spr_state_rasklad_on);
+        }
+
+    } else if(com == offiw){
+        if(noErrorsInReplay()){
+            clearState(spr_state_rasklad_on);
+        }
+    } else if(com == getrgu2){
+        if(noErrorsInReplay()){
+            if(replay.size() > 1){
+                char p = replay[1];
+                if(p == 0){
+                    clearState(spr_state_rgu_down_position);
+                    clearState(spr_state_rgu_up_position);
+                } else if(p == 1){
+                    clearState(spr_state_rgu_down_position);
+                    addState(spr_state_rgu_up_position);
+                } else if(p == 2){
+                    addState(spr_state_rgu_down_position);
+                    clearState(spr_state_rgu_up_position);
+                }
+            }
+        }
     } else if(com == getren){
         if(noErrorsInReplay()){
             QByteArray res = replay.right(4);
@@ -295,7 +334,7 @@ void ServerConnect::onReadyRead(){
             clearState(spr_state_rentgen_on_correct);
             clearState((spr_state_exposition_on));
         }
-    } else if(com == offsep){
+    } else if(com == offsep || com == clearrs){
         if(noErrorsInReplay()){
             clearState(spr_state_separator_on);
             clearState(spr_state_rentgen_on);
@@ -343,8 +382,14 @@ void ServerConnect::onServerStateChange(uint32_t _state)
         if((onBits & SPR_STATE_RGU_MOVED) == SPR_STATE_RGU_MOVED){
             logWidget->onLogsCommand(nullptr, QString(tr("Движение РГУ...")));
         }
-        if((offBits & SPR_STATE_RGU_MOVED) == SPR_STATE_RGU_MOVED){
-            logWidget->onLogsCommand(nullptr, QString(tr("Движение РГУ завершено...")));
+//        if((offBits & SPR_STATE_RGU_MOVED) == SPR_STATE_RGU_MOVED){
+//            logWidget->onLogsCommand(nullptr, QString(tr("Движение РГУ завершено...")));
+//        }
+        if((onBits & SPR_STATE_RGU_UP_POSITION) == SPR_STATE_RGU_UP_POSITION){
+            logWidget->onLogsCommand(nullptr, QString(tr("РГУ в верхнем положении...")));
+        }
+        if((onBits & SPR_STATE_RGU_DOWN_POSITION) == SPR_STATE_RGU_DOWN_POSITION){
+            logWidget->onLogsCommand(nullptr, QString(tr("РГУ в нижнем положении...")));
         }
         if((onBits & SPR_STATE_TEST_IMS) == SPR_STATE_TEST_IMS){
             logWidget->onLogsCommand(nullptr, QString(tr("Тест исполнительных механизмов начат...")));
@@ -364,6 +409,12 @@ void ServerConnect::onServerStateChange(uint32_t _state)
         if((offBits & SPR_STATE_PITATEL_ON) == SPR_STATE_PITATEL_ON){
             logWidget->onLogsCommand(nullptr, QString(tr("Питатель выключен...")));
         }
+        if((onBits & SPR_STATE_RASKLAD_ON) == SPR_STATE_RASKLAD_ON){
+            logWidget->onLogsCommand(nullptr, QString(tr("Раскладчик включен...")));
+        }
+        if((offBits & SPR_STATE_RASKLAD_ON) == SPR_STATE_RASKLAD_ON){
+            logWidget->onLogsCommand(nullptr, QString(tr("Раскладчик выключен...")));
+        }
         if((onBits & SPR_STATE_SEPARATED) == SPR_STATE_SEPARATED){
             logWidget->onLogsCommand(nullptr, QString(tr("Сепарация началась...")));
         }
@@ -377,10 +428,13 @@ void ServerConnect::onServerStateChange(uint32_t _state)
             logWidget->onLogsCommand(nullptr, QString(tr("Экспозиция выключена...")));
         }
         if((onBits & SPR_STATE_RENTGEN_ON_CORRECT) == SPR_STATE_RENTGEN_ON_CORRECT){
-            logWidget->onLogsCommand(nullptr, QString(tr("Рентген в нормальном режиме...")));
+            logWidget->onLogsCommand(nullptr, QString(tr("Рентген вышел на нормальный режим...")));
         }
-        if((offBits & SPR_STATE_RENTGEN_ON_CORRECT) == SPR_STATE_RENTGEN_ON_CORRECT){
-            logWidget->onErrorLogsCommand(nullptr, QString(tr("Рентген не вышел на нормальный режим или выключен...")));
+//        if((offBits & SPR_STATE_RENTGEN_ON_CORRECT) == SPR_STATE_RENTGEN_ON_CORRECT){
+//            logWidget->onLogsCommand(nullptr, QString(tr("Рентген не вышел на нормальный режим или выключен...")));
+//        }
+        if((onBits & SPR_STATE_RENTGEN_NOT_REGIME) == SPR_STATE_RENTGEN_NOT_REGIME){
+            logWidget->onErrorLogsCommand(nullptr, QString(tr("Рентген не вышел на нормальный режим или не выключен...")));
         }
 
     }

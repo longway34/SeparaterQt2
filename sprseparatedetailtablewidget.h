@@ -11,8 +11,9 @@ class SPRSeparateDetailTableWidget : public QWidget, public ISPRWidget
     Q_OBJECT
 
     SPRMainModel *model;
+    SPRSeparateModel *separateModel;
 public:
-    SPRSeparateDetailTableWidget(QWidget *parent = 0);
+    SPRSeparateDetailTableWidget(QWidget *parent = nullptr);
 
 private:
     Ui::SPRSeparateDetailTableWidget ui;
@@ -24,7 +25,7 @@ public:
 
 protected:
 
-    QList<int> getVisbleThreads();
+    SPRThreadList getVisbleThreads();
 public slots:
     virtual void onModelChanget(IModelVariable *variable);
     virtual void widgetsShow();

@@ -7,7 +7,10 @@
 #include "tcp/TCPCommandSet.h"
 #include "tcp/tcptimeoutwigget.h"
 #include "tcp/tcpcommandrguup.h"
-#include "tcp/tcpcommandrguupdown.h"
+//#include "tcp/tcpcommandrguupdown.h"
+
+#include "tcp/tcpcommandrguupdown2.h"
+
 #include "tcp/tcpstartsoptestimscommand.h"
 #include "tcp/tcpcommandstartpitatel.h"
 #include "tcp/tcpcommandstoppitatel.h"
@@ -40,8 +43,9 @@ public:
     TCPCommandSet *rentgenOffCommand;
 
     TCPCommandSet *rguReadStateCommand;
-    TCPCommandRGUUpDown *rguUpCommand;
-    TCPCommandRGUUpDown *rguDownCommand;
+    TCPCommandRGUUpDown2 *rguUpCommand;
+    TCPCommandRGUUpDown2 *rguDownCommand;
+    TCPCommand *rguStop;
 
     TCPCommandSet *thermoReadStateCommand;
     TCPCommandSet *thermoWriteStateCommand;
@@ -55,6 +59,7 @@ public:
 
     TCPCommand *commandStartRasklad;
     TCPCommand *commandStopRasklad;
+
 
     TCPStartRudospuskCommand *commandStartRudostusk;
     TCPStopRudostuskCommand *commandStopRudospusk;
@@ -73,14 +78,16 @@ public:
     }
 
     void stopRGUNow(){
-        rguDownCommand->setFinish(true);
-        rguUpCommand->setFinish(true);
+        rguUpCommand->setStarted(false);
+        rguDownCommand->setStarted(false);
+//        rguUpCommand->setFinish(true);
     }
 
 private:
     Ui::SPRTestIMSWidget ui;
     QVector<QCheckBox*> vectorIms;
     QVector<QWidget*> vectorSeparatorOnEnabled;
+    QVector<QWidget*> vectorSeparatedProcessDisabled;
     // ISPRWidget interface
 public:
     ISPRModelData *setModelData(SPRMainModel *_model);
@@ -89,6 +96,7 @@ public:
     virtual ISPRModelData *getModelData();
 public slots:
     void onCommandComplite(TCPCommand* _comm);
+    void onCommandNotComplite(TCPCommand* _comm);
     void onCommand(bool);
 //    void onServerConnectError(ITCPCommand *);
 //    void onServerReadWriteError(ITCPCommand *_comm);

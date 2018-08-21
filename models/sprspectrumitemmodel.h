@@ -13,6 +13,7 @@
 #include "qwt_interval.h"
 #include "qwt_plot_histogram.h"
 
+class SPRGraphItem;
 
 typedef class spectumItemData{
     uint16_t bufLength;
@@ -37,6 +38,7 @@ public:
     QMap<EnumElements, double> elementsSigma;
     QMap<EnumElements, double> elementsAverage;
     QMap<EnumElements, double> elementsCount;
+    QMap<EnumElements, double> elementsCorrel;
 
     double avr, dispersion, sigma, correl;
     QVector<double> diff;
@@ -85,79 +87,43 @@ class SPRSpectrumItemModel : public ISPRModelData
 
     QString hashKeyDebug;
 
+    SPRGraphItem *graphic;
+
     SPRViewGraphicsMode graphicMode;
-    double scaleMul;
+//    double scaleMul;
 
 public:
     SPRSpectrumItemModel();
     SPRSpectrumItemModel(QDomDocument *_doc, int _index, ISPRModelData *parent = nullptr);
     SPRSpectrumItemModel(SPRSpectrumZonesTableModel *_ranges, SPRSettingsFormulaModel *_formulas, uint _thread, ISPRModelData *parent = nullptr);
 
-    virtual ~SPRSpectrumItemModel(){
-        if(zones != nullptr && QVariant(property("delete_ranges")).toBool()){
-            delete zones; zones = nullptr;
-            setProperty("delete_ranges", QVariant(false));
-        }
-        if(formulas != nullptr && QVariant(property("delete_formulas")).toBool()){
-            delete formulas; formulas = nullptr;
-            setProperty("delete_formulas", QVariant(false));
-        }
-    }
+    virtual ~SPRSpectrumItemModel();
 
     double getCorrel(SPRSpectrumItemModel *ather, bool elementsOnly = false, EnumElements _elements = Ns);
-    double getCorrel(){
-        return spectrumData.correl;
-    }
+    double getCorrel();
 
     double getXRay();
 
-    ISPRModelData *setModel(SPRSpectrumZonesTableModel *_ranges, SPRSettingsFormulaModel *_formulas){
-        setZonesTable(_ranges);
-        setFormulas(_formulas);
-        recomplite();
-        return this;
-    }
+    ISPRModelData *setModel(SPRSpectrumZonesTableModel *_ranges, SPRSettingsFormulaModel *_formulas);
 
-    QColor getSpectrumColor(){
-        QColor ret(int(*spectrumData.red), int(*spectrumData.green), int(*spectrumData.blue));
-        return ret;
-    }
+    QColor getSpectrumColor();
 
-    void setSpectrumColor(QColor color){
-        *spectrumData.red = (uint8_t)color.red();
-        *spectrumData.green = (uint8_t)color.green();
-        *spectrumData.blue = (uint8_t)color.blue();
-//        emit modelChanget(this);
-    }
+    void setSpectrumColor(QColor color);
 
-    QString getSpectrumName(){
-        return QString(spectrumData.name);
-    }
+    QString getSpectrumName();
 
-    void setSpectrumName(QString name){
-        setObjectName(name);
-        memcpy(spectrumData.name, name.toUtf8().constData(), name.toUtf8().size());
-//        emit modelChanget(this);
-    }
+    void setSpectrumName(QString name);
 
-    void setSpectrumThread(uint th){
-        *spectrumData.thread = th;
-        thread = th;
-    }
+    void setSpectrumThread(uint th);
 
-    uint getSpectrumThread(){
-        return *spectrumData.thread;
-    }
+    uint getSpectrumThread();
 
-    SPRSpectrumZonesModel *getZones(){
-        uint th = *spectrumData.thread;
-        return zones->items[*spectrumData.thread];
-    }
-    void recomplite();
+    SPRSpectrumZonesModel *getZones();
+    void recomplite(SPRSpectrumItemModel* baseItem=nullptr);
     void setZonesTable(SPRSpectrumZonesTableModel *value);
     void setFormulas(SPRSettingsFormulaModel *value);
     SpectrumItemData *getSpectrumData();
-    void setSpectrumData(uint8_t *buf, uint16_t len = DEF_SPECTRUM_DATA_BUF_LENGTH);
+    void setSpectrumData(uint8_t *buf, uint16_t len = DEF_SPECTRUM_DATA_BUF_LENGTH, SPRSpectrumItemModel *baseItem = nullptr);
 
     QMap<EnumElements, QVector<QwtIntervalSample>> getZonesGaphics();
     QPolygonF getSpectrumGraphics();
@@ -171,7 +137,10 @@ public:
     SPRViewGraphicsMode getGraphicMode() const;
     void setGraphicMode(const SPRViewGraphicsMode &value, double _scaleMul = 1);
 
+    SPRGraphItem *getGraphic();
+
 protected:
+    double setCorrelData(SPRSpectrumItemModel *ather);
 };
 
 #endif // SPRSPECTRUMITEMMODEL_H

@@ -5,7 +5,9 @@
 #include "models/sprsettingsrentgenmodel.h"
 #include "isprwidget.h"
 
-class SPRSettingsRentgenControlWidget : public QWidget, public ISPRWidget
+#include "isprsettingswidget.h"
+
+class SPRSettingsRentgenControlWidget : public QWidget, public ISPRWidget, public ISPRSettingsWidget
 {
     Q_OBJECT
 
@@ -48,6 +50,10 @@ public slots:
 
     // ISPRWidget interface
 protected:
+
+    // ISPRSettingsWidget interface
+public:
+    virtual void setMasterMode(bool value);
 };
 
 

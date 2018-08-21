@@ -27,52 +27,73 @@ TCPStartSopTestIMSCommand::TCPStartSopTestIMSCommand(ServerConnect *_server, TCP
 void TCPStartSopTestIMSCommand::go(TCPCommand *_command)
 {
     if(!_command){
-       countIms = 0;
-       commandSet[0]->send(server);
-       if(widget){
-           widget->setWindowModality(Qt::NonModal);
+       clear();
+
+       for(uint8_t th=0; th<ims.size(); th++){
+            addCommand(testim)->addSendData(&ims[th], 1)->addSendData(&freq, sizeof (freq))->addSendData(&delay, sizeof (delay));
+            addCommand(new TCPTimeOutCommand(timeoutcommand, timeWork * 1000, 1, widget,
+                                    tr("Тест исполнительных механизмов"),
+                                    tr("Тест механизма ручья %1 из %2").arg(th+1).arg(ims.size())));
+            addCommand(stoptest);
        }
-       return;
-    }
-    int num = _command->getNum();
-    if(num == 0){
-        if(countIms >= ims.size()){
-            emit commandComplite(this);
-            return;
+       addCommand(new TCPCommand(getsepar)); // 3
+//       addCommand(new TCPCommand(stoptest)); // 4
+        running = true;
+    } else {
+        if(!running){
+            if(_command->getCommand() != stoptest){
+                stopTestCommand->send(server);
+            }
+//            emit commandComplite(stopTestCommand);
+            emit commandComplite(stopTestCommand);
         }
-        QByteArray param;
-        uint8_t ch = ims[countIms];
-        param.append(QByteArray::fromRawData((char*)&ch, sizeof(ch)));
-        param.append(QByteArray::fromRawData((char*)&freq, sizeof(freq)));
-        param.append(QByteArray::fromRawData((char*)&delay, sizeof(delay)));
-        findCommands(testim).first()->addSendData(param);
+    }
+    TCPCommandSet::go(_command);
+//       countIms = 0;
+//       commandSet[0]->send(server);
+//       if(widget){
+//           widget->setWindowModality(Qt::NonModal);
+//       }
+//       return;
+//    }
+//    int num = _command->getNum();
+//    if(num == 0){
+//        if(countIms >= ims.size()){
+//            emit commandComplite(this);
+//            return;
+//        }
+//        QByteArray param;
+//        uint8_t ch = ims[countIms];
+//        param.append(QByteArray::fromRawData((char*)&ch, sizeof(ch)));
+//        param.append(QByteArray::fromRawData((char*)&freq, sizeof(freq)));
+//        param.append(QByteArray::fromRawData((char*)&delay, sizeof(delay)));
+//        findCommands(testim).first()->addSendData(param);
 
-        TCPTimeOutCommand* to = (TCPTimeOutCommand*)findCommands(timeoutcommand).first();
-        to->setTimeOut(timeWork * 1000);
-        if(widget){
-            to->setWidgetTitleMessage(tr("Тест исполнительных механизмов"),
-                                      QString(tr("Тест механизма ручья %1 из %2")).
-                                      arg(QString::number(ims[countIms] + 1),
-                                          QString::number(ims.size())));
-            widget->onRangeChange(countIms, ims.size());
-        }
-        commandSet[1]->send(server);
-        return;
-    }
-    if(num == commandSet[commandSet.size() - 1]->getNum()){ // last command
-        countIms++;
-        if(widget){
-            widget->setWindowModality(Qt::ApplicationModal);
-        }
-        emit commandComplite(this);
-        commandSet[0]->send(server);
-        return;
-    }
-    if(num < commandSet.size() - 1){
-        commandSet[num + 1]->send(server);
-        return;
-    }
-
+//        TCPTimeOutCommand* to = (TCPTimeOutCommand*)findCommands(timeoutcommand).first();
+//        to->setTimeOut(timeWork * 1000);
+//        if(widget){
+//            to->setWidgetTitleMessage(tr("Тест исполнительных механизмов"),
+//                                      QString(tr("Тест механизма ручья %1 из %2")).
+//                                      arg(QString::number(ims[countIms] + 1),
+//                                          QString::number(ims.size())));
+//            widget->onRangeChange(countIms, ims.size());
+//        }
+//        commandSet[1]->send(server);
+//        return;
+//    }
+//    if(num == commandSet[commandSet.size() - 1]->getNum()){ // last command
+//        countIms++;
+//        if(widget){
+//            widget->setWindowModality(Qt::ApplicationModal);
+//        }
+//        emit commandComplite(this);
+//        commandSet[0]->send(server);
+//        return;
+//    }
+//    if(num < commandSet.size() - 1){
+//        commandSet[num + 1]->send(server);
+//        return;
+//    }
 }
 
 QByteArray TCPStartSopTestIMSCommand::getReplayData(){
@@ -83,11 +104,12 @@ QByteArray TCPStartSopTestIMSCommand::getResult(){
 }
 
 void TCPStartSopTestIMSCommand::stopTest(){
+    running = false;
     countIms = 10000;
-    if(widget){
-        widget->setWindowModality(Qt::ApplicationModal);
-    }
-    stopTestCommand->send(server);
-    emit commandComplite(stopTestCommand);
+//    if(widget){
+//        widget->setWindowModality(Qt::ApplicationModal);
+//    }
+//    stopTestCommand->send(server);
+//    emit commandComplite(stopTestCommand);
     return;
 }

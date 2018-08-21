@@ -8,8 +8,10 @@
 #include <qwt_legend.h>
 #include <qwt_scale_draw.h>
 
+#include <QMessageBox>
+
 SPRSeparateGistogrammWidget::SPRSeparateGistogrammWidget(QWidget *parent) :
-    QWidget(parent)
+    QWidget(parent), model(nullptr), setSeparateData(nullptr)
 {
     ui.setupUi(this);
 
@@ -69,6 +71,9 @@ SPRSeparateGistogrammWidget::SPRSeparateGistogrammWidget(QWidget *parent) :
     ui.bComplite->setEnabled(false);
     connect(ui.bComplite, SIGNAL(clicked(bool)), this, SLOT(onCompliteButtomClick(bool)));
 
+    setSeparateData = new TCPCommand(setsepar);
+    connect(setSeparateData, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onTCPCommandComplite(TCPCommand*)));
+    connect(setSeparateData, SIGNAL(commandNotComplite(TCPCommand*)), this, SLOT(onTCPErrorCommandComplite(TCPCommand *)));
 }
 
 void SPRSeparateGistogrammWidget::onSetSecectedItem(QwtPlotItem* item, MovedItemPosition){
@@ -79,16 +84,45 @@ void SPRSeparateGistogrammWidget::onSetSecectedItem(QwtPlotItem* item, MovedItem
     }
 }
 
-void SPRSeparateGistogrammWidget::onCompliteButtomClick(bool){
-    ui.bComplite->setEnabled(false);
+void SPRSeparateGistogrammWidget::onTCPCommandComplite(TCPCommand *)
+{
+    if(sender() == setSeparateData){
+        if(getLogWidget()){
+            getLogWidget()->onLogsCommand(tr("Применены новые настройки сепарирования..."));
+        }
+        QMessageBox::information(nullptr, tr("Настройки сепаратора"), tr("Применены новые настройки сепарирования..."));
+        ui.bComplite->setEnabled(false);
+    }
+}
 
-    emit changePorogsCompite();
+void SPRSeparateGistogrammWidget::onTCPErrorCommandComplite(TCPCommand *_command)
+{
+    if(sender() == setSeparateData){
+        if(getLogWidget()){
+            getLogWidget()->onErrorLogsCommand(_command, tr("Ошибка применения новых настроек сепарирования..."));
+        }
+        QMessageBox::warning(nullptr, tr("Ошибка настроек сепаратора"), tr("Ошибка применения новых настроек сепарирования..."));
+
+    }
+
+}
+
+void SPRSeparateGistogrammWidget::onCompliteButtomClick(bool){
+
+    if(model){
+        int err;
+        QByteArray sepData = model->getSeparateModel()->toByteArray(&err);
+        setSeparateData->setSendData(sepData);
+        setSeparateData->send(model->getServer());
+        emit changePorogsCompite();
+    }
 }
 
 
 void SPRSeparateGistogrammWidget::onDblClickMouseEvent(){
     if(model){
-        threadCurrent++; if(threadCurrent >= model->getThreads()->getData()) threadCurrent = -1;
+        threadCurrent++;
+        if(threadCurrent >= model->getThreads()->getData()) threadCurrent = -1;
         widgetsShow();
     }
 }

@@ -23,8 +23,8 @@ SPRSettingsControlModel::SPRSettingsControlModel(QDomDocument *_doc, ISPRModelDa
     tMeassureForHistogramm = new SPRVariable<uint>(doc, SPR_CONTROL_T_MEASSURE_FOR_HISTOGRAMM_XPATH, DEF_SPR_CONTROL_T_MEASSURE_FOR_HISTOGRAMM, this);
     correctOptimalOreStream = new SPRVariable<double>(doc, SPR_CONTROL_CORRECT_OPTIMAL_ORE_STREAM_XPATH, DEF_SPR_CONTROL_CORRECT_OPTIMAL_ORE_STREAM, this);
     autoOreStreamControl = new SPRBooleanVariable(doc, SPR_CONTROL_AUTO_STREAM_CONTROL_XPATH, DEF_SPR_CONTROL_AUTO_STREAM_CONTROL, this);
-    VEMSLevelLess = new SPRVariable<double>(doc, SPR_CONTROL_VEMS_LEVEL_LESS_XPATH, DEF_SPR_CONTROL_VEMS_LEVEL_LESS, this);
-    VEMSMaxCode = new SPRVariable<double>(doc, SPR_CONTROL_VEMS_MAX_CODE_XPATH, DEF_SPR_CONTROL_VEMS_MAX_CODE, this);
+    VEMSLevelLess = new SPRVariable<uint16_t>(doc, SPR_CONTROL_VEMS_LEVEL_LESS_XPATH, DEF_SPR_CONTROL_VEMS_LEVEL_LESS, this);
+    VEMSMaxCode = new SPRVariable<uint16_t>(doc, SPR_CONTROL_VEMS_MAX_CODE_XPATH, DEF_SPR_CONTROL_VEMS_MAX_CODE, this);
     VEMSBeginCode = new SPRVariable<uint16_t>(doc, SPR_CONTROL_VEMS_BEGIN_CODE_XPATH, DEF_SPR_CONTROL_VEMS_BEGIN_CODE, this);
 }
 

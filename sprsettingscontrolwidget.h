@@ -4,8 +4,9 @@
 #include "ui_sprsettingscontrolwidget.h"
 #include "isprwidget.h"
 #include "models/sprsettingscontrolmodel.h"
+#include "isprsettingswidget.h"
 
-class SPRSettingsControlWidget : public QWidget, public ISPRWidget
+class SPRSettingsControlWidget : public QWidget, public ISPRWidget, public ISPRSettingsWidget
 {
     Q_OBJECT
 
@@ -18,7 +19,8 @@ private:
 
     // ISPRWidget interface
 public:
-    virtual ISPRModelData *setModelData(SPRSettingsControlModel *data);
+//    virtual ISPRModelData *setModelData(SPRSettingsControlModel *data);
+    virtual ISPRModelData *setModelData(ISPRModelData *data);
     virtual ISPRModelData *getModelData();
 
     // ISPRWidget interface
@@ -33,6 +35,10 @@ public slots:
 
     // ISPRWidget interface
 protected:
+
+    // ISPRSettingsWidget interface
+public:
+    virtual void setMasterMode(bool value);
 };
 
 #endif // SPRSETTINGSCONTROLWIDGET_H

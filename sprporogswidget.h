@@ -15,9 +15,15 @@ class SPRPorogsWidget : public QWidget, public ISPRWidget
 {
     Q_OBJECT
     SPRPorogsModel *model;
+    QDoubleValidator *porogValidator;
 
 public:
-    explicit SPRPorogsWidget(QWidget *parent = 0);
+    explicit SPRPorogsWidget(QWidget *parent = nullptr);
+    virtual ~SPRPorogsWidget(){
+        if(porogValidator){
+            delete porogValidator;
+        }
+    }
     Ui::SPRPorogsWidget ui;
 
     void setThreads(SPRVariable<uint>* threads);

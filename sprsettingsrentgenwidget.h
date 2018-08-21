@@ -4,12 +4,15 @@
 #include "ui_sprsettingsrentgenwidget.h"
 #include "models/isprmodeldata.h"
 #include "isprwidget.h"
+#include "isprsettingswidget.h"
 
-class SPRSettingsRentgenWidget : public QWidget, public ISPRWidget
+class SPRSettingsRentgenWidget : public QWidget, public ISPRWidget, public ISPRSettingsWidget
 {
     Q_OBJECT
 
     SPRSettingsRentgenModel *model;
+
+    bool masterMode;
 
 public:
     Ui::SPRSettingsRentgenWidget ui;
@@ -44,6 +47,10 @@ signals:
 
     // ISPRWidget interface
 protected:
+
+    // ISPRSettingsWidget interface
+public:
+    virtual void setMasterMode(bool value);
 };
 
 #endif // SPRSETTINGSRENTGENWIDGET_H

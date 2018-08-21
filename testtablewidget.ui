@@ -36,17 +36,10 @@
        <widget class="QWidget" name="widget_2" native="true">
         <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="50,50">
          <item>
-          <widget class="SPRSeparateGistogrammWidget" name="testGistogramm" native="true">
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>194</height>
-            </size>
-           </property>
-          </widget>
+          <widget class="SPRHitoryGraphics" name="gHistoryIn" native="true"/>
          </item>
          <item>
-          <widget class="SPRSpectrumGraphicsWidget" name="kSpertGraphic" native="true"/>
+          <widget class="SPRHitoryGraphics" name="gHistoryOut" native="true"/>
          </item>
         </layout>
        </widget>
@@ -349,26 +342,20 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>SPRSpectrumGraphicsWidget</class>
-   <extends>QWidget</extends>
-   <header>sprspectrumgraphicswidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>SPRSpectrumSmallTable</class>
    <extends>QTableWidget</extends>
    <header>sprspectrumsmalltable.h</header>
   </customwidget>
   <customwidget>
-   <class>SPRSeparateGistogrammWidget</class>
-   <extends>QWidget</extends>
-   <header>sprseparategistogrammwidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>SPRSeparateDetailsTable</class>
    <extends>QTableView</extends>
    <header>sprseparatedetailstable.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SPRHitoryGraphics</class>
+   <extends>QWidget</extends>
+   <header>sprhitorygraphics.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

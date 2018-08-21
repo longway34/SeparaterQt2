@@ -10,12 +10,12 @@ void TCPAutoSetRentgen::setUseRGU(bool value)
     useRGU = value;
 }
 
-QList<int> TCPAutoSetRentgen::getThreads()
+SPRThreadList TCPAutoSetRentgen::getThreads()
 {
     return threads;
 }
 
-void TCPAutoSetRentgen::setThreads(QList<int> &value)
+void TCPAutoSetRentgen::setThreads(SPRThreadList &value)
 {
     threads = value;
 }
@@ -75,7 +75,7 @@ void TCPAutoSetRentgen::go(TCPCommand *_command)
             uint time_out_hot_tube = 1;
             uint _time_out_expon = 2000;
             uint _time_out_on_deu_cp = 1000;
-            uint32_t spkTime = 10;
+            uint32_t spkTime = 0x64;
             uint _time_out_spk = 2000;
 #endif
     if(!_command){
@@ -127,7 +127,7 @@ void TCPAutoSetRentgen::go(TCPCommand *_command)
 
             settingCodes();
 
-            if(!mainModel->getServer()->isState(spr_state_exposition_on) || mainModel->getServer()->isState(spr_state_rentgen_not_regime)){
+            if(!mainModel->getServer()->isState(spr_state_exposition_on) && !mainModel->getServer()->isState(spr_state_rentgen_on_correct)){
 
                 addCommand(expon)->addCommand(offosw)->addCommand(onosw);
                 findCommands(expon).last()->addSendData(&ch, 1);
@@ -137,7 +137,6 @@ void TCPAutoSetRentgen::go(TCPCommand *_command)
                 addCommand(getren);
                 findCommands(getren).last()->addSendData(&ch, 1);
             }
-
             addCommand(setspk);
             findCommands(setspk).last()->addSendData(&spkTime, sizeof(spkTime));
             addCommand(new TCPTimeOutCommand(timeoutcommand, _time_out_spk, 100, getTimeOutWidget(),

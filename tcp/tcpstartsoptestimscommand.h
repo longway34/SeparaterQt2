@@ -12,6 +12,8 @@ class TCPStartSopTestIMSCommand : public TCPCommandSet
     uint16_t freq; // Gz
     int countIms;
 
+    bool running;
+
     TCPCommand *stopTestCommand;
 public:
     TCPStartSopTestIMSCommand();

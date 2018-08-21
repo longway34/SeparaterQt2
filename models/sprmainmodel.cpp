@@ -36,23 +36,32 @@ void SPRMainModel::setDoc(QDomDocument *value)
     spectrumZonesTableModel->setThreads(settingsMainModel->getThreads());
 
     if(spectrumListItemsModel) {delete spectrumListItemsModel; spectrumListItemsModel = nullptr;}
-    spectrumListItemsModel = new SPRSpectrumListItemsModel(spectrumZonesTableModel, settingsFormulaModel, settingsMainModel->getThreads(), settingsMainModel->getSpectrumFileName(), settingsControlModel->controlArea, this);
+    spectrumListItemsModel = new SPRSpectrumListItemsModel(this, nullptr, false, this);
 //    spectrumListItemsModel->setSpectrumsfName(settingsMainModel->getSpectrumFileName());
 
+    kSpectrums = new SPRSpectrumListItemsModel(this,
+                        spectrumListItemsModel->getSpectrumsModelBase(), true, nullptr);
+
     if(separateModel){delete separateModel; separateModel = nullptr;}
-    separateModel = new SPRSeparateModel(doc, this);
+    separateModel = new SPRSeparateModel(doc, this, nullptr);
+
+    if(separateOutputModel){delete separateOutputModel; separateOutputModel = nullptr;}
+    separateOutputModel = new SPRSeparateOutputModel(this, this->getThreadsList(), nullptr);
+
+    if(historyModel){delete historyModel; historyModel = nullptr;}
+    historyModel = new SPRHistoryModel(this, kSpectrums);
 
     emit modelChanget(this);
 }
 
-SPRQStringVariable *SPRMainModel::getSpectrumFName() const
+SPRQStringVariable *SPRMainModel::getSpectrumFName()
 {
-    return spectrumFName;
+    return settingsMainModel->getSpectrumFileName();
 }
 
-void SPRMainModel::setSpectrumFName(SPRQStringVariable *value)
+void SPRMainModel::setSpectrumFName(QString value)
 {
-    spectrumFName = value;
+    settingsMainModel->spectrumFileName->setData(value);
 }
 
 
@@ -88,35 +97,74 @@ SPRElementsModel *SPRMainModel::getElementsModel() const
     return elementsModel;
 }
 
+SPRSeparateOutputModel *SPRMainModel::getSeparateOutputModel() const
+{
+    return separateOutputModel;
+}
+
+SPRThreadList SPRMainModel::getThreadsList()
+{
+    SPRThreadList res;
+    if(getThreads())
+        for(uint8_t th = 0; th<getThreads()->getData(); th++){
+            res << th;
+        }
+    else
+        for(uint8_t th = 0; th<MAX_SPR_MAIN_THREADS; th++){
+            res << th;
+        }
+
+    return res;
+}
+
+SPRSpectrumListItemsModel *SPRMainModel::getKSpectrums() const
+{
+    return kSpectrums;
+}
+
+SPRHistoryModel *SPRMainModel::getHistoryModel() const
+{
+    return historyModel;
+}
+
 SPRMainModel::SPRMainModel(QDomDocument *_doc, ISPRModelData *parent): ISPRModelData(_doc, parent),
+//    spectrumFName(nullptr),
+    settingsMainModel(nullptr),
     settingsControlModel(nullptr),
     settingsFormulaModel(nullptr),
     settingsIMSModel(nullptr),
-    settingsMainModel(nullptr),
     settingsPorogsModel(nullptr),
     settingsRentgenModel(nullptr),
     spectrumZonesTableModel(nullptr),
     spectrumListItemsModel(nullptr),
+    kSpectrums(nullptr),
     elementsModel(nullptr),
 //    server(nullptr),
-    separateModel(nullptr)
+    separateModel(nullptr),
+    separateOutputModel(nullptr),
+    historyModel(nullptr)
 {
     setObjectName("MainModel");
     setDoc(_doc);
 }
 
 SPRMainModel::SPRMainModel(QString docFName, ISPRModelData *parent): ISPRModelData(docFName, parent),
+//    spectrumFName(nullptr),
+    settingsMainModel(nullptr),
     settingsControlModel(nullptr),
     settingsFormulaModel(nullptr),
     settingsIMSModel(nullptr),
-    settingsMainModel(nullptr),
     settingsPorogsModel(nullptr),
     settingsRentgenModel(nullptr),
     spectrumZonesTableModel(nullptr),
     spectrumListItemsModel(nullptr),
+    kSpectrums(nullptr),
     elementsModel(nullptr),
 //    server(nullptr),
-    separateModel(nullptr)
+    separateModel(nullptr),
+    separateOutputModel(nullptr),
+    historyModel(nullptr)
+
 {
     setObjectName("MainModel");
     filePath = "";
@@ -153,6 +201,9 @@ SPRMainModel::~SPRMainModel()
     if(settingsMainModel) delete settingsMainModel; settingsMainModel = nullptr;
     if(elementsModel) delete elementsModel; elementsModel = nullptr;
     if(separateModel) delete separateModel; separateModel = nullptr;
+    if(separateOutputModel) delete separateOutputModel; separateOutputModel = nullptr;
+    if(historyModel) delete historyModel; historyModel = nullptr;
+//    if(spectrumFName) delete spectrumFName; spectrumFName = nullptr;
 }
 
 QDomDocument *SPRMainModel::getDoc() const

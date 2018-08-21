@@ -38,7 +38,7 @@ public:
     SPRVariable<uint> *getRentgens() const;
     SPRVariable<uint> *getThreads() const;
     SPRVariable<uint> *getIms() const;
-    SPRQStringVariable *getSpectrumFileName() const;
+    SPRQStringVariable *getSpectrumFileName();
     SPRQStringVariable *getName() const;
     SPRQStringVariable *getIpAddress() const;
     void setIpAddress(SPRQStringVariable *value);

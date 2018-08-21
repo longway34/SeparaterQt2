@@ -88,36 +88,38 @@ SPRSettingsPorogsWidget::SPRSettingsPorogsWidget(QWidget *parent) :
 
 void SPRSettingsPorogsWidget::widgetsShow()
 {
-    blockSignals(true);
-    ui.leMinStone->setValue(model->forMinStone->getData());
-    ui.leMaxStone->setValue(model->forMaxStone->getData());
-    ui.leXRayCorrection->setValue(model->xRayCorrection->getData());
+    if(model){
+        blockSignals(true);
+        ui.leMinStone->setValue(model->forMinStone->getData());
+        ui.leMaxStone->setValue(model->forMaxStone->getData());
+        ui.leXRayCorrection->setValue(model->xRayCorrection->getData());
 
-    TypeSelection type = model->typeSelection->getData();
-    if(type == OnConsentrate){
-        ui.rbConcentrat->setChecked(true);
-    } else if(type == OnTail){
-        ui.rbTail->setChecked(true);
+        TypeSelection type = model->typeSelection->getData();
+        if(type == OnConsentrate){
+            ui.rbConcentrat->setChecked(true);
+        } else if(type == OnTail){
+            ui.rbTail->setChecked(true);
+        }
+
+        TypeConditions cond = model->getConditions()->getData();
+        switch (cond) {
+        case H1:
+            ui.rbH1Resume->setChecked(true);
+            break;
+        case H2:
+            ui.rbH2Resume->setChecked(true);
+            break;
+        case H3:
+            ui.rbH3Resume->setChecked(true);
+            break;
+        default:
+            break;
+        }
+
+        repaintGraphic(0);
+        ui.wPorogs->widgetsShow();
+        blockSignals(false);
     }
-
-    TypeConditions cond = model->getConditions()->getData();
-    switch (cond) {
-    case H1:
-        ui.rbH1Resume->setChecked(true);
-        break;
-    case H2:
-        ui.rbH2Resume->setChecked(true);
-        break;
-    case H3:
-        ui.rbH3Resume->setChecked(true);
-        break;
-    default:
-        break;
-    }
-
-    repaintGraphic(0);
-    ui.wPorogs->widgetsShow();
-    blockSignals(false);
 }
 
 ISPRModelData *SPRSettingsPorogsWidget::getModelData()
@@ -177,4 +179,10 @@ void SPRSettingsPorogsWidget::viewChange(QAbstractButton *btn)
 void SPRSettingsPorogsWidget::onModelChanget(IModelVariable *)
 {
     widgetsShow();
+}
+
+
+void SPRSettingsPorogsWidget::setMasterMode(bool value)
+{
+    this->setEnabled(value);
 }

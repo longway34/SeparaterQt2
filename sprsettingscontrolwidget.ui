@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>941</width>
-    <height>494</height>
+    <height>412</height>
    </rect>
   </property>
   <property name="font">
@@ -20,6 +20,21 @@
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
    <item>
     <widget class="QWidget" name="widget_3" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -35,6 +50,21 @@
          <string>Контроль за сепарацией</string>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout">
+         <property name="spacing">
+          <number>3</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
          <item>
           <widget class="QTableWidget" name="tControl">
            <property name="font">
@@ -133,8 +163,26 @@
          <string>ВЭМС</string>
         </property>
         <layout class="QFormLayout" name="formLayout_4">
+         <property name="horizontalSpacing">
+          <number>3</number>
+         </property>
+         <property name="leftMargin">
+          <number>9</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>9</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
          <item row="0" column="0">
           <widget class="QLabel" name="label_8">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="text">
             <string>Уровень уменьшения (%)</string>
            </property>
@@ -142,6 +190,9 @@
          </item>
          <item row="0" column="1">
           <widget class="QDoubleSpinBox" name="leVEMSLess">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="decimals">
             <number>0</number>
            </property>
@@ -156,7 +207,7 @@
          <item row="2" column="0">
           <widget class="QLabel" name="label_9">
            <property name="text">
-            <string>Максимальный код (%)</string>
+            <string>Максимальный код</string>
            </property>
            <property name="wordWrap">
             <bool>false</bool>
@@ -165,6 +216,9 @@
          </item>
          <item row="2" column="1">
           <widget class="QDoubleSpinBox" name="leVEMSMaxCode">
+           <property name="suffix">
+            <string>%</string>
+           </property>
            <property name="decimals">
             <number>0</number>
            </property>
@@ -182,12 +236,15 @@
          <item row="3" column="0">
           <widget class="QLabel" name="label_10">
            <property name="text">
-            <string>При включении (%)</string>
+            <string>При включении</string>
            </property>
           </widget>
          </item>
          <item row="3" column="1">
           <widget class="QDoubleSpinBox" name="leVEMSBegin">
+           <property name="suffix">
+            <string>%</string>
+           </property>
            <property name="decimals">
             <number>0</number>
            </property>
@@ -211,8 +268,26 @@
    <item>
     <widget class="QWidget" name="widget_2" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
       <item>
        <widget class="QGroupBox" name="groupBox_2">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="title">
          <string>Масса среднего камня (г)</string>
         </property>
@@ -267,6 +342,24 @@
          <string>Время опроса (сек.)</string>
         </property>
         <layout class="QFormLayout" name="formLayout_2">
+         <property name="horizontalSpacing">
+          <number>3</number>
+         </property>
+         <property name="verticalSpacing">
+          <number>3</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
          <item row="0" column="0">
           <widget class="QLabel" name="label_4">
            <property name="text">
@@ -327,6 +420,9 @@
       </item>
       <item>
        <widget class="QGroupBox" name="groupBox_4">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="title">
          <string>Коррекция рудопотока</string>
         </property>

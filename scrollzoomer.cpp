@@ -5,6 +5,7 @@
 #include <qwt_scale_widget.h>
 #include "scrollbar.h"
 #include "scrollzoomer.h"
+#include "models/sprspectrumitemmodel.h"
 
 class ScrollData
 {
@@ -123,7 +124,7 @@ QwtText ScrollZoomer::trackerTextF(const QPointF &pos) const
         size_t size = (*current)->spect->dataSize();
         if(x>=0 && x<(*current)->spect->dataSize()){
             nText = QString("%1 (%2ch : %3)").
-                    arg((*current)->model->getSpectrumName()).
+                    arg((*current)->getModel()->getSpectrumName()).
                     arg(QString::number(x)).
                     arg(QString::number((*current)->spect->sample(x).toPoint().ry()));
         }

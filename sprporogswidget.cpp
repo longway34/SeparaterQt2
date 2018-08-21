@@ -12,9 +12,15 @@ static SeparatorPorogsData defSeparatorPorogsData = {
 };
 
 SPRPorogsWidget::SPRPorogsWidget(QWidget *parent) :
-    QWidget(parent), model(nullptr)
+    QWidget(parent), model(nullptr), porogValidator(nullptr)
 {
     ui.setupUi(this);
+
+    QLocale loc(QLocale::C);
+    loc.setNumberOptions(QLocale::RejectGroupSeparator);
+
+    porogValidator = new QDoubleValidator(-99, 99, 2, this);
+    porogValidator->setLocale(loc);
 
 }
 
@@ -55,10 +61,12 @@ void SPRPorogsWidget::widgetsShow()
         for(int t=0, k=1; t < model->getThreads()->getData(); t++, k++){
             hnames.append(QString::number(k));
             for(int c=0; c<cond; c++){
+
                 if(!t) vnames.append(names->at(c));
-                QLineEdit *cellValue = new QLineEdit(QString::number(model->porogs[t][c]->getData()),ui.tPorogsValues);
+                QLineEdit *cellValue = new QLineEdit(QString::number(model->porogs[t][c]->getData(),'f', 2),ui.tPorogsValues);
                 cellValue->setFrame(false); cellValue->setAlignment(Qt::AlignCenter);
-                cellValue->setValidator(new QDoubleValidator(-99,99,2,cellValue));
+                cellValue->setValidator(porogValidator);
+
                 cellValue->setToolTip(tr("Значение для ручья ")+QString::number(t)+tr(" условия ")+names->at(c));
                 cellValue->setProperty("row", c); cellValue->setProperty("col", t); //cellValue->setProperty("parent", QVariant("tPorogsValues"));
                 ui.tPorogsValues->setCellWidget(c, t, cellValue);

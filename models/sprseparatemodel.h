@@ -6,14 +6,15 @@
 #include <QDateTime>
 
 #include "_types.h"
-#include "models/isprmodeldata.h"
+//#include "models/isprmodeldata.h"
 #include "variables/sprvariable.h"
 #include "models/sprspectrumzonesmodel.h"
 //#include "models/sprmainmodel.h"
 #include "models/sprporogsmodel.h"
-#include "models/imainmodel.h"
+//#include "models/imainmodel.h"
 
-#include "qwt_interval.h"
+#include <qwt_interval.h>
+#include <qwt_series_data.h>
 
 struct sobl{
     double ls;
@@ -60,45 +61,49 @@ typedef struct sep_ust{
     double  sep_row; // похоже тоже ручная установка или по непонятному алгоритму из собственной модели
    } SPRSettintsSeparate;
 
-typedef struct ssep_work {
-  //double i_kn[MAX_CH+1];
-  //double i_xw[MAX_CH+1];
-  //double i_km[MAX_CH+1];
-  double i_prd[MAX_SPR_MAIN_THREADS][4]; // MAX_CH = 4 = 8x4x4 = 128
-  //double p_cr[MAX_CH];
-  //double p_crk[MAX_CH];
-  //double p_crx[MAX_CH];
-  double p_prd[MAX_SPR_MAIN_THREADS][4]; // 8x4x4= 128
-  double p_tk[MAX_SPR_MAIN_THREADS]; // 8x4 = 32
-  double p_tkh1[MAX_SPR_MAIN_THREADS]; // 8x4 = 32
-  double p_tkh2[MAX_SPR_MAIN_THREADS]; // 8x4 = 32
-  double p_tkh3[MAX_SPR_MAIN_THREADS]; // 8x4 = 32
-  double wcount[MAX_SPR_MAIN_THREADS]; // 8x4 = 32
-  double s_rst[MAX_SPR_MAIN_THREADS][5]; // MAX_CH = 4 MAX_GR = 5 = 8x4x5 = 160
-  double error ; // = 8 ///////
-
-  ssep_work(){
+class SPRWorkSeparate
+{
+public:
+    uint64_t dt;
+  struct{
+      //double i_kn[MAX_CH+1];
+      //double i_xw[MAX_CH+1];
+      //double i_km[MAX_CH+1];
+      double i_prd[MAX_SPR_MAIN_THREADS][4]; // MAX_CH = 4 = 8x4x4 = 128
+      //double p_cr[MAX_CH];
+      //double p_crk[MAX_CH];
+      //double p_crx[MAX_CH];
+      double p_prd[MAX_SPR_MAIN_THREADS][4]; // 8x4x4= 128
+      double p_tk[MAX_SPR_MAIN_THREADS]; // 8x4 = 32
+      double p_tkh1[MAX_SPR_MAIN_THREADS]; // 8x4 = 32
+      double p_tkh2[MAX_SPR_MAIN_THREADS]; // 8x4 = 32
+      double p_tkh3[MAX_SPR_MAIN_THREADS]; // 8x4 = 32
+      double wcount[MAX_SPR_MAIN_THREADS]; // 8x4 = 32
+      double s_rst[MAX_SPR_MAIN_THREADS][5]; // MAX_CH = 4 MAX_GR = 5 = 8x4x5 = 160
+      double error ; // = 8 ///////
+  } source;
+  SPRWorkSeparate(){
       clear();
   }
   void clear(){
       for(int th=0; th<MAX_SPR_MAIN_THREADS; th++){
           for(int i=0; i<4; i++){
-              i_prd[th][i] = 0; p_prd[th][i] = 0;
+              source.i_prd[th][i] = 0; source.p_prd[th][i] = 0;
           }
           for(int i=0; i<5; i++){
-              s_rst[th][i] = 0;
+              source.s_rst[th][i] = 0;
           }
-          p_tk[th] = 0; p_tkh1[th] = 0; p_tkh2[th] = 0; p_tkh3[th] = 0;
-          wcount[th] = 0;
+          source.p_tk[th] = 0; source.p_tkh1[th] = 0; source.p_tkh2[th] = 0; source.p_tkh3[th] = 0;
+          source.wcount[th] = 0;
       }
-      error = 0;
+      source.error = 0;
   }
-} SPRWorkSeparate;
+};
 
 typedef struct ssep_work_row{
     int id;
     int number;
-    QDateTime dt;
+    uint64_t dt;
     int thread;
     double i_prd[4]; // MAX_CH = 4 = 8x4 = 32
     double p_prd[4]; // 8x4= 32
@@ -123,6 +128,7 @@ typedef struct ssep_work_row{
     }
     ssep_work_row(){
         id = rand();
+        dt = QDateTime::currentDateTime().toSecsSinceEpoch();
         clear();
     }
     void clear(){
@@ -197,11 +203,12 @@ public:
     void setGcol(int value);
 } SPRWorkGistogrammRow;
 
+class SPRMainModel;
 
 class SPRSeparateModel : public ISPRModelData
 {
 
-//    SPRMainModel *mainModel;
+    SPRMainModel *mainModel;
     SPRSettintsSeparate settingsSeparate;
 
     bool separateStructupeEmpty;
@@ -241,11 +248,11 @@ public:
 
     void setWorkGistogrammData(QByteArray rawData, int thread);
 
-    QByteArray toByteArray(IMainModel *_mainModel, int *errors);
+    QByteArray toByteArray(int *errors);
 
-    SPRSeparateModel(QDomDocument *_doc, ISPRModelData *parent=nullptr);
+    SPRSeparateModel(QDomDocument *_doc, SPRMainModel *_model, ISPRModelData *parent=nullptr);
 //    SPRMainModel *getModelData() const;
-//    void setModelData(SPRMainModel *value);
+    void setModelData(ISPRModelData *value);
     virtual ~SPRSeparateModel();
 
     SPRSettintsSeparate *getSettingsSeparate();

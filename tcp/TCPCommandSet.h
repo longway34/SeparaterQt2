@@ -32,6 +32,15 @@
 #define MSG_TIME_OUT_ON_SEPAR               (QString(tr("Старт сепарации")))
 #define MSG_TIME_OUT_ON_SEPAR_MSG(X)        (QString(tr("Старт сепарации...(%1)")).arg( (X) ))
 
+#define MSG_TIME_OUT_ON_PITATEL               (QString(tr("Включение питателя")))
+#define MSG_TIME_OUT_ON_PITAPEL_MSG(X)        (QString(tr("Включение питателя...(%1)")).arg( (X) ))
+
+#define MSG_TIME_OUT_OFF_PITATEL               (QString(tr("Выключение питателя")))
+#define MSG_TIME_OUT_OFF_PITAPEL_MSG(X)        (QString(tr("Выключение питателя...(%1)")).arg( (X) ))
+
+#define MSG_TIME_OUT_ON_RASKLAD               (QString(tr("Включение раскладчика")))
+#define MSG_TIME_OUT_ON_RASKLAD_MSG(X)        (QString(tr("Включение раскладчика...(%1)")).arg( (X) ))
+
 #define MSG_TIME_OUT_OFF_SEPAR               (QString(tr("Останов сепарации")))
 #define MSG_TIME_OUT_OFF_SEPAR_MSG(X)        (QString(tr("Останов сепарации...(%1)")).arg( (X) ))
 

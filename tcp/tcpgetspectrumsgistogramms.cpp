@@ -1,12 +1,16 @@
-#include "tcpgetspectrumsgistogramms.h"
+#include "tcp/tcpgetspectrumsgistogramms.h"
 #include "tcp/tcpexpositiononoff.h"
 #include "tcp/tcpcommandrguupdown.h"
 
-void TCPGetSpectrumsGistogramms::setThreadTimer(double _time_spk_in_sec, QList<uint8_t> _wtList)
+void TCPGetSpectrumsGistogramms::setThreadTimer(double _time_spk_in_sec, SPRThreadList _wtList)
 {
-
-    timeOfSpectorScope_in_sec = _time_spk_in_sec;
-    workingThreads = _wtList;
+    if(model){
+        timeOfSpectorScope_in_sec = _time_spk_in_sec;
+        if(workingThreads.size() > 0){
+            workingThreads.clear();
+        }
+        workingThreads.append(SPRThreadList(_wtList));
+    }
 }
 
 EnumCommands TCPGetSpectrumsGistogramms::getDataType() const
@@ -49,8 +53,11 @@ TCPGetSpectrumsGistogramms::TCPGetSpectrumsGistogramms()
 {
 }
 
-TCPGetSpectrumsGistogramms::TCPGetSpectrumsGistogramms(ServerConnect *_server, EnumCommands _dataType, SPRMainModel *_model, double _timeSpk_in_sec, QList<uint8_t> _threads, TCPTimeOutWigget *_toWidget, TCPLogsWigtets *_logWidgets):
-    TCPCommandSet(_server, _toWidget, {}), model(_model), dataType(_dataType), timeOfSpectorScope_in_sec(_timeSpk_in_sec)
+TCPGetSpectrumsGistogramms::TCPGetSpectrumsGistogramms(ServerConnect *_server, EnumCommands _dataType, SPRMainModel *_model, double _timeSpk_in_sec, SPRThreadList _threads, TCPTimeOutWigget *_toWidget, TCPLogsWigtets *_logWidgets):
+    TCPCommandSet(_server, _toWidget, {}), expositionOn(nullptr),
+    model(_model), dataType(_dataType),
+    timeOfSpectorScope_in_sec(_timeSpk_in_sec)
+
 {
     workingThreads = _threads;
     withOffExp = false;
@@ -117,10 +124,11 @@ void TCPGetSpectrumsGistogramms::go(TCPCommand *_command)
                 }
             }
             if(!server->isState(spr_state_exposition_on)){
-                if(server->isState(spr_state_rentgen_on_correct)){
+                if(server->isState(spr_state_rentgen_not_regime)){
                     addCommand(new TCPExpositionOnOff(server, false, true, model, getTimeOutWidget(), getLogWidget()));
                 }
-                addCommand(new TCPExpositionOnOff(server, true, true, model, getTimeOutWidget(), getLogWidget()));
+                expositionOn = new TCPExpositionOnOff(server, true, true, model, getTimeOutWidget(), getLogWidget());
+                addCommand(expositionOn);
 
             }
             int32_t spkT = timeOfSpectorScope_in_sec * 10;
@@ -149,47 +157,46 @@ void TCPGetSpectrumsGistogramms::go(TCPCommand *_command)
         }
         if(dataType == getspk){
             if(withOffExp){
-                addCommand(new TCPExpositionOnOff(server, false, true, model, getTimeOutWidget(), getLogWidget()));
+                TCPExpositionOnOff *exponOff = new TCPExpositionOnOff(server, false, true, model, getTimeOutWidget(), getLogWidget());
+                addCommand(exponOff);
+                connect(exponOff, SIGNAL(commandNotComplite(TCPCommand*)), this, SLOT(onCommandNotComplite(TCPCommand*)));
             }
         }
 
         addCommand(new TCPCommand(nocommand));
-
-//        if(dataType == getspk){
-//            char ren = '\0';
-//            addCommand(new TCPCommand(expoff));
-//            findCommands(expoff).last()->setSendData(&ren,sizeof(ren));
-//            addCommand(new TCPCommand(offosw));
-//        }
     } else {
-        if(_command->getCommand() == getren){
+        if(_command == expositionOn){
             uint16_t mkv, mka; uint8_t err;
-            bool res = _command->isRentgenReady(_command->getReplayData(), &mkv, &mka, &err);
-            if(!res) {
-                TCPExpositionOnOff *off = new TCPExpositionOnOff(server, false, true, model, getTimeOutWidget(), getLogWidget());
-                addCommand(off);
-                off->send(server);
+            QVector<TCPCommand*> lgetren = _command->findCommands(getren);
+            if(lgetren.size() > 0){
+                bool res = lgetren.last()->isRentgenReady(lgetren.last()->getReplayData(), &mkv, &mka, &err);
+                if(!res) {
+    //                TCPExpositionOnOff *off = new TCPExpositionOnOff(server, false, true, model, getTimeOutWidget(), getLogWidget());
+    //                addCommand(off);
+    //                off->send(server);
 
-                emit rentgenNotReady(_command);
-                emit commandNotComplite(_command);
-                return;
+                    emit rentgenNotReady(lgetren.last());
+                    emit commandNotComplite(lgetren.last());
+                    return;
+                }
             }
         }
     }
     TCPCommandSet::go(_command);
 }
 
-//bool TCPGetSpectrumsGistogramms::isRentgenReady(uint *_mkv, uint *_mka){
-//    QByteArray res = findCommands(getren).last()->getReplayData().right(4);
-//    uint mka=0, mkv=0;
-//    memcpy(&mkv, res.constData(), 2);
-//    memcpy(&mka, res.constData()+2, 2);
-//    if(_mkv) *_mkv = mkv;
-//    if(_mka) *_mka = mka;
-//    if(mkv >= 0x0600 && mka >= 0x0600 && mkv < 0x0700 && mka < 0x0700){
-//        return true;
-//    } else {
-//        return false;
-//    }
+void TCPGetSpectrumsGistogramms::onCommandNotComplite(TCPCommand *_command)
+{
+    if(_command->getCommand() == getren){
+        uint16_t mka, mkv; uint8_t err;
+        isRentgenReady(_command->getReplayData(), &mkv, &mka, &err);
+        qDebug() << "************************************";
+        qDebug() << "command getRen not complite..." << QString::number(mkv, 16) << " " << QString::number(mka, 16);
+    }
+}
 
-//}
+
+bool TCPGetSpectrumsGistogramms::isCommamdCompare(TCPCommand *_command)
+{
+    return TCPCommandSet::isCommamdCompare(_command);
+}

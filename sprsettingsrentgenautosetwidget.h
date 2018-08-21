@@ -7,7 +7,9 @@
 #include "sprsettingsrentgenautosetdialog.h"
 #include "isprwidget.h"
 
-class SPRSettingsRentgenAutosetWidget : public QWidget, public ISPRWidget
+#include "isprsettingswidget.h"
+
+class SPRSettingsRentgenAutosetWidget : public QWidget, public ISPRWidget, public ISPRSettingsWidget
 {
     Q_OBJECT
 
@@ -41,7 +43,11 @@ protected slots:
 
     // ISPRWidget interface
 protected:
-    QList<int> getSelectedThreads();
+    QList<uint8_t> getSelectedThreads();
+
+    // ISPRSettingsWidget interface
+public:
+    virtual void setMasterMode(bool value);
 };
 
 #endif // SPRSETTINGSRENTGENAUTOSETWIDGET_H

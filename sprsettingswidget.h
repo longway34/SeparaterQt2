@@ -8,13 +8,17 @@
 #include "isprwidget.h"
 #include "models/sprmainmodel.h"
 
-class SPRSettingsWidget : public QWidget, public ISPRWidget
+#include "isprsettingswidget.h"
+
+class SPRSettingsWidget : public QWidget, public ISPRWidget, ISPRSettingsWidget
 {
     Q_OBJECT
 
     QDomDocument document;
     QDomDocument *doc;
     QString docFName;
+
+    bool masterMode;
 
     SPRMainModel *model;
 public:
@@ -34,21 +38,15 @@ signals:
     // ISPRWidget interface
 public:
     virtual ISPRModelData *getModelData(){return nullptr;}
+    bool getMasterMode() const;
+    virtual void setMasterMode(bool value);
+
 public slots:
     virtual void viewChange(){}
     virtual void viewChange(int){}
     virtual void viewChange(QTableWidget *, int, int){}
     virtual void onModelChanget(IModelVariable *);
-    virtual void widgetsShow(){
-//        emit doShow();
-        ui.wSettingsControl->widgetsShow();
-        ui.wSettingsFormulaWidget->widgetsShow();
-        ui.wSettingsIMSWidget->widgetsShow();
-        ui.wSettingsMainWidget->widgetsShow();
-        ui.wSettingsPorogsWidget->widgetsShow();
-        ui.wSettingsRentgen->widgetsShow();
-        ui.wSpectrumZonesWidget->widgetsShow();
-    }
+    virtual void widgetsShow();
     void onChangeFileSpectrum(QString fName);
     void onChangeFileSettinds(QString fName);
 

@@ -3,12 +3,25 @@
 //#include "models/sprsettingsmainmodel.h"
 #include <QDir>
 
+bool SPRSettingsWidget::getMasterMode() const
+{
+    return masterMode;
+}
+
+void SPRSettingsWidget::setMasterMode(bool value)
+{
+    masterMode = value;
+    widgetsShow();
+}
+
 SPRSettingsWidget::SPRSettingsWidget(QWidget *parent):
     QWidget(parent), model(nullptr)
 {
     ui.setupUi(this);
 
     connect(ui.tabSettingsWidget, SIGNAL(currentChanged(int)), this, SLOT(widgetsShow()));
+
+    setMasterMode(false);
 }
 
 SPRSettingsWidget::SPRSettingsWidget(QDomDocument *_doc, QString fName, QWidget *parent):
@@ -17,6 +30,8 @@ SPRSettingsWidget::SPRSettingsWidget(QDomDocument *_doc, QString fName, QWidget 
     ui.setupUi(this);
     setDoc(_doc);
     connect(ui.tabSettingsWidget, SIGNAL(currentChanged(int)), this, SLOT(widgetsShow()));
+
+    setMasterMode(false);
 }
 
 void SPRSettingsWidget::setDoc(QDomDocument *_doc)
@@ -101,4 +116,40 @@ void SPRSettingsWidget::onCancelButtomClick(bool){
 void SPRSettingsWidget::onModelChanget(IModelVariable*)
 {
     widgetsShow();
+}
+
+void SPRSettingsWidget::widgetsShow(){
+    //        emit doShow();
+    QList<ISPRSettingsWidget *> lst =
+        {ui.wSettingsControl,
+         ui.wSettingsFormulaWidget,
+         ui.wSettingsIMSWidget,
+         ui.wSettingsMainWidget,
+         ui.wSettingsPorogsWidget,
+         ui.wSettingsRentgen,
+         ui.wSpectrumZonesWidget};
+
+    foreach(ISPRSettingsWidget *w, lst){
+        w->setMasterMode(masterMode);
+    }
+
+//    QList<ISPRWidget *> lst =
+//        {ui.wSettingsControl,
+//         ui.wSettingsFormulaWidget,
+//         ui.wSettingsIMSWidget,
+//         ui.wSettingsMainWidget,
+//         ui.wSettingsPorogsWidget,
+//         ui.wSettingsRentgen,
+//         ui.wSpectrumZonesWidget};
+
+//    foreach(ISPRWidget *w, lst){
+//        w->widgetsShow();
+//    }
+    ui.wSettingsControl->widgetsShow();
+    ui.wSettingsFormulaWidget->widgetsShow();
+    ui.wSettingsIMSWidget->widgetsShow();
+    ui.wSettingsMainWidget->widgetsShow();
+    ui.wSettingsPorogsWidget->widgetsShow();
+    ui.wSettingsRentgen->widgetsShow();
+    ui.wSpectrumZonesWidget->widgetsShow();
 }

@@ -44,7 +44,9 @@ public:
     virtual void setReplayData(QByteArray replayData){
         this->replayData = replayData;
 
-        qDebug() << "command: "<<QString::number(getCommand(),16)<< "; send:" << getSendData().toHex(':')<< "; res: "<<getReplayData().toHex(':');
+        QList<EnumCommands> noDebug = {getkspk, getspk, getgist, getsepar};
+        if(!noDebug.contains(this->command))
+            qDebug() << "command: "<<QString::number(getCommand(),16)<< "; send:" << getSendData().toHex(':')<< "; res: "<<getReplayData().toHex(':');
 
         if(noErrors()){
             emit commandComplite(this);
@@ -131,6 +133,7 @@ public:
 public slots:
     virtual void go(TCPCommand *_command = NULL){
     }
+    virtual void onCommandNotComplite(TCPCommand*_command);
 
 private:
 

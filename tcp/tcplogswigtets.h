@@ -9,20 +9,23 @@ class TCPLogsWigtets : public QWidget
     Q_OBJECT
 protected:
     QString onLogsCommand(ITCPCommand *command);
-    void onLogsCommand(QString msg, QColor _color = QColor());
 
 
     QTextCharFormat textCharFormatDefault;
     QTextCharFormat textCharFormatAther;
 
 public:
-    explicit TCPLogsWigtets(QWidget *parent = 0);
+    explicit TCPLogsWigtets(QWidget *parent = nullptr);
     Ui::TCPLogsWigtets ui;
 
 public slots:
     void onClear(bool);
     void onLogsCommand(ITCPCommand *command, QString _prefix);
     void onErrorLogsCommand(ITCPCommand *command, QString _prefix);
+    void onLogsCommand(QString msg, QColor _color = QColor());
+signals:
+    void logWidgetEvent(QString, QColor);
+//    void clear();
 private:
 };
 
