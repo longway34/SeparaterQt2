@@ -5,7 +5,7 @@
 #include "models/sprmainmodel.h"
 #include "tcp/tcpcommandstartpitatel.h"
 #include "tcp/tcpcommandstoppitatel.h"
-#include "tcp/tcpcommandrentgenonfull.h"
+#include "tcp/tcpcommandseparatoronfull.h"
 #include "tcp/tcpteststopseparate.h"
 #include "isprwidget.h"
 #include "models/sprsettingscontrolmodel.h"
@@ -27,6 +27,8 @@ class SPRPitatelControlWidget : public QWidget, public ISPRWidget
     TCPTestStopSeparate *separatorOff;
     TCPTimeOutWigget *toWidget;
 
+    bool fullMode;
+
 public:
     explicit SPRPitatelControlWidget(QWidget *parent = nullptr) :
         QWidget(parent), mainModel(nullptr),
@@ -35,7 +37,8 @@ public:
         setPitatelCommand(nullptr),
         separatorOn(nullptr),
         separatorOff(nullptr),
-        toWidget(nullptr)
+        toWidget(nullptr),
+        fullMode(true)
 
     {
         ui.setupUi(this);
@@ -76,7 +79,7 @@ public:
             setPitatelCommand = new TCPCommand(setpuw);
 
             if(separatorOn) delete separatorOn;
-            separatorOn = new TCPCommandSeparatorOnFull(mainModel->getServer(), mainModel, toWidget);
+            separatorOn = new TCPCommandSeparatorOnFull(mainModel->getServer(), mainModel, toWidget, fullMode);
 
             if(separatorOff) delete separatorOff;
             separatorOff = new TCPTestStopSeparate(toWidget, mainModel);
@@ -245,6 +248,7 @@ public:
 //        }
 //        return QObject::event(event);
 //    }
+    void setFullMode(bool value);
 };
 
 #endif // SPRPITATELCONTROLWIDGET_H

@@ -71,7 +71,7 @@ void ISPRWidget::setDoc(QString _fName)
                 docFilePath = fi.absolutePath();
             } else {
                 docFilePath = QDir::currentPath();
-                docFileName = docFilePath + QDir::separator()+(DEF_SPR_MAIN_SETTINGS_FNAME)+(DEF_SPR_MAIN_SETTINGS_FNAME);
+                docFileName = docFilePath + QDir::separator()+(DEF_SPR_MAIN_SETTINGS_FNAME)+(DEF_SPR_MAIN_SETTINGS_FNAME_SUFFIX);
             }
 
         }

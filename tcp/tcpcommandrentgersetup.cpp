@@ -1,6 +1,6 @@
-#include "tcpcommandrentgeron.h"
+#include "tcpcommandrentgersetup.h"
 
-void TCPCommandRentgerOn::setModel(SPRSettingsRentgenModel *value)
+void TCPCommandRentgerSetup::setModel(SPRSettingsRentgenModel *value)
 {
     if(value){
         model = value;
@@ -9,12 +9,12 @@ void TCPCommandRentgerOn::setModel(SPRSettingsRentgenModel *value)
 
 }
 
-TCPCommandRentgerOn::TCPCommandRentgerOn()
+TCPCommandRentgerSetup::TCPCommandRentgerSetup()
 {
 
 }
 
-TCPCommandRentgerOn::TCPCommandRentgerOn(ServerConnect *_server, TCPTimeOutWigget *_widget, SPRSettingsRentgenModel *_model):
+TCPCommandRentgerSetup::TCPCommandRentgerSetup(ServerConnect *_server, TCPTimeOutWigget *_widget, SPRSettingsRentgenModel *_model):
     TCPCommandSet(_server, _widget, {}), model(_model)
 {
     command = setRentgenOn;
@@ -46,7 +46,7 @@ TCPCommandRentgerOn::TCPCommandRentgerOn(ServerConnect *_server, TCPTimeOutWigge
 
 }
 
-void TCPCommandRentgerOn::go(TCPCommand *_command)
+void TCPCommandRentgerSetup::go(TCPCommand *_command)
 {
     if(model){
         if(!_command){
@@ -54,6 +54,14 @@ void TCPCommandRentgerOn::go(TCPCommand *_command)
 //                commandSet.remove(0);
 //            }
             clear();
+
+            if(!server->isState(spr_state_rentgen_on)){
+                SPRMainModel *mainModel = model->getMainModel();
+                if(mainModel){
+                    addCommand(new TCPCommandSeparatorOnFull(server, mainModel, widget, true));
+                }
+            }
+
             rentgenNum = 1; /* DEF_SPR_MAIN_RENTGENS;*/
             QByteArray va;
             va.append("\0", 1);

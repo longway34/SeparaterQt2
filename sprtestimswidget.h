@@ -15,14 +15,14 @@
 #include "tcp/tcpcommandstartpitatel.h"
 #include "tcp/tcpcommandstoppitatel.h"
 #include "tcp/tcpcommandseparatoroff.h"
-#include "tcp/tcpcommandrentgeron.h"
+#include "tcp/tcpcommandrentgersetup.h"
 //#include "tcp/tcpcommandgetspectrums.h"
 #include "tcp/tcpgetspectrumsgistogramms.h"
 #include "tcp/tcpstartrudospuskcommand.h"
 #include "tcp/tcpstoprudostuskcommand.h"
 
 #include "tcp/tcpteststopseparate.h"
-#include "tcp/tcpcommandrentgenonfull.h"
+#include "tcp/tcpcommandseparatoronfull.h"
 
 class SPRTestIMSWidget : public QWidget, public ISPRWidget
 {
@@ -39,7 +39,7 @@ public:
     TCPCommandSeparatorOnFull *separatorOnCommand;
     TCPTestStopSeparate *separatorOffCommand;
 
-    TCPCommandRentgerOn *rentgenOnCommand;
+    TCPCommandRentgerSetup *rentgenOnCommand;
     TCPCommandSet *rentgenOffCommand;
 
     TCPCommandSet *rguReadStateCommand;

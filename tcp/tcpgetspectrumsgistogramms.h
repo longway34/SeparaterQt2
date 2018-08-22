@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include "tcp/TCPCommandSet.h"
-#include "tcp/tcpcommandrentgenonfull.h"
+#include "tcp/tcpcommandseparatoronfull.h"
 #include "models/sprsettingsrentgenmodel.h"
 #include "tcp/tcplogswigtets.h"
 #include "tcp/tcpexpositiononoff.h"

@@ -203,6 +203,7 @@ void ServerConnect::queueComplite(){
                    clearState(spr_state_separator_on);
                    clearState(spr_state_exposition_on);
                    clearState(spr_state_rentgen_on_correct);
+                   clearState(spr_state_codes_is_stated);
 //                   clearState(spr_state_rentgen_not_regime);
                 }
                 addState(spr_state_error_connect);
@@ -225,6 +226,7 @@ void ServerConnect::queueComplite(){
                 clearState(spr_state_separator_on);
                 clearState(spr_state_exposition_on);
                 clearState(spr_state_rentgen_on_correct);
+                clearState(spr_state_codes_is_stated);
 //                clearState(spr_state_rentgen_not_regime);
             }
 //            clearState(SPR_STATE_SERVER_CONNECT | SPR_STATE_RENTGEN_ON | SPR_STATE_SEPATOR_ON | SPR_STATE_EXPOSITION_ON);
@@ -266,6 +268,12 @@ void ServerConnect::onReadyRead(){
             addState(spr_state_separator_on);
         } else {
             clearState(spr_state_separator_on);
+        }
+    } else if(com == setudeu || com == setptdeu){
+        if(noErrorsInReplay()){
+            addState(spr_state_codes_is_stated);
+        } else {
+            clearState(spr_state_codes_is_stated);
         }
     } else if(com == expon){
         if(noErrorsInReplay()){
@@ -375,6 +383,9 @@ void ServerConnect::onServerStateChange(uint32_t _state)
         }
         if((onBits & SPR_STATE_SEPATOR_ON) == SPR_STATE_SEPATOR_ON){
             logWidget->onLogsCommand(nullptr, QString(tr("Сепаратор включен...")));
+        }
+        if((onBits & SPR_STATE_CODES_IS_STATED) == SPR_STATE_CODES_IS_STATED){
+            logWidget->onLogsCommand(nullptr, QString(tr("Коды ДЭУ и CP установлены...")));
         }
         if((offBits & SPR_STATE_SEPATOR_ON) == SPR_STATE_SEPATOR_ON){
             logWidget->onLogsCommand(nullptr, QString(tr("Сепаратор выключен...")));

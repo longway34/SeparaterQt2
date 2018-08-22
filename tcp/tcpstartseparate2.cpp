@@ -61,13 +61,13 @@ void TCPStartSeparate2::go(TCPCommand *_command)
     //            findCommands(setsepar).last()->setSendData(separData);
 
             if(!model->getServer()->isState(spr_state_separated)){
-//                addCommand(oniw);
+                addCommand(oniw);
                 addCommand(new TCPTimeOutCommand(timeoutcommand, 2000, 100, getTimeOutWidget(),
                                 MSG_TIME_OUT_ON_RASKLAD, MSG_TIME_OUT_ON_RASKLAD_MSG( 2 )));
 
                 TCPCommandStartPitatel *startPitatel = new TCPCommandStartPitatel(model->getServer(),getTimeOutWidget());
                 startPitatel->setModelVariable(model->getSettingsControlModel()->VEMSBeginCode);
-//                addCommand(startPitatel);
+                addCommand(startPitatel);
                 addCommand(new TCPCommand(startsep));
 
                 addCommand(getstate);

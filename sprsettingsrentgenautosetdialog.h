@@ -88,6 +88,7 @@ public slots:
     void onClickButtons(bool);
     void onCusorOverSelectItem(QwtPlotItem *item, MovedItemPosition);
     void onChangeSelectedItemValue(QwtPlotItem *item, double distance, MovedItemPosition position);
+    void onCommandNotComplite(TCPCommand *);
 protected:
     bool isDeuCpAllOK(uint8_t th = 255, QList<bool> *_src = nullptr);
     double prDeuCpOKAll(QList<bool> *_src = nullptr);

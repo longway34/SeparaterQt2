@@ -43,7 +43,17 @@ int main(int argc, char *argv[])
 //    MainWindow w(&doc);
 //    w.show();
 
-    MainWindow w;
+    QString fName = "Separator.xml";
+    for(int i=0; i<argc; i++){
+        QString sarg = argv[i];
+        if(sarg.toUpper() == "-F"){
+            if(argc > i){
+                fName = argv[i+1];
+            }
+        }
+    }
+
+    MainWindow w(fName);
     w.show();
 
     return a.exec();

@@ -84,7 +84,6 @@ SOURCES += \
     tcp/tcplogswigtets.cpp \
     tcp/tcpcommandrguup.cpp \
     tcp/tcpcommandrguupdown.cpp \
-    tcp/tcpcommandrentgeron.cpp \
     tcp/tcpcommandgetspectrums.cpp \
     tcp/tcpstartsoptestimscommand.cpp \
     tcp/tcpcommandstartpitatel.cpp \
@@ -115,7 +114,6 @@ SOURCES += \
     sprspectrumlisttable.cpp \
     sprspectrumchoisetimedialog.cpp \
     sprdeucodestable.cpp \
-    tcp/tcpcommandrentgenonfull.cpp \
     models/imainmodel.cpp \
     sprrentgenvatable.cpp \
     mainwindow.cpp \
@@ -144,7 +142,10 @@ SOURCES += \
     models/sprhistorymodel.cpp \
     sprstonesizeschart.cpp \
     sprpitatelcontrolwidget.cpp \
-    sprseparatecontrolwidget.cpp
+    sprseparatecontrolwidget.cpp \
+    tcp/tcpcommandseparatoronfull.cpp \
+    tcp/tcpcommandrentgersetup.cpp \
+    aboutdialog.cpp
 
 HEADERS += \
     _types.h \
@@ -197,7 +198,6 @@ HEADERS += \
     tcp/tcplogswigtets.h \
     tcp/tcpcommandrguup.h \
     tcp/tcpcommandrguupdown.h \
-    tcp/tcpcommandrentgeron.h \
     tcp/tcpcommandgetspectrums.h \
     tcp/tcpstartsoptestimscommand.h \
     tcp/tcpcommandstartpitatel.h \
@@ -229,7 +229,6 @@ HEADERS += \
     sprspectrumlisttablewidget.h \
     sprspectrumchoisetimedialog.h \
     sprdeucodestable.h \
-    tcp/tcpcommandrentgenonfull.h \
     models/imainmodel.h \
     sprrentgenvatable.h \
     mainwindow.h \
@@ -257,7 +256,10 @@ HEADERS += \
     models/sprhistorymodel.h \
     sprstonesizeschart.h \
     sprpitatelcontrolwidget.h \
-    sprseparatecontrolwidget.h
+    sprseparatecontrolwidget.h \
+    tcp/tcpcommandseparatoronfull.h \
+    tcp/tcpcommandrentgersetup.h \
+    aboutdialog.h
 
 FORMS += \
     sprsettingsrentgenmainwidget.ui \
@@ -289,7 +291,8 @@ FORMS += \
     maintabwidget.ui \
     sprsettingrentgenautosetdialog.ui \
     sprpitatelcontrolwidget.ui \
-    sprseparatecontrolwidget.ui
+    sprseparatecontrolwidget.ui \
+    aboutdialog.ui
 
 RESOURCES += \
     icons.qrc \

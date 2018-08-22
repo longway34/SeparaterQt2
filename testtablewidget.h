@@ -15,7 +15,7 @@
 #include "tcp/tcpseparatego.h"
 #include "isprwidget.h"
 
-#include "tcp/tcpcommandrentgenonfull.h"
+#include "tcp/tcpcommandseparatoronfull.h"
 #include "tcp/tcpcommandgetspectrums.h"
 
 #include "tcp/tcpstartseparate2.h"

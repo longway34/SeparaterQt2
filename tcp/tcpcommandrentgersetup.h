@@ -4,16 +4,17 @@
 #include <QObject>
 #include "tcp/TCPCommandSet.h"
 #include "models/sprsettingsrentgenmodel.h"
+#include "tcp/tcpcommandseparatoronfull.h"
 
-class TCPCommandRentgerOn : public TCPCommandSet
+class TCPCommandRentgerSetup : public TCPCommandSet
 {
     SPRSettingsRentgenModel *model;
 
     uint8_t rentgenNum;
     uint8_t rentgenCount;
 public:
-    TCPCommandRentgerOn();
-    TCPCommandRentgerOn(ServerConnect *_server, TCPTimeOutWigget *_widget, SPRSettingsRentgenModel *_model = nullptr);
+    TCPCommandRentgerSetup();
+    TCPCommandRentgerSetup(ServerConnect *_server, TCPTimeOutWigget *_widget, SPRSettingsRentgenModel *_model = nullptr);
 
 
     void setModel(SPRSettingsRentgenModel *value);

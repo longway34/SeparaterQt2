@@ -38,6 +38,10 @@
         <file>icons/b_Up_passive.png</file>
         <file>icons/b_Keys.png</file>
         <file>icons/b_Exit.png</file>
+        <file>icons/logo.jpg</file>
+        <file>icons/Logo_3.png</file>
+        <file>icons/logo_2.jpg</file>
+        <file>icons/texture.png</file>
     </qresource>
     <qresource prefix="/icons/settings">
         <file>icons/AlgoripmSerrings_tabs/Algoritm_Sittings_Porogs_tab.png</file>

@@ -1,7 +1,7 @@
 #include "tcpteststartseparate.h"
-#include "tcp/tcpcommandrentgenonfull.h"
+#include "tcp/tcpcommandseparatoronfull.h"
 #include "tcp/tcpcommandseparatoroff.h"
-#include "tcp/tcpcommandrentgeron.h"
+#include "tcp/tcpcommandrentgersetup.h"
 #include "tcp/tcpgetspectrumsgistogramms.h"
 #include "tcp/tcpseparatego.h"
 #include <QMessageBox>

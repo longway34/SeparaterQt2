@@ -4,7 +4,7 @@
 #include <QObject>
 #include "tcp/TCPCommandSet.h"
 #include "models/sprmainmodel.h"
-#include "tcp/tcpcommandrentgenonfull.h"
+#include "tcp/tcpcommandseparatoronfull.h"
 #include "tcp/tcpcommandrguupdown2.h"
 
 class TCPAutoSetRentgen: public TCPCommandSet

@@ -8,7 +8,7 @@
 #include "models/sprmainmodel.h"
 #include "tcp/tcpseparatego.h"
 #include "tcp/tcpgetspectrumsgistogramms.h"
-#include "tcp/tcpcommandrentgenonfull.h"
+#include "tcp/tcpcommandseparatoronfull.h"
 #include "tcp/tcpcommandseparatoroff.h"
 
 class TCPTestStartSeparate : public TCPCommandSet

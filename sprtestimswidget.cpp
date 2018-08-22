@@ -67,7 +67,7 @@ SPRTestIMSWidget::SPRTestIMSWidget(QWidget *parent) :
 // init commands and connects
 // *********************************************************************
 
-    rentgenOnCommand = new TCPCommandRentgerOn(nullptr, towidget);
+    rentgenOnCommand = new TCPCommandRentgerSetup(nullptr, towidget);
     connect(rentgenOnCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
 
     rentgenOffCommand = new TCPCommandSet(nullptr, towidget, QVector<TCPCommand*>{
@@ -142,6 +142,7 @@ SPRTestIMSWidget::SPRTestIMSWidget(QWidget *parent) :
     commandStopRudospusk = new TCPStopRudostuskCommand(nullptr, nullptr);
     connect(commandStopRudospusk, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
 
+    ui.wPitatelControl->setFullMode(false);
 }
 
 void SPRTestIMSWidget::setLogWidget(TCPLogsWigtets *value)
@@ -443,22 +444,21 @@ void SPRTestIMSWidget::onCommandComplite(TCPCommand *_comm){
     }
     if(sender() == getSpectrumsCommand){
         QVector<QColor> colors = {Qt::red, Qt::green, Qt::blue, Qt::yellow, Qt::cyan, Qt::magenta};
-        QByteArray res = getSpectrumsCommand->getReplayData();
-        if(res.size() > 0 && res[0] == 0){
+
+        SPRSpectrumListItemsModel* mod = dynamic_cast<SPRSpectrumListItemsModel*>(ui.wSpectrumWidget->getModelData());
+        if(mod){
             QMessageBox::information(this, tr("Получение спектров"), tr("Спектры получены"));
             ((SPRSpectrumListItemsModel*)(ui.wSpectrumWidget->getModelData()))->clearGraphicsItemModel();
-            for(int ch=0; ch<MAX_SPR_MAIN_THREADS; ch++){
+            QVector<TCPCommand*> lgetspk = getSpectrumsCommand->findCommands(getspk);
+            for(uint8_t ch=0; ch<lgetspk.size(); ch++){
                 QByteArray sp = getSpectrumsCommand->getSpectrumData(ch);
-                ((SPRSpectrumListItemsModel*)(ui.wSpectrumWidget->getModelData()))->addSpectrum(sp, 5000, ch);
-//                QColor col = colors[ch % colors.size()];
-//                ui.wSpectrumWidget->getModel()->getSpectrumItem(ch)->setSpectrumColor(col);
+                mod->setSpectrumData(ch,sp,spectrumsOnly, 5000, tr("Спектор %1"));
             }
-
             ui.wSpectrumWidget->setVisibleAll();
             ui.wSpectrumWidget->widgetsShow();
-        } else {
-            QMessageBox::information(this, tr("Получение спектров"), tr("Спектры не получены\n или получены с ошибкой..."));
         }
+
+
         return;
 
     }

@@ -44,6 +44,7 @@
 #define SPR_STATE_RGU_UP_POSITION       0x00001000
 #define SPR_STATE_RGU_DOWN_POSITION     0x00002000
 
+#define SPR_STATE_CODES_IS_STATED       0x00004000
 
 #define SPR_STATE_SEPATOR_ON            0x00010000
 #define SPR_STATE_RENTGEN_ON            0x00020000
@@ -80,6 +81,8 @@ typedef enum server_connect_state :uint32_t {
 
     spr_state_rgu_up_position       = SPR_STATE_RGU_UP_POSITION,
     spr_state_rgu_down_position     = SPR_STATE_RGU_DOWN_POSITION,
+
+    spr_state_codes_is_stated       = SPR_STATE_CODES_IS_STATED,
 
     spr_state_separator_on          = SPR_STATE_SEPATOR_ON,
     spr_state_rentgen_on            = SPR_STATE_RENTGEN_ON,

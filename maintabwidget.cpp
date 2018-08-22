@@ -47,6 +47,22 @@ MainTabWidget::MainTabWidget(QString _fName, QWidget *parent): QTabWidget(parent
     setDoc(_fName);
 }
 
+SPRMainModel *MainTabWidget::getModel() const
+{
+    return model;
+}
+
+bool MainTabWidget::isCloseEnabled()
+{
+    if(model){
+        //        QList<
+        if(model->getServer()->isState(spr_state_pitatel_on) ||
+           model){
+
+        }
+    }
+}
+
 bool MainTabWidget::getIsMasterMode() const
 {
     return isMasterMode;
@@ -172,9 +188,12 @@ void MainTabWidget::setDoc(QString _fName)
 {
     bool createNewDoc = false;
     if(!QFile::exists(_fName)){
+        std::cout << "File not fount " << _fName.toStdString().c_str() << " used from recource..." << std::endl;
         _fName = ":/def/defSettings.xml";
         createNewDoc = true;
 
+    } else {
+        std::cout << "File fount " << _fName.toStdString().c_str() << " ..." << std::endl;
     }
     ISPRWidget::setDoc(_fName);
     setModelData(new SPRMainModel(doc));

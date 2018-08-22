@@ -1,6 +1,6 @@
-#include "tcpcommandrentgenonfull.h"
-#include "tcp/tcpcommandrentgeron.h"
-
+#include "tcpcommandseparatoronfull.h"
+#include "tcp/tcpcommandrentgersetup.h"
+#include "tcp/tcpcommandseparatoroff.h"
 
 void TCPCommandSeparatorOnFull::setModelData(SPRMainModel *value)
 {
@@ -31,10 +31,16 @@ bool TCPCommandSeparatorOnFull::isRentgenReady(){
 
 }
 
-TCPCommandSeparatorOnFull::TCPCommandSeparatorOnFull(ServerConnect *server, SPRMainModel *_model, TCPTimeOutWigget *_widget):
+void TCPCommandSeparatorOnFull::setFullMode(bool value)
+{
+    fullMode = value;
+}
+
+TCPCommandSeparatorOnFull::TCPCommandSeparatorOnFull(ServerConnect *server, SPRMainModel *_model, TCPTimeOutWigget *_widget, bool _isFullMode):
     TCPCommandSet(server, _widget, {}), model(nullptr)
 {
     command = setSeparatorOnFull;
+    fullMode = _isFullMode;
     setModelData(_model);
 }
 
@@ -46,18 +52,22 @@ void TCPCommandSeparatorOnFull::go(TCPCommand *_command)
         if(model){
             addCommand(new TCPCommand(getstate));
 
+            addCommand(new TCPCommandSeparatorOff(model->getServer(), widget));
+
             addCommand(new TCPCommand(initada));
             addCommand(new TCPCommand(onsep));
-            addCommand(new TCPCommand(onren));
+            if(fullMode){
+                addCommand(new TCPCommand(onren));
 
-            addCommand(new TCPCommandRentgerOn(model->getServer(), this->widget, model->getSettingsRentgenModel()));
+                uint timeHotTube = model->getSettingsRentgenModel()->timeOnRA->getData();
+                addCommand(new TCPTimeOutCommand(timeoutcommand, timeHotTube * 1000 + 1000, 10, widget,
+                                MSG_TIME_OUT_REN_ON, MSG_TIME_OUT_REN_ON_MSG(timeHotTube)));
+                addCommand(new TCPCommandRentgerSetup(model->getServer(), this->widget, model->getSettingsRentgenModel()));
+            }
             addCommand(new TCPCommand(offosw));
             addCommand(new TCPCommand(onosw));
 
-            uint timeHotTube = model->getSettingsRentgenModel()->timeOnRA->getData();
 
-            addCommand(new TCPTimeOutCommand(timeoutcommand, timeHotTube * 1000 + 1000, 10, widget,
-                            MSG_TIME_OUT_REN_ON, MSG_TIME_OUT_REN_ON_MSG(timeHotTube)));
 //                                             QString(tr("Включение рентгена...")),
 //                                             QString(tr("Прогрев трубок (%1 секунд)...")).arg(timeHotTube)));
         }

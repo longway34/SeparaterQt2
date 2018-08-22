@@ -272,6 +272,7 @@ ISPRModelData *SPRSettingsRentgenAutoSetDialog::setModelData(ISPRModelData *valu
                     if(!toWidget) toWidget = new TCPTimeOutWigget(nullptr);
                     autoSetCommand = new TCPAutoSetRentgen(mainModel, toWidget);
                     connect(autoSetCommand, SIGNAL(commandComplite(TCPCommand*)), this, SLOT(onCommandComplite(TCPCommand*)));
+                    connect(autoSetCommand, SIGNAL(commandNotComplite(TCPCommand*)), this, SLOT(onCommandNotComplite(TCPCommand*)));
 
                     if(autoSetGo) delete autoSetGo;
                     autoSetGo = new TCPAutosetCommandGo(mainModel->getServer(), tempDEU2Command, tempCP2Command, threads, toWidget, nullptr);
@@ -365,28 +366,34 @@ void SPRSettingsRentgenAutoSetDialog::onClickButtons(bool){
         if(sender() == ui.bSuspend){
             ui.bComplite->setEnabled(false);
             ui.bSuspend->setEnabled(false);
+            finish = true;
+        }
+        if(sender() == ui.bComplite){
+            if(mainModel){
+                foreach(uint8_t th, threads){
+                    mainModel->getSettingsRentgenModel()->deuCodes[th]->setData(tempDEU[th]);
+                    mainModel->getSettingsRentgenModel()->cpCodes[th]->setData(tempCP[th]);
+                }
+                mainModel->getSettingsRentgenModel()->peakPosition->setData(tempPeakPosition);
+            }
         }
     }
     if(sender() == ui.bExit){
         finish = true;
         this->accept();
     }
-    if(sender() == ui.bComplite){
-        if(mainModel){
-            foreach(uint8_t th, threads){
-                mainModel->getSettingsRentgenModel()->deuCodes[th]->setData(tempDEU[th]);
-                mainModel->getSettingsRentgenModel()->cpCodes[th]->setData(tempCP[th]);
-            }
-            mainModel->getSettingsRentgenModel()->peakPosition->setData(tempPeakPosition);
-        }
-    }
 
 }
 
+void SPRSettingsRentgenAutoSetDialog::onCommandNotComplite(TCPCommand*){
+    if(sender() == autoSetCommand){
+        qDebug() << "ERRORS WORKING Rentgen.... ********************";
+    }
+}
 
 void SPRSettingsRentgenAutoSetDialog::onCommandComplite(TCPCommand* _command){
     if(spectrums && mainModel){
-        if(_command == autoSetCommand || _command == autoSetGo){
+        if((_command == autoSetCommand || _command == autoSetGo) && !finish){
 
             QVector<TCPCommand*> vspc = _command->findCommands(getspk);
             for(int i=0; i<vspc.size(); i++){

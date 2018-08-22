@@ -1,5 +1,5 @@
-#ifndef TCPCOMMANDRENTGENONFULL_H
-#define TCPCOMMANDRENTGENONFULL_H
+#ifndef TCPCOMMANDSEPARATORONFULL_H
+#define TCPCOMMANDSEPARATORONFULL_H
 
 #include <QObject>
 #include "tcp/TCPCommandSet.h"
@@ -10,13 +10,16 @@ class TCPCommandSeparatorOnFull: public TCPCommandSet
     Q_OBJECT
 
     SPRMainModel *model;
+    bool fullMode;
 public:
-    TCPCommandSeparatorOnFull(ServerConnect *server, SPRMainModel *_model=nullptr, TCPTimeOutWigget *_widget = nullptr);
+    TCPCommandSeparatorOnFull(ServerConnect *server, SPRMainModel *_model=nullptr, TCPTimeOutWigget *_widget = nullptr, bool _isFullMode=true);
 
     void setModelData(SPRMainModel *value);
 
-    bool isRentgenReady();
+    virtual bool isRentgenReady();
     // TCPCommand interface
+    void setFullMode(bool value);
+
 public slots:
     virtual void go(TCPCommand *_command);
 
@@ -26,4 +29,4 @@ signals:
 
 
 
-#endif // TCPCOMMANDRENTGENONFULL_H
+#endif // TCPCOMMANDSEPARATORONFULL_H

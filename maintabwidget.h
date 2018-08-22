@@ -30,6 +30,7 @@ signals:
     // ISPRWidget interface
 public:
     virtual ISPRModelData *getModelData(){return model;}
+    bool isCloseEnabled();
 public slots:
     virtual ISPRModelData *setModelData(SPRMainModel *_model);
     virtual void viewChange(){}
@@ -53,6 +54,7 @@ public:
     void setLogWidget(TCPLogsWigtets *value);
     bool getIsMasterMode() const;
     void setIsMasterMode(bool value);
+    SPRMainModel *getModel() const;
 };
 
 

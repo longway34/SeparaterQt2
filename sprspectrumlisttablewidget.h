@@ -11,9 +11,9 @@
 #include "tcp/tcpgetspectrumsgistogramms.h"
 //#include "tcp/tcpcommandseparatoron.h"
 
-#include "tcp/tcpcommandrentgenonfull.h"
+#include "tcp/tcpcommandseparatoronfull.h"
 
-#include "tcp/tcpcommandrentgeron.h"
+#include "tcp/tcpcommandrentgersetup.h"
 #include "tcp/TCPCommandSet.h"
 #include "tcp/tcpcommandrguupdown.h"
 #include "tcp/tcpteststopseparate.h"

@@ -11,13 +11,23 @@
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+   <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
+  <property name="acceptDrops">
+   <bool>true</bool>
+  </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>(c) ООО &quot;ТЕХНОРОС&quot; 2018 Программа рабоы сепаратора</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="icons.qrc">
+    <normaloff>:/icons/icons/logo.jpg</normaloff>:/icons/icons/logo.jpg</iconset>
+  </property>
+  <property name="statusTip">
+   <string>(C) ООО &quot;ТЕХНОРОС&quot; 2018</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout" stretch="80,20">
@@ -52,11 +62,17 @@
     <addaction name="actMasterMode"/>
     <addaction name="actOpenConfig"/>
     <addaction name="actSave"/>
+    <addaction name="actSaveAs"/>
     <addaction name="actAbout"/>
     <addaction name="separator"/>
     <addaction name="actExit"/>
    </widget>
    <addaction name="menu"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar">
+   <property name="layoutDirection">
+    <enum>Qt::LeftToRight</enum>
+   </property>
   </widget>
   <action name="actOpenConfig">
    <property name="enabled">
@@ -67,7 +83,10 @@
      <normaloff>:/icons/icons/b_Open.png</normaloff>:/icons/icons/b_Open.png</iconset>
    </property>
    <property name="text">
-    <string>Открыть конфигурациб</string>
+    <string>Открыть конфигурацию</string>
+   </property>
+   <property name="iconText">
+    <string>Открыть конфигурационный файл с настройками другого сепаратора</string>
    </property>
   </action>
   <action name="actSave">
@@ -81,6 +100,9 @@
    <property name="text">
     <string>Сохранить изменения</string>
    </property>
+   <property name="iconText">
+    <string>Сохранить изменения в текущем файле</string>
+   </property>
   </action>
   <action name="actExit">
    <property name="icon">
@@ -89,6 +111,12 @@
    </property>
    <property name="text">
     <string>Выход</string>
+   </property>
+   <property name="toolTip">
+    <string>Выход из программы</string>
+   </property>
+   <property name="statusTip">
+    <string/>
    </property>
   </action>
   <action name="actMasterMode">
@@ -102,46 +130,50 @@
    <property name="text">
     <string>Режим мастера</string>
    </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Переключиться в режим мастера и выйти из этого режима&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
   </action>
   <action name="actAbout">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/icons/logo.jpg</normaloff>:/icons/icons/logo.jpg</iconset>
+   </property>
    <property name="text">
     <string>О нас</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Наша контактная информация&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </action>
+  <action name="actSaveAs">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Сохранить как...</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Сохранить конфигураию в другом файле&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </action>
  </widget>
  <customwidgets>
-  <customwidget>
-   <class>MainTabWidget</class>
-   <extends>QWidget</extends>
-   <header>maintabwidget.h</header>
-   <container>1</container>
-  </customwidget>
   <customwidget>
    <class>TCPLogsWigtets</class>
    <extends>QWidget</extends>
    <header>tcp/tcplogswigtets.h</header>
    <container>1</container>
   </customwidget>
+  <customwidget>
+   <class>MainTabWidget</class>
+   <extends>QWidget</extends>
+   <header>maintabwidget.h</header>
+   <container>1</container>
+  </customwidget>
  </customwidgets>
  <resources>
   <include location="icons.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>actExit</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>close()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>399</x>
-     <y>299</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>
